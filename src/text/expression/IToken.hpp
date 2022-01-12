@@ -1,7 +1,7 @@
 #ifndef __ITOKEN_HPP__
 #define __ITOKEN_HPP__
 
-#include "IOutput.hpp"
+#include "common/IOutput.hpp"
 
 class IToken : public IOutput
 {

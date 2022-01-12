@@ -9,7 +9,7 @@
 #include <unordered_set>
 #include <memory>
 #include <sstream>
-#include "../Parser.hpp"
+#include "text/Parser.hpp"
 #include "Token.hpp"
 #include "SyntaxException.hpp"
 
