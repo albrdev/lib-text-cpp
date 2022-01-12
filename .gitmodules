@@ -1,3 +1,5 @@
 [submodule "ext/lib-common-cpp"]
 	path = ext/lib-common-cpp
 	url = git@github.com:albrdev/lib-common-cpp.git
+	url = https://github.com/albrdev/lib-common-cpp.git
+	branch = main
