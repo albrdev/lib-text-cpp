@@ -51,4 +51,3 @@ add_executable(${EXECUTABLE_TEST} main-test.cpp ${SOURCES})
 target_link_libraries(${EXECUTABLE_TEST} ${LIBRARY_TEXT} ${UNITTEST_TEXT})
 enable_testing()
 add_test(NAME ${PROJECT_TEST} COMMAND ${EXECUTABLE_TEST})
-
