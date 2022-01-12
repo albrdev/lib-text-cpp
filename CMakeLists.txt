@@ -9,8 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_COMPILER "g++")
 
 # Main
-set(TARGET_MAIN text)
-set(TARGET_TEST text-test)
+set(LIBRARY_TEXT text)
+set(UNITTEST_TEXT text-test)
 project(lib-text VERSION 1.0.0)
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
@@ -19,12 +19,12 @@ elseif(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif()
 
-add_library(${TARGET_MAIN} STATIC)
-target_include_directories(${TARGET_MAIN} PUBLIC src ext/lib-common-cpp/src)
+add_library(${LIBRARY_TEXT} STATIC)
+target_include_directories(${LIBRARY_TEXT} PUBLIC src ext/lib-common-cpp/src)
 
-add_library(${TARGET_TEST} STATIC)
-target_include_directories(${TARGET_TEST} PUBLIC src ext/lib-common-cpp/src)
-target_link_libraries(${TARGET_TEST} gtest_main gmock_main)
+add_library(${UNITTEST_TEXT} STATIC)
+target_include_directories(${UNITTEST_TEXT} PUBLIC src ext/lib-common-cpp/src)
+target_link_libraries(${UNITTEST_TEXT} gtest_main gmock_main)
 
 # Traverse directories
 add_subdirectory(src)
@@ -46,9 +46,9 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-get_target_property(SOURCES ${TARGET_TEST} SOURCES)
+get_target_property(SOURCES ${UNITTEST_TEXT} SOURCES)
 add_executable(${EXECUTABLE_TEST} main-test.cpp ${SOURCES})
-target_link_libraries(${EXECUTABLE_TEST} ${TARGET_MAIN} ${TARGET_TEST})
+target_link_libraries(${EXECUTABLE_TEST} ${LIBRARY_TEXT} ${UNITTEST_TEXT})
 enable_testing()
 add_test(NAME ${PROJECT_TEST} COMMAND ${EXECUTABLE_TEST})
 
