@@ -30,8 +30,8 @@ target_link_libraries(${UNITTEST_TEXT} gtest_main gmock_main)
 add_subdirectory(src)
 
 # Unit test
-set(PROJECT_TEST unit_testsuite)
-set(EXECUTABLE_TEST unit_testsuite)
+set(PROJECT_TEST unit_testsuite-text)
+set(EXECUTABLE_TEST unit_testsuite-text)
 
 project(${PROJECT_TEST})
 
