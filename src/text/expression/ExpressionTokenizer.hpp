@@ -13,23 +13,23 @@
 #include "Token.hpp"
 #include "SyntaxException.hpp"
 
-template<class T>
+template<class... Ts>
 class ExpressionTokenizer : public Parser
 {
   public:
-  using ValueType          = ValueToken<T>;
+  using ValueType          = ValueToken<Ts...>;
   using UnaryOperatorType  = UnaryOperatorToken<ValueType*>;
   using BinaryOperatorType = BinaryOperatorToken<ValueType*>;
   using FunctionType       = FunctionToken<ValueType*>;
-  using VariableType       = VariableToken<T>;
+  using VariableType       = VariableToken<Ts...>;
   using MiscType           = GenericToken<char>;
 
   constexpr static char DefaultCommentIdentifier = '#';
 
-  std::unordered_map<char, ExpressionTokenizer<T>::UnaryOperatorType>& GetUnaryOperators() { return m_UnaryOperators; }
-  std::unordered_map<std::string, ExpressionTokenizer<T>::BinaryOperatorType>& GetBinaryOperators() { return m_BinaryOperators; }
-  std::unordered_map<std::string, ExpressionTokenizer<T>::FunctionType>& GetFunctions() { return m_Functions; }
-  std::unordered_map<std::string, ExpressionTokenizer<T>::VariableType>& GetConstants() { return m_Constants; }
+  std::unordered_map<char, ExpressionTokenizer<Ts...>::UnaryOperatorType>& GetUnaryOperators() { return m_UnaryOperators; }
+  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::BinaryOperatorType>& GetBinaryOperators() { return m_BinaryOperators; }
+  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::FunctionType>& GetFunctions() { return m_Functions; }
+  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::VariableType>& GetConstants() { return m_Constants; }
 
   void AddUnaryOperator(typename UnaryOperatorType::CallbackType callback, char identifier, int precedence, Associativity associativity)
   {
@@ -55,29 +55,31 @@ class ExpressionTokenizer : public Parser
 
   void RemoveFunction(const std::string& identifier) { m_Functions.erase(identifier); }
 
-  void AddConstant(std::nullptr_t value, const std::string& identifier) { m_Constants[identifier] = VariableType(identifier, value); }
-  void AddConstant(const std::string& value, const std::string& identifier) { m_Constants[identifier] = VariableType(identifier, value); }
-  void AddConstant(const T& value, const std::string& identifier) { m_Constants[identifier] = VariableType(identifier, value); }
+  template<class T>
+  void AddConstant(const T& value, const std::string& identifier)
+  {
+    m_Constants[identifier] = VariableType(identifier, value);
+  }
 
   void RemoveConstant(const std::string& identifier) { m_Constants.erase(identifier); }
 
-  void SetNumberConverter(const std::function<T(const std::string&)>& value) { m_NumberConverter = value; }
+  void SetNumberConverter(const std::function<ValueType*(const std::string&)>& value) { m_NumberConverter = value; }
 
   const char& GetCommentIdentifier() const { return m_CommentIdentifier; }
   void SetCommentIdentifier(char value) { m_CommentIdentifier = value; }
 
-  ExpressionTokenizer()
+  ExpressionTokenizer(const std::function<ValueType*(const std::string&)>& numberConverter)
       : Parser()
       , m_UnaryOperators()
       , m_BinaryOperators()
       , m_Functions()
       , m_Constants()
-      , m_NumberConverter(ExpressionTokenizer<T>::NumberConverter)
-      , m_CommentIdentifier(ExpressionTokenizer<T>::DefaultCommentIdentifier)
+      , m_NumberConverter(numberConverter)
+      , m_CommentIdentifier(ExpressionTokenizer<Ts...>::DefaultCommentIdentifier)
       , m_TokenCache()
   {}
 
-  ExpressionTokenizer(const ExpressionTokenizer<T>& other)
+  ExpressionTokenizer(const ExpressionTokenizer<Ts...>& other)
       : Parser(other)
       , m_UnaryOperators(other.m_UnaryOperators)
       , m_BinaryOperators(other.m_BinaryOperators)
@@ -88,7 +90,7 @@ class ExpressionTokenizer : public Parser
       , m_TokenCache(other.m_TokenCache)
   {}
 
-  ExpressionTokenizer(ExpressionTokenizer<T>&& other)
+  ExpressionTokenizer(ExpressionTokenizer<Ts...>&& other)
       : Parser(std::move(other))
       , m_UnaryOperators(std::move(other.m_UnaryOperators))
       , m_BinaryOperators(std::move(other.m_BinaryOperators))
@@ -127,8 +129,8 @@ class ExpressionTokenizer : public Parser
       }
       else if(IsNumber(GetCurrent()))
       {
-        T value = m_NumberConverter(ParseNumber());
-        m_TokenCache.push_back(std::unique_ptr<IToken>(new ValueType(value)));
+        auto value = m_NumberConverter(ParseNumber());
+        m_TokenCache.push_back(std::unique_ptr<IToken>(value));
         result.push(m_TokenCache.back().get());
       }
       else if(IsString(GetCurrent()))
@@ -226,21 +228,13 @@ class ExpressionTokenizer : public Parser
   private:
   using Parser::SetText;
 
-  static T NumberConverter(const std::string& value)
-  {
-    std::istringstream iss(value);
-    T result;
-    iss >> result;
-    return result;
-  }
+  std::unordered_map<char, ExpressionTokenizer<Ts...>::UnaryOperatorType> m_UnaryOperators;
+  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::BinaryOperatorType> m_BinaryOperators;
 
-  std::unordered_map<char, ExpressionTokenizer<T>::UnaryOperatorType> m_UnaryOperators;
-  std::unordered_map<std::string, ExpressionTokenizer<T>::BinaryOperatorType> m_BinaryOperators;
+  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::FunctionType> m_Functions;
+  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::VariableType> m_Constants;
 
-  std::unordered_map<std::string, ExpressionTokenizer<T>::FunctionType> m_Functions;
-  std::unordered_map<std::string, ExpressionTokenizer<T>::VariableType> m_Constants;
-
-  std::function<T(const std::string&)> m_NumberConverter;
+  std::function<ValueType*(const std::string&)> m_NumberConverter;
   char m_CommentIdentifier;
 
   std::vector<std::unique_ptr<IToken>> m_TokenCache;

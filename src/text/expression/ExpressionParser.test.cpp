@@ -3,6 +3,7 @@
 #include <cmath>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <ratio>
 #include <limits>
 #include <exception>
@@ -10,12 +11,28 @@
 #include "ExpressionParser.hpp"
 
 using ArithmeticType     = double;
-using ArithmeticValue    = ExpressionParser<ArithmeticType>::ValueType;
-using ArithmeticVariable = ExpressionParser<ArithmeticType>::VariableType;
+using ArithmeticValue    = ExpressionParser<std::uint64_t, ArithmeticType>::ValueType;
+using ArithmeticVariable = ExpressionParser<std::uint64_t, ArithmeticType>::VariableType;
 
 using BitwiseType     = std::uint64_t;
 using BitwiseValue    = ExpressionParser<BitwiseType>::ValueType;
 using BitwiseVariable = ExpressionParser<BitwiseType>::VariableType;
+
+static ArithmeticValue* arithmeticNumberConverter(const std::string& value)
+{
+  std::istringstream iss(value);
+  ArithmeticType result;
+  iss >> result;
+  return new ArithmeticValue(result);
+}
+
+static BitwiseValue* bitwiseNumberConverter(const std::string& value)
+{
+  std::istringstream iss(value);
+  BitwiseType result;
+  iss >> result;
+  return new BitwiseValue(result);
+}
 
 std::vector<ArithmeticValue> arithmeticResults;
 ArithmeticValue* arithmeticAns(const std::vector<ArithmeticValue*>& args)
@@ -85,19 +102,26 @@ constexpr static double ratio()
   return static_cast<double>(T::num) / static_cast<double>(T::den);
 }
 
-template<class T>
-ExpressionParser<T> createInstance()
+template<class... Ts>
+ExpressionParser<Ts...> createInstance()
 {
-  ExpressionParser<T> instance;
-  instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(std::abs(value->GetValue<T>())); }, '+', 4, Associativity::Right);
-  instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(-value->GetValue<T>()); }, '-', 4, Associativity::Right);
-  instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(!value->GetValue<T>()); }, '!', 4, Associativity::Right);
+  ExpressionParser<Ts...> instance(arithmeticNumberConverter);
+
+  instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(std::abs(value->GetValue<ArithmeticType>())); },
+                            '+',
+                            4,
+                            Associativity::Right);
+  instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(-value->GetValue<ArithmeticType>()); }, '-', 4, Associativity::Right);
+  instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(static_cast<ArithmeticType>(!value->GetValue<ArithmeticType>())); },
+                            '!',
+                            4,
+                            Associativity::Right);
 
   instance.AddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) {
         if(a->GetType() == typeid(ArithmeticType) && b->GetType() == typeid(ArithmeticType))
         {
-          return new ArithmeticValue(a->GetValue<T>() + b->GetValue<T>());
+          return new ArithmeticValue(a->GetValue<ArithmeticType>() + b->GetValue<ArithmeticType>());
         }
         else
         {
@@ -107,39 +131,46 @@ ExpressionParser<T> createInstance()
       "+",
       1,
       Associativity::Left);
-  instance.AddBinaryOperator([](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<T>() - b->GetValue<T>()); },
-                             "-",
-                             1,
-                             Associativity::Left);
-  instance.AddBinaryOperator([](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<T>() * b->GetValue<T>()); },
-                             "*",
-                             2,
-                             Associativity::Left);
-  instance.AddBinaryOperator([](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<T>() / b->GetValue<T>()); },
-                             "/",
-                             2,
-                             Associativity::Left);
+  instance.AddBinaryOperator(
+      [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() - b->GetValue<ArithmeticType>()); },
+      "-",
+      1,
+      Associativity::Left);
+  instance.AddBinaryOperator(
+      [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() * b->GetValue<ArithmeticType>()); },
+      "*",
+      2,
+      Associativity::Left);
+  instance.AddBinaryOperator(
+      [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() / b->GetValue<ArithmeticType>()); },
+      "/",
+      2,
+      Associativity::Left);
   instance.AddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) {
-        return new ArithmeticValue(static_cast<T>(static_cast<long>(a->GetValue<T>()) % static_cast<long>(b->GetValue<T>())));
+        return new ArithmeticValue(
+            static_cast<ArithmeticType>(static_cast<long>(a->GetValue<ArithmeticType>()) % static_cast<long>(b->GetValue<ArithmeticType>())));
       },
       "%",
       2,
       Associativity::Left);
-  instance.AddBinaryOperator([](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(std::pow(a->GetValue<T>(), b->GetValue<T>())); },
-                             "^",
-                             3,
-                             Associativity::Right);
+  instance.AddBinaryOperator(
+      [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(std::pow(a->GetValue<ArithmeticType>(), b->GetValue<ArithmeticType>())); },
+      "^",
+      3,
+      Associativity::Right);
 
-  instance.AddBinaryOperator([](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(std::pow(a->GetValue<T>(), b->GetValue<T>())); },
-                             "**",
-                             3,
-                             Associativity::Right);
+  instance.AddBinaryOperator(
+      [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(std::pow(a->GetValue<ArithmeticType>(), b->GetValue<ArithmeticType>())); },
+      "**",
+      3,
+      Associativity::Right);
 
-  instance.AddBinaryOperator([](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(std::trunc(a->GetValue<T>() / b->GetValue<T>())); },
-                             "//",
-                             2,
-                             Associativity::Right);
+  instance.AddBinaryOperator(
+      [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(std::trunc(a->GetValue<ArithmeticType>() / b->GetValue<ArithmeticType>())); },
+      "//",
+      2,
+      Associativity::Right);
 
   instance.AddBinaryOperator(
       [](ArithmeticValue* lhs, ArithmeticValue* rhs) {
@@ -149,9 +180,9 @@ ExpressionParser<T> createInstance()
           throw SyntaxException("Assignment of non-variable type: " + lhs->ToString() + " (" + lhs->GetType().name() + ")");
         }
 
-        if(rhs->GetType() == typeid(T))
+        if(rhs->GetType() == typeid(ArithmeticType))
         {
-          (*variable) = rhs->GetValue<T>();
+          (*variable) = rhs->GetValue<ArithmeticType>();
         }
         else if(rhs->GetType() == typeid(std::string))
         {
@@ -197,36 +228,48 @@ ExpressionParser<T> createInstance()
   instance.AddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
         static_cast<void>(args);
-        return new ArithmeticValue(static_cast<T>(std::rand()));
+        return new ArithmeticValue(static_cast<ArithmeticType>(std::rand()));
       },
       "random");
 
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::abs(args[0]->GetValue<T>())); }, "abs");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(-std::abs(args[0]->GetValue<T>())); }, "neg");
-
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::pow(args[0]->GetValue<T>(), args[1]->GetValue<T>())); },
-                       "math.pow");
-  instance.AddFunction(
-      [](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::pow(args[0]->GetValue<T>(), 1.0 / args[1]->GetValue<T>())); },
-      "math.root");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::sqrt(args[0]->GetValue<T>())); }, "math.sqrt");
-
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log(args[0]->GetValue<T>())); }, "math.log");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log2(args[0]->GetValue<T>())); }, "math.log2");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log10(args[0]->GetValue<T>())); }, "math.log10");
-
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::sin(args[0]->GetValue<T>())); }, "math.sin");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::cos(args[0]->GetValue<T>())); }, "math.cos");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::tan(args[0]->GetValue<T>())); }, "math.tan");
+  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::abs(args[0]->GetValue<ArithmeticType>())); }, "abs");
+  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(-std::abs(args[0]->GetValue<ArithmeticType>())); }, "neg");
 
   instance.AddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
-        T result = std::numeric_limits<T>::max();
+        return new ArithmeticValue(std::pow(args[0]->GetValue<ArithmeticType>(), args[1]->GetValue<ArithmeticType>()));
+      },
+      "math.pow");
+  instance.AddFunction(
+      [](const std::vector<ArithmeticValue*>& args) {
+        return new ArithmeticValue(std::pow(args[0]->GetValue<ArithmeticType>(), 1.0 / args[1]->GetValue<ArithmeticType>()));
+      },
+      "math.root");
+  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::sqrt(args[0]->GetValue<ArithmeticType>())); },
+                       "math.sqrt");
+
+  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log(args[0]->GetValue<ArithmeticType>())); },
+                       "math.log");
+  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log2(args[0]->GetValue<ArithmeticType>())); },
+                       "math.log2");
+  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log10(args[0]->GetValue<ArithmeticType>())); },
+                       "math.log10");
+
+  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::sin(args[0]->GetValue<ArithmeticType>())); },
+                       "math.sin");
+  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::cos(args[0]->GetValue<ArithmeticType>())); },
+                       "math.cos");
+  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::tan(args[0]->GetValue<ArithmeticType>())); },
+                       "math.tan");
+
+  instance.AddFunction(
+      [](const std::vector<ArithmeticValue*>& args) {
+        ArithmeticType result = std::numeric_limits<ArithmeticType>::max();
         for(const auto& i : args)
         {
-          if(i->GetValue<T>() < result)
+          if(i->GetValue<ArithmeticType>() < result)
           {
-            result = i->GetValue<T>();
+            result = i->GetValue<ArithmeticType>();
           }
         }
 
@@ -236,12 +279,12 @@ ExpressionParser<T> createInstance()
 
   instance.AddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
-        T result = std::numeric_limits<T>::min();
+        ArithmeticType result = std::numeric_limits<ArithmeticType>::min();
         for(const auto& i : args)
         {
-          if(i->GetValue<T>() > result)
+          if(i->GetValue<ArithmeticType>() > result)
           {
-            result = i->GetValue<T>();
+            result = i->GetValue<ArithmeticType>();
           }
         }
 
@@ -251,18 +294,19 @@ ExpressionParser<T> createInstance()
 
   instance.AddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
-        T result = 0.0;
+        ArithmeticType result = 0.0;
         for(const auto& i : args)
         {
-          result += i->GetValue<T>();
+          result += i->GetValue<ArithmeticType>();
         }
 
-        return new ArithmeticValue(result / static_cast<T>(args.size()));
+        return new ArithmeticValue(result / static_cast<ArithmeticType>(args.size()));
       },
       "math.mean");
 
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(static_cast<T>(args[0]->GetValue<std::string>().length())); },
-                       "str.len");
+  instance.AddFunction(
+      [](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(static_cast<ArithmeticType>(args[0]->GetValue<std::string>().length())); },
+      "str.len");
 
   instance.SetJuxtapositionOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() * b->GetValue<ArithmeticType>()); },
@@ -272,55 +316,59 @@ ExpressionParser<T> createInstance()
   return instance;
 }
 
-template<class T>
-ExpressionParser<T> createInstance2()
+template<class... Ts>
+ExpressionParser<Ts...> createInstance2()
 {
-  ExpressionParser<T> instance;
-  instance.AddUnaryOperator([](BitwiseValue* value) { return new BitwiseValue(!value->GetValue<T>()); }, '!', 4, Associativity::Right);
-  instance.AddUnaryOperator([](BitwiseValue* value) { return new BitwiseValue(~value->GetValue<T>()); }, '~', 4, Associativity::Right);
+  ExpressionParser<Ts...> instance(bitwiseNumberConverter);
 
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<T>() | b->GetValue<T>()); },
+  instance.AddUnaryOperator([](BitwiseValue* value) { return new BitwiseValue(static_cast<BitwiseType>(!value->GetValue<BitwiseType>())); },
+                            '!',
+                            4,
+                            Associativity::Right);
+  instance.AddUnaryOperator([](BitwiseValue* value) { return new BitwiseValue(~value->GetValue<BitwiseType>()); }, '~', 4, Associativity::Right);
+
+  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() | b->GetValue<BitwiseType>()); },
                              "|",
                              1,
                              Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<T>() & b->GetValue<T>()); },
+  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() & b->GetValue<BitwiseType>()); },
                              "&",
                              1,
                              Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<T>() ^ b->GetValue<T>()); },
+  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() ^ b->GetValue<BitwiseType>()); },
                              "^",
                              2,
                              Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<T>() | b->GetValue<T>()); },
+  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() | b->GetValue<BitwiseType>()); },
                              "+",
                              1,
                              Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<T>() & b->GetValue<T>()); },
+  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() & b->GetValue<BitwiseType>()); },
                              "*",
                              1,
                              Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<T>() << b->GetValue<T>()); },
+  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() << b->GetValue<BitwiseType>()); },
                              "<<",
                              1,
                              Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<T>() >> b->GetValue<T>()); },
+  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() >> b->GetValue<BitwiseType>()); },
                              ">>",
                              1,
                              Associativity::Left);
 
   instance.AddBinaryOperator(
       [](BitwiseValue* a, BitwiseValue* b) {
-        (*dynamic_cast<BitwiseVariable*>(a)) = b->GetValue<T>();
+        (*dynamic_cast<BitwiseVariable*>(a)) = b->GetValue<BitwiseType>();
         return a;
       },
       "=",
       4,
       Associativity::Right);
 
-  instance.AddConstant(std::numeric_limits<std::uint8_t>::max(), "byte.max");
-  instance.AddConstant(std::numeric_limits<std::uint16_t>::max(), "ushort.max");
-  instance.AddConstant(std::numeric_limits<std::uint32_t>::max(), "uint.max");
-  instance.AddConstant(std::numeric_limits<std::uint64_t>::max(), "ulong.max");
+  instance.AddConstant(static_cast<BitwiseType>(std::numeric_limits<std::uint8_t>::max()), "byte.max");
+  instance.AddConstant(static_cast<BitwiseType>(std::numeric_limits<std::uint16_t>::max()), "ushort.max");
+  instance.AddConstant(static_cast<BitwiseType>(std::numeric_limits<std::uint32_t>::max()), "uint.max");
+  instance.AddConstant(static_cast<BitwiseType>(std::numeric_limits<std::uint64_t>::max()), "ulong.max");
 
   instance.AddFunction(bitwiseAns, "ans");
 
@@ -352,21 +400,21 @@ namespace UnitTest
   {
     // Not
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("!1");
       auto expected         = static_cast<double>(!1.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("!0");
       auto expected         = static_cast<double>(!0.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("!-1");
       auto expected         = static_cast<double>(!-1.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -377,28 +425,28 @@ namespace UnitTest
   {
     // Addition
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 + 3");
       auto expected         = 10.0 + 3.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 + 3");
       auto expected         = (-10.0) + 3.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 + -3");
       auto expected         = 10.0 + (-3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 + -3");
       auto expected         = (-10.0) + (-3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -406,28 +454,28 @@ namespace UnitTest
 
     // Subtraction
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 - 3");
       auto expected         = 10.0 - 3.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 - 3");
       auto expected         = (-10.0) - 3.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 - -3");
       auto expected         = 10.0 - (-3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 - -3");
       auto expected         = (-10.0) - (-3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -435,28 +483,28 @@ namespace UnitTest
 
     // Multiplication
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 * 3");
       auto expected         = 10.0 * 3.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 * 3");
       auto expected         = (-10.0) * 3.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 * -3");
       auto expected         = 10.0 * (-3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 * -3");
       auto expected         = (-10.0) * (-3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -464,28 +512,28 @@ namespace UnitTest
 
     // Division
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 / 3");
       auto expected         = 10.0 / 3.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 / 3");
       auto expected         = (-10.0) / 3.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 / -3");
       auto expected         = 10.0 / (-3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 / -3");
       auto expected         = (-10.0) / (-3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -493,28 +541,28 @@ namespace UnitTest
 
     // Truncated division
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 // 3");
       auto expected         = std::trunc(10.0 / 3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 // 3");
       auto expected         = std::trunc((-10.0) / 3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 // -3");
       auto expected         = std::trunc(10.0 / (-3.0));
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 // -3");
       auto expected         = std::trunc((-10.0) / (-3.0));
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -522,56 +570,56 @@ namespace UnitTest
 
     // Exponentiation 1
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 ^ 3");
       auto expected         = std::pow(10.0, 3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 ^ 3");
       auto expected         = std::pow(-10.0, 3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 ^ -3");
       auto expected         = std::pow(10.0, -3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 ^ -3");
       auto expected         = std::pow(-10.0, -3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("9 ^ 3");
       auto expected         = std::pow(9.0, 3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-9 ^ 3");
       auto expected         = std::pow(-9.0, 3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("9 ^ -3");
       auto expected         = std::pow(9.0, -3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-9 ^ -3");
       auto expected         = std::pow(-9.0, -3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -579,56 +627,56 @@ namespace UnitTest
 
     // Exponentiation 2
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 ** 2");
       auto expected         = std::pow(10.0, 2.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 ** 2");
       auto expected         = std::pow(-10.0, 2.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("10 ** -2");
       auto expected         = std::pow(10.0, -2.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-10 ** -2");
       auto expected         = std::pow(-10.0, -2.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("9 ** 2");
       auto expected         = std::pow(9.0, 2.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-9 ** 2");
       auto expected         = std::pow(-9.0, 2.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("9 ** -2");
       auto expected         = std::pow(9.0, -2.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-9 ** -2");
       auto expected         = std::pow(-9.0, -2.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -638,28 +686,28 @@ namespace UnitTest
   TEST(ExpressionParser, Functions)
   {
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("random()");
       ASSERT_GE(actual.GetValue<ArithmeticType>(), 0.0);
       ASSERT_LE(actual.GetValue<ArithmeticType>(), static_cast<double>(RAND_MAX));
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("math.mean(1, 2, 3)");
       auto expected         = (1.0 + 2.0 + 3.0) / 3.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("math.log10(math.mean(1000, 1000, 1000, 1000, 1000))");
       auto expected         = std::log10((1000.0 + 1000.0 + 1000.0 + 1000.0 + 1000.0) / 5.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("math.mean(min(50, 0, -50), max(-100, 0, 100))");
       auto expected         = (std::min(std::min(50.0, 0.0), -50.0) + std::max(std::max(-100.0, 0.0), 100.0)) / 2.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -669,35 +717,35 @@ namespace UnitTest
   TEST(ExpressionParser, Strings)
   {
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("\"abc123\"");
       auto expected         = std::string("abc123");
       ASSERT_EQ(actual.GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("\"abc\" + \"123\"");
       auto expected         = std::string("abc") + std::string("123");
       ASSERT_EQ(actual.GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("\"abc\" + 123");
       auto expected         = std::string("abc") + std::string("123");
       ASSERT_EQ(actual.GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("123 + \"abc\"");
       auto expected         = std::string("123") + std::string("abc");
       ASSERT_EQ(actual.GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("str.len(\"abc123\")");
       auto expected         = static_cast<double>(std::string("abc123").length());
       ASSERT_EQ(actual.GetValue<double>(), expected);
@@ -707,7 +755,7 @@ namespace UnitTest
   TEST(ExpressionParser, Variables)
   {
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = 1");
       auto var              = 1.0;
       auto expected         = var;
@@ -716,7 +764,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = -1");
       auto var              = -1.0;
       auto expected         = var;
@@ -725,7 +773,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = 1 + 1");
       auto var              = 1.0;
       auto expected         = var + 1.0;
@@ -734,7 +782,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = -1 + 1");
       auto var              = -1.0;
       auto expected         = var + 1.0;
@@ -743,7 +791,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = (1 + 1)");
       auto var              = 1.0 + 1.0;
       auto expected         = var;
@@ -752,7 +800,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = -(1 + 1)");
       auto var              = -(1.0 + 1.0);
       auto expected         = var;
@@ -761,7 +809,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = (1 + 1) * 2");
       auto var              = (1.0 + 1.0);
       auto expected         = var * 2.0;
@@ -774,7 +822,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = (10^2^3) + var");
       auto var              = std::pow(10.0, std::pow(2.0, 3.0));
       auto expected         = var + var;
@@ -783,7 +831,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = -(1 + 1) * 4 + -var");
       auto var              = -(1.0 + 1.0);
       auto expected         = (var * 4.0) + (-var);
@@ -792,7 +840,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto x                = 10.0;
       auto y                = 5.0;
       expressionParser.AddVariable("x", x);
@@ -805,7 +853,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto x                = 10.0;
       auto y                = 5.0;
       expressionParser.Evaluate("x = 10");
@@ -818,7 +866,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var = var = 1");
       auto var              = 1.0;
       auto expected         = var;
@@ -827,7 +875,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var2 = var1 = 1");
       auto var1             = 1.0;
       auto var2             = var1;
@@ -838,7 +886,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var2 = var1 = 1 + 1");
       auto var1             = 1.0;
       auto var2             = var1;
@@ -849,7 +897,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var2 = (var1 = 1) + 1");
       auto var1             = 1.0;
       auto var2             = var1;
@@ -860,7 +908,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var2 = (var1 = 1 + 1)");
       auto var1             = 1.0;
       auto var2             = var1 + 1.0;
@@ -871,7 +919,7 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("var2 = ((var1 = 1) + 1)");
       auto var1             = 1.0;
       auto var2             = var1 + 1.0;
@@ -885,21 +933,21 @@ namespace UnitTest
   TEST(ExpressionParser, Comments)
   {
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("1 + 1 #");
       auto expected         = 1.0 + 1.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("1 + 1 # comment");
       auto expected         = 1.0 + 1.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("1 # + 1");
       auto expected         = 1.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
@@ -908,7 +956,7 @@ namespace UnitTest
 
   TEST(ExpressionParser, Ans)
   {
-    auto expressionParser = createInstance<ArithmeticType>();
+    auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
 
     auto actual1   = expressionParser.Evaluate("1 + 1");
     auto expected1 = 1.0 + 1.0;
@@ -1005,110 +1053,110 @@ namespace UnitTest
   TEST(ExpressionParser, Misc)
   {
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       using expected        = SyntaxException;
       ASSERT_THROW(expressionParser.Evaluate("void"), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       using expected        = std::runtime_error;
       ASSERT_THROW(expressionParser.Evaluate("void = void + 1"), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("null");
       auto expected         = nullptr;
       ASSERT_EQ(actual.GetValue<std::nullptr_t>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("12345");
       auto expected         = 12345.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-(-5)");
       auto expected         = -(-5.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("3 + --4");
       auto expected         = 3.0 + (-(-4.0));
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("4 + 5 * (5 + 2)");
       auto expected         = 4.0 + (5.0 * (5.0 + 2.0));
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("-(10^3)");
       auto expected         = -std::pow(10.0, 3.0);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("1 + -(10^3)");
       auto expected         = 1.0 + (-std::pow(10.0, 3.0));
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("1 + 10^2^3");
       auto expected         = 1.0 + std::pow(10.0, std::pow(2.0, 3.0));
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("3 + 4 * 2 / (1 - 5) ^ 2 ^ 3");
       auto expected         = 3.0 + (4.0 * (2.0 / std::pow(1.0 - 5.0, std::pow(2.0, 3.0))));
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("2^1da^-5");
       auto expected         = std::pow(2.0, std::pow(ratio<std::deca>(), -5.0));
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("1da^3 * (10 - 2 * 2)");
       auto expected         = std::pow(ratio<std::deca>(), 3.0) * (10.0 - (2.0 * 2.0));
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("math.sin(max(2, 3) / 3 * math.pi)");
       auto expected         = std::sin((std::max(2.0, 3.0) / 3.0) * M_PI);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("(phys.au / phys.c) / 60 # How long light travels from the Sun to Earth");
       auto expected         = (149597870700.0 / 299792458.0) / 60.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance<ArithmeticType>();
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("384402000 / phys.c # How long light travels from the Moon to Earth");
       auto expected         = 384402000.0 / 299792458.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);

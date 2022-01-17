@@ -6,16 +6,23 @@
 #include <sstream>
 #include "TokenBase.hpp"
 
-template<class T>
-using ValueType = std::variant<std::nullptr_t, std::string, T>;
+template<class... Ts>
+struct overloaded : Ts...
+{
+  using Ts::operator()...;
+};
 
-template<class T>
-class ValueToken : public TokenBase<ValueType<T>>
+template<class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
+template<class... Ts>
+using ValueType = std::variant<std::nullptr_t, std::string, Ts...>;
+
+template<class... Ts>
+class ValueToken : public TokenBase<ValueType<Ts...>>
 {
   public:
-  using InnerValueType = T;
-
-  template<class U>
+  template<class T>
   const auto& GetValue() const
   {
     if(!m_IsInitialized)
@@ -23,10 +30,10 @@ class ValueToken : public TokenBase<ValueType<T>>
       ThrowOnUninitializedAccess();
     }
 
-    return std::get<U>(this->GetObject());
+    return std::get<T>(this->GetObject());
   }
 
-  template<class U>
+  template<class T>
   auto& GetValue()
   {
     if(!m_IsInitialized)
@@ -34,22 +41,13 @@ class ValueToken : public TokenBase<ValueType<T>>
       ThrowOnUninitializedAccess();
     }
 
-    return std::get<U>(this->GetObject());
+    return std::get<T>(this->GetObject());
   }
 
-  void SetValue(const std::nullptr_t& value)
-  {
-    this->SetObject(ValueType<T>(value));
-    m_IsInitialized = true;
-  }
-  void SetValue(const std::string& value)
-  {
-    this->SetObject(ValueType<T>(value));
-    m_IsInitialized = true;
-  }
+  template<class T>
   void SetValue(const T& value)
   {
-    this->SetObject(ValueType<T>(value));
+    this->SetObject(ValueType<Ts...>(value));
     m_IsInitialized = true;
   }
 
@@ -57,72 +55,50 @@ class ValueToken : public TokenBase<ValueType<T>>
 
   const bool& IsInitialized() const { return m_IsInitialized; }
 
-  virtual std::string ToString() const override { return std::visit(StringVisitor(), this->GetObject()); }
+  virtual std::string ToString() const override { return std::visit(ToStringVisitor(), this->GetObject()); }
 
-  ValueToken<T>& operator=(const std::nullptr_t value)
+  template<class T>
+  ValueToken<Ts...>& operator=(const T& value)
   {
-    TokenBase<ValueType<T>>::operator=(ValueType<T>(value));
-    m_IsInitialized                  = true;
-    return *this;
-  }
-
-  ValueToken<T>& operator=(const std::string& value)
-  {
-    TokenBase<ValueType<T>>::operator=(ValueType<T>(value));
-    m_IsInitialized                  = true;
-    return *this;
-  }
-
-  ValueToken<T>& operator=(const T& value)
-  {
-    TokenBase<ValueType<T>>::operator=(ValueType<T>(value));
-    m_IsInitialized                  = true;
+    TokenBase<ValueType<Ts...>>::operator=(value);
+    m_IsInitialized                      = true;
     return *this;
   }
 
   ValueToken()
-      : TokenBase<ValueType<T>>(ValueType<T>(nullptr))
+      : TokenBase<ValueType<Ts...>>(ValueType<Ts...>(nullptr))
       , m_IsInitialized(false)
   {}
 
-  explicit ValueToken(const std::nullptr_t value)
-      : TokenBase<ValueType<T>>(ValueType<T>(value))
-      , m_IsInitialized(true)
-  {}
-
-  explicit ValueToken(const std::string& value)
-      : TokenBase<ValueType<T>>(ValueType<T>(value))
-      , m_IsInitialized(true)
-  {}
-
+  template<class T>
   explicit ValueToken(const T& value)
-      : TokenBase<ValueType<T>>(ValueType<T>(value))
+      : TokenBase<ValueType<Ts...>>(ValueType<Ts...>(value))
       , m_IsInitialized(true)
   {}
 
-  ValueToken(const ValueToken<T>& other)
-      : TokenBase<ValueType<T>>(other)
+  ValueToken(const ValueToken<Ts...>& other)
+      : TokenBase<ValueType<Ts...>>(other)
       , m_IsInitialized(other.m_IsInitialized)
   {}
 
-  ValueToken(ValueToken<T>&& other)
-      : TokenBase<ValueType<T>>(std::move(other))
+  ValueToken(ValueToken<Ts...>&& other)
+      : TokenBase<ValueType<Ts...>>(std::move(other))
       , m_IsInitialized(std::move(other.m_IsInitialized))
   {}
 
   virtual ~ValueToken() override = default;
 
-  ValueToken<T>& operator=(const ValueToken<T>& other)
+  ValueToken<Ts...>& operator=(const ValueToken<Ts...>& other)
   {
-    TokenBase<ValueType<T>>::operator=(other);
-    m_IsInitialized                  = other.m_IsInitialized;
+    TokenBase<ValueType<Ts...>>::operator=(other);
+    m_IsInitialized                      = other.m_IsInitialized;
     return *this;
   }
 
-  ValueToken<T>& operator=(ValueToken<T>&& other)
+  ValueToken<Ts...>& operator=(ValueToken<Ts...>&& other)
   {
-    TokenBase<ValueType<T>>::operator=(std::move(other));
-    m_IsInitialized                  = std::move(other.m_IsInitialized);
+    TokenBase<ValueType<Ts...>>::operator=(std::move(other));
+    m_IsInitialized                      = std::move(other.m_IsInitialized);
     return *this;
   }
 
@@ -130,17 +106,15 @@ class ValueToken : public TokenBase<ValueType<T>>
   virtual void ThrowOnUninitializedAccess() const { throw std::runtime_error("Accessing uninitialized value"); }
 
   private:
-  using TokenBase<ValueType<T>>::GetObject;
-  using TokenBase<ValueType<T>>::SetObject;
+  using TokenBase<ValueType<Ts...>>::GetObject;
+  using TokenBase<ValueType<Ts...>>::SetObject;
 
   struct TypeIdVisitor
   {
-    const std::type_info& operator()(const std::nullptr_t& value) const { return typeid(value); }
-    const std::type_info& operator()(const std::string& value) const { return typeid(value); }
-    const std::type_info& operator()(const T& value) const { return typeid(value); }
+    const std::type_info& operator()(const auto& value) const { return typeid(value); }
   };
 
-  struct StringVisitor
+  struct ToStringVisitor
   {
     std::string operator()(const std::nullptr_t& value) const
     {
@@ -150,7 +124,7 @@ class ValueToken : public TokenBase<ValueType<T>>
 
     std::string operator()(const std::string& value) const { return value; }
 
-    std::string operator()(const T& value) const
+    std::string operator()(const auto& value) const
     {
       std::ostringstream oss;
       oss << value;

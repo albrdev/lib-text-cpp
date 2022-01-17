@@ -5,77 +5,57 @@
 #include "SymbolicToken.hpp"
 #include <string>
 
-template<class T>
-class VariableToken : public ValueToken<T>, public SymbolicToken<std::string>
+template<class... Ts>
+class VariableToken : public ValueToken<Ts...>, public SymbolicToken<std::string>
 {
   public:
   virtual std::string ToString() const override { return this->GetIdentifier(); }
 
-  VariableToken<T>& operator=(const std::nullptr_t value)
+  template<class T>
+  VariableToken<Ts...>& operator=(const T& value)
   {
-    ValueToken<T>::operator=(value);
-    return *this;
-  }
-
-  VariableToken<T>& operator=(const std::string& value)
-  {
-    ValueToken<T>::operator=(value);
-    return *this;
-  }
-
-  VariableToken<T>& operator=(const T& value)
-  {
-    ValueToken<T>::operator=(value);
+    ValueToken<Ts...>::operator=(value);
     return *this;
   }
 
   VariableToken()
-      : ValueToken<T>()
+      : ValueToken<Ts...>()
       , SymbolicToken<std::string>()
   {}
 
   VariableToken(const std::string& identifier)
-      : ValueToken<T>()
+      : ValueToken<Ts...>()
       , SymbolicToken<std::string>(identifier)
   {}
 
-  explicit VariableToken(const std::string& identifier, const std::nullptr_t value)
-      : ValueToken<T>(value)
-      , SymbolicToken<std::string>(identifier)
-  {}
-
-  explicit VariableToken(const std::string& identifier, const std::string& value)
-      : ValueToken<T>(value)
-      , SymbolicToken<std::string>(identifier)
-  {}
-
+  template<class T>
   explicit VariableToken(const std::string& identifier, const T& value)
-      : ValueToken<T>(value)
+      : ValueToken<Ts...>(value)
       , SymbolicToken<std::string>(identifier)
   {}
 
   virtual ~VariableToken() override = default;
 
-  VariableToken(const VariableToken<T>& other)
-      : ValueToken<T>(other)
+  VariableToken(const VariableToken<Ts...>& other)
+      : ValueToken<Ts...>(other)
       , SymbolicToken<std::string>(other)
   {}
 
-  VariableToken(VariableToken<T>&& other)
-      : ValueToken<T>(std::move(other))
+  VariableToken(VariableToken<Ts...>&& other)
+      : ValueToken<Ts...>(std::move(other))
       , SymbolicToken<std::string>(std::move(other))
   {}
 
-  VariableToken<T>& operator=(const VariableToken<T>& other)
+  VariableToken<Ts...>& operator=(const VariableToken<Ts...>& other)
   {
-    ValueToken<T>::operator             =(other);
+    ValueToken<Ts...>::operator         =(other);
     SymbolicToken<std::string>::operator=(other);
     return *this;
   }
 
-  VariableToken<T>& operator=(VariableToken<T>&& other)
+  VariableToken<Ts...>& operator=(VariableToken<Ts...>&& other)
   {
-    ValueToken<T>::operator             =(std::move(other));
+    ValueToken<Ts...>::operator         =(std::move(other));
     SymbolicToken<std::string>::operator=(std::move(other));
     return *this;
   }

@@ -7,15 +7,15 @@
 #include "Token.hpp"
 #include "FunctionTokenHelper.hpp"
 
-template<class T>
+template<class... Ts>
 class ExpressionEvaluator
 {
   public:
-  using ValueType          = ValueToken<T>;
+  using ValueType          = ValueToken<Ts...>;
   using UnaryOperatorType  = UnaryOperatorToken<ValueType*>;
   using BinaryOperatorType = BinaryOperatorToken<ValueType*>;
   using FunctionType       = FunctionToken<ValueType*>;
-  using VariableType       = VariableToken<T>;
+  using VariableType       = VariableToken<Ts...>;
   using MiscType           = GenericToken<char>;
 
   private:
@@ -26,11 +26,11 @@ class ExpressionEvaluator
       : m_ResultCache()
   {}
 
-  ExpressionEvaluator(const ExpressionEvaluator<T>& other)
+  ExpressionEvaluator(const ExpressionEvaluator<Ts...>& other)
       : m_ResultCache(other.m_ResultCache)
   {}
 
-  ExpressionEvaluator(ExpressionEvaluator<T>&& other)
+  ExpressionEvaluator(ExpressionEvaluator<Ts...>&& other)
       : m_ResultCache(std::move(other.m_ResultCache))
   {}
 

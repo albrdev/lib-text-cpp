@@ -13,15 +13,15 @@
 #include "FunctionTokenHelper.hpp"
 #include "SyntaxException.hpp"
 
-template<class T>
+template<class... Ts>
 class ExpressionPostfixParser
 {
   public:
-  using ValueType          = ValueToken<T>;
+  using ValueType          = ValueToken<Ts...>;
   using UnaryOperatorType  = UnaryOperatorToken<ValueType*>;
   using BinaryOperatorType = BinaryOperatorToken<ValueType*>;
   using FunctionType       = FunctionToken<ValueType*>;
-  using VariableType       = VariableToken<T>;
+  using VariableType       = VariableToken<Ts...>;
   using MiscType           = GenericToken<char>;
 
   private:
@@ -39,11 +39,11 @@ class ExpressionPostfixParser
       : m_JuxtapositionOperator()
   {}
 
-  ExpressionPostfixParser(const ExpressionPostfixParser<T>& other)
+  ExpressionPostfixParser(const ExpressionPostfixParser<Ts...>& other)
       : m_JuxtapositionOperator(other.m_JuxtapositionOperator)
   {}
 
-  ExpressionPostfixParser(ExpressionPostfixParser<T>&& other)
+  ExpressionPostfixParser(ExpressionPostfixParser<Ts...>&& other)
       : m_JuxtapositionOperator(std::move(other.m_JuxtapositionOperator))
   {}
 
