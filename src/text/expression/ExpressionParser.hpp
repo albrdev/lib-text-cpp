@@ -41,7 +41,7 @@ class ExpressionParser : public ExpressionTokenizer<Ts...>, public ExpressionPos
 
     if(!m_VariableCache.empty())
     {
-      throw SyntaxException("Expression uninitialized variable(s)");
+      throw SyntaxException("Accessing nonexistent variable(s)");
     }
 
     return result;
