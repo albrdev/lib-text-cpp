@@ -136,7 +136,7 @@ class ExpressionEvaluator
 
     if(stack.size() != 1u)
     {
-      throw SyntaxException("Excessive values provided: " + stack.size());
+      throw SyntaxException("Excessive values provided: " + std::to_string(stack.size()));
     }
 
     return *stack.back();
