@@ -53,26 +53,24 @@ class ExpressionPostfixParser
   {
     m_FunctionHelperCache.clear();
 
-    ValueType* value           = nullptr;
-    OperatorToken* anyOperator = nullptr;
-    FunctionType* function     = nullptr;
-    VariableType* variable     = nullptr;
-    MiscType* misc             = nullptr;
+    const OperatorToken* anyOperator = nullptr;
+    const FunctionType* function     = nullptr;
+    const MiscType* misc             = nullptr;
 
     std::queue<IToken*> queue;
     std::stack<IToken*> stack;
     std::stack<FunctionHelperType*> functionHelpers;
 
-    IToken* previous = nullptr;
+    const IToken* previous = nullptr;
     while(!tokens.empty())
     {
       const auto current = tokens.front();
-      if((value = dynamic_cast<ValueType*>(current)) != nullptr)
+      if(current->IsType<ValueType>())
       {
         if(m_JuxtapositionOperator != nullptr)
         {
-          if(((misc = dynamic_cast<MiscType*>(previous)) != nullptr && misc->GetObject() == ')') ||
-             ((variable = dynamic_cast<VariableType*>(current)) != nullptr && (value = dynamic_cast<ValueType*>(previous)) != nullptr))
+          if(((misc = previous->AsPointer<MiscType>()) != nullptr && misc->GetObject() == ')') ||
+             (current->IsType<VariableType>() && previous->IsType<ValueType>()))
           {
             stack.push(m_JuxtapositionOperator.get());
           }
@@ -80,10 +78,10 @@ class ExpressionPostfixParser
 
         queue.push(current);
       }
-      else if((anyOperator = dynamic_cast<OperatorToken*>(current)) != nullptr)
+      else if((anyOperator = current->AsPointer<OperatorToken>()) != nullptr)
       {
         OperatorToken* tmpOperator;
-        while(!stack.empty() && (tmpOperator = dynamic_cast<OperatorToken*>(stack.top())) != nullptr)
+        while(!stack.empty() && (tmpOperator = stack.top()->AsPointer<OperatorToken>()) != nullptr)
         {
           if(((anyOperator->GetAssociativity() & Associativity::Left) != 0 && anyOperator->GetPrecedence() <= tmpOperator->GetPrecedence()) ||
              anyOperator->GetPrecedence() < tmpOperator->GetPrecedence())
@@ -99,11 +97,11 @@ class ExpressionPostfixParser
 
         stack.push(current);
       }
-      else if((function = dynamic_cast<FunctionType*>(current)) != nullptr)
+      else if((function = current->AsPointer<FunctionType>()) != nullptr)
       {
         if(m_JuxtapositionOperator != nullptr)
         {
-          if(((misc = dynamic_cast<MiscType*>(previous)) != nullptr && misc->GetObject() == ')') || (value = dynamic_cast<ValueType*>(previous)) != nullptr)
+          if(((misc = previous->AsPointer<MiscType>()) != nullptr && misc->GetObject() == ')') || previous->IsType<ValueType>())
           {
             stack.push(m_JuxtapositionOperator.get());
           }
@@ -114,13 +112,13 @@ class ExpressionPostfixParser
         stack.push(m_FunctionHelperCache.back().get());
         functionHelpers.push(m_FunctionHelperCache.back().get());
       }
-      else if((misc = dynamic_cast<MiscType*>(current)) != nullptr)
+      else if((misc = current->AsPointer<MiscType>()) != nullptr)
       {
         switch(misc->GetObject())
         {
           case '(':
           {
-            if(m_JuxtapositionOperator != nullptr && (value = dynamic_cast<ValueType*>(previous)) != nullptr)
+            if(m_JuxtapositionOperator != nullptr && previous->IsType<ValueType>())
             {
               stack.push(m_JuxtapositionOperator.get());
             }
@@ -141,7 +139,7 @@ class ExpressionPostfixParser
 
               if(functionHelpers.top()->GetBracketBalance() == 0)
               {
-                if(previous != nullptr && ((misc = dynamic_cast<MiscType*>(previous)) == nullptr || misc->GetObject() != '('))
+                if(previous != nullptr && ((misc = previous->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
                 {
                   functionHelpers.top()->IncrementArgumentCount();
                 }
@@ -151,7 +149,7 @@ class ExpressionPostfixParser
             }
 
             misc = nullptr;
-            while(!stack.empty() && ((misc = dynamic_cast<MiscType*>(stack.top())) == nullptr || misc->GetObject() != '('))
+            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
             {
               queue.push(stack.top());
               stack.pop();
@@ -164,7 +162,7 @@ class ExpressionPostfixParser
 
             stack.pop();
 
-            if(!stack.empty() && dynamic_cast<FunctionHelperType*>(stack.top()))
+            if(!stack.empty() && stack.top()->IsType<FunctionHelperType>())
             {
               queue.push(stack.top());
               stack.pop();
@@ -179,7 +177,7 @@ class ExpressionPostfixParser
               functionHelpers.top()->IncrementArgumentCount();
             }
 
-            while(!stack.empty() && ((misc = dynamic_cast<MiscType*>(stack.top())) == nullptr || misc->GetObject() != '('))
+            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
             {
               queue.push(stack.top());
               stack.pop();
@@ -205,7 +203,7 @@ class ExpressionPostfixParser
 
     while(!stack.empty())
     {
-      if(dynamic_cast<MiscType*>(stack.top()) != nullptr)
+      if((misc = stack.top()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ')'))
       {
         throw std::runtime_error("Missing matching closing bracket");
       }

@@ -142,8 +142,8 @@ class ExpressionTokenizer : public Parser
       else if(unOps.find(GetCurrent()) != unOps.end() || binOps.find(GetCurrent()) != binOps.end())
       {
         MiscType* misc = nullptr;
-        if(result.empty() || dynamic_cast<OperatorToken*>(result.back()) != nullptr ||
-           ((misc = dynamic_cast<MiscType*>(result.back())) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ',')))
+        if(result.empty() || result.back()->IsType<OperatorToken>() ||
+           ((misc = result.back()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ',')))
         {
           const auto op = m_UnaryOperators.find(GetCurrent());
           if(op == m_UnaryOperators.cend())

@@ -53,11 +53,11 @@ class ExpressionEvaluator
     {
       const auto current = postfix.front();
 
-      if((value = dynamic_cast<ValueType*>(current)) != nullptr)
+      if((value = current->AsPointer<ValueType>()) != nullptr)
       {
         stack.push_back(value);
       }
-      else if((unaryOperator = dynamic_cast<UnaryOperatorType*>(current)) != nullptr)
+      else if((unaryOperator = current->AsPointer<UnaryOperatorType>()) != nullptr)
       {
         if(stack.size() < 1u)
         {
@@ -71,7 +71,7 @@ class ExpressionEvaluator
         m_ResultCache.push_back(std::unique_ptr<ValueType>(value));
         stack.push_back(value);
       }
-      else if((binaryOperator = dynamic_cast<BinaryOperatorType*>(current)) != nullptr)
+      else if((binaryOperator = current->AsPointer<BinaryOperatorType>()) != nullptr)
       {
         if(stack.size() < 2u)
         {
@@ -83,11 +83,11 @@ class ExpressionEvaluator
         const auto lhs = stack.back();
         stack.pop_back();
 
-        VariableType* variable = dynamic_cast<VariableType*>(lhs);
+        VariableType* variable = lhs->IToken::AsPointer<VariableType>();
         bool isNewVariable     = variable != nullptr && !variable->IsInitialized();
 
         auto value = (*binaryOperator)(lhs, rhs);
-        if(dynamic_cast<VariableType*>(value) != nullptr)
+        if(value->IToken::IsType<VariableType>())
         {
           if(isNewVariable && value == lhs)
           {
@@ -102,7 +102,7 @@ class ExpressionEvaluator
 
         stack.push_back(value);
       }
-      else if((functionHelper = dynamic_cast<FunctionHelperType*>(current)) != nullptr)
+      else if((functionHelper = current->AsPointer<FunctionHelperType>()) != nullptr)
       {
         if(functionHelper->GetArgumentCount() < functionHelper->GetFunction().GetMinArgumentCount() ||
            functionHelper->GetArgumentCount() > std::min(functionHelper->GetFunction().GetMaxArgumentCount(), FunctionType::GetArgumentCountMaxLimit()))
