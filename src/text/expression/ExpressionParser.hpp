@@ -30,7 +30,7 @@ class ExpressionParser : public ExpressionTokenizer<Ts...>, public ExpressionPos
     return result;
   }
 
-  void SetVariables(std::unordered_map<std::string, VariableType*>* value) { m_pVariables = value; }
+  void SetVariables(const std::unordered_map<std::string, VariableType*>* value) { m_pVariables = value; }
 
   ExpressionParser(const std::function<ValueType*(const std::string&)>& numberConverter)
       : ExpressionTokenizer<Ts...>(numberConverter)
@@ -60,7 +60,7 @@ class ExpressionParser : public ExpressionTokenizer<Ts...>, public ExpressionPos
   using ExpressionPostfixParser<Ts...>::Execute;
   using ExpressionEvaluator<Ts...>::Execute;
 
-  std::unordered_map<std::string, VariableType*>* m_pVariables;
+  const std::unordered_map<std::string, VariableType*>* m_pVariables;
 };
 
 #endif // __EXPRESSIONPARSER_HPP__

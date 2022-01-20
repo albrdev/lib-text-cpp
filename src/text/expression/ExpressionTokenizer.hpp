@@ -104,7 +104,7 @@ class ExpressionTokenizer : public Parser
 
   virtual ~ExpressionTokenizer() override = default;
 
-  std::queue<IToken*> Execute(const std::string& text, std::unordered_map<std::string, VariableType*>& variables)
+  std::queue<IToken*> Execute(const std::string& text, const std::unordered_map<std::string, VariableType*>& variables)
   {
     m_TokenCache.clear();
     this->SetText(text);
