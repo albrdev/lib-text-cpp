@@ -20,4 +20,4 @@ unittest:
 
 .PHONY: memcheck
 memcheck:
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --error-exitcode=1 ./build/test/unit_testsuite 2>&1 | sed -n "/SUMMARY/,$$$$p"
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --error-exitcode=1 ./build/unit_testsuite-text 2>&1 | sed -n "/SUMMARY/,$$$$p"
