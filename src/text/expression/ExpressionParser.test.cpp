@@ -111,7 +111,7 @@ inline std::unordered_map<std::string, std::unique_ptr<BitwiseVariable>> bitwise
 inline std::unordered_map<std::string, BitwiseVariable*> bitwiseVariables;
 
 template<class T>
-void arithmeticAddVariable(const std::string identifier, const T& value)
+void arithmeticAddVariable(const std::string& identifier, const T& value)
 {
   auto newVariable                    = std::make_unique<ArithmeticVariable>(identifier, value);
   auto tmp                            = newVariable.get();
@@ -119,7 +119,7 @@ void arithmeticAddVariable(const std::string identifier, const T& value)
   arithmeticVariables[identifier]     = tmp;
 }
 
-ArithmeticValue* arithmeticOnNewVariable(const std::string identifier)
+ArithmeticValue* arithmeticOnNewVariable(const std::string& identifier)
 {
   auto newVariable                       = std::make_unique<ArithmeticVariable>(identifier);
   auto result                            = newVariable.get();
@@ -128,7 +128,7 @@ ArithmeticValue* arithmeticOnNewVariable(const std::string identifier)
   return result;
 }
 
-BitwiseValue* bitwiseOnNewVariable(const std::string identifier)
+BitwiseValue* bitwiseOnNewVariable(const std::string& identifier)
 {
   auto newVariable                    = std::make_unique<BitwiseVariable>(identifier);
   auto result                         = newVariable.get();
