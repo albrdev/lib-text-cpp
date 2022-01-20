@@ -36,9 +36,7 @@ class ExpressionEvaluator
 
   virtual ~ExpressionEvaluator() = default;
 
-  ValueType& Execute(std::queue<IToken*> postfix,
-                     std::unordered_map<std::string, std::unique_ptr<VariableType>>& variables,
-                     std::unordered_map<std::string, std::unique_ptr<VariableType>>& variableCache)
+  ValueType& Execute(std::queue<IToken*> postfix)
   {
     m_ResultCache.clear();
 
@@ -83,21 +81,10 @@ class ExpressionEvaluator
         const auto lhs = stack.back();
         stack.pop_back();
 
-        VariableType* variable = lhs->IToken::AsPointer<VariableType>();
-        bool isNewVariable     = variable != nullptr && !variable->IsInitialized();
-
         auto value = (*binaryOperator)(lhs, rhs);
-        if(value->IToken::IsType<VariableType>())
+        if(!value->IToken::IsType<VariableType>())
         {
-          if(isNewVariable && value == lhs)
-          {
-            auto variableIterator = variableCache.extract(variable->GetIdentifier());
-            variables.insert(std::move(variableIterator));
-          }
-        }
-        else
-        {
-          m_ResultCache.push_back(std::unique_ptr<ValueType>(value));
+          m_ResultCache.push_back(std::unique_ptr<ValueType>(value)); //*
         }
 
         stack.push_back(value);

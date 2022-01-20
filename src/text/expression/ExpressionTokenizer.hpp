@@ -64,6 +64,7 @@ class ExpressionTokenizer : public Parser
   void RemoveConstant(const std::string& identifier) { m_Constants.erase(identifier); }
 
   void SetNumberConverter(const std::function<ValueType*(const std::string&)>& value) { m_NumberConverter = value; }
+  void SetOnUnknownIdentifierCallback(const std::function<ValueType*(const std::string&)>& value) { m_OnUnknownIdentifierCallback = value; }
 
   const char& GetCommentIdentifier() const { return m_CommentIdentifier; }
   void SetCommentIdentifier(char value) { m_CommentIdentifier = value; }
@@ -103,9 +104,7 @@ class ExpressionTokenizer : public Parser
 
   virtual ~ExpressionTokenizer() override = default;
 
-  std::queue<IToken*> Execute(const std::string& text,
-                              const std::unordered_map<std::string, std::unique_ptr<VariableType>>& variables,
-                              std::unordered_map<std::string, std::unique_ptr<VariableType>>& variableCache)
+  std::queue<IToken*> Execute(const std::string& text, std::unordered_map<std::string, VariableType*>& variables)
   {
     m_TokenCache.clear();
     this->SetText(text);
@@ -189,23 +188,22 @@ class ExpressionTokenizer : public Parser
             const auto variable = variables.find(identifier);
             if(variable != variables.cend())
             {
-              result.push(variable->second.get());
+              result.push(variable->second);
             }
             else
             {
-              auto variableIterator = variableCache.find(identifier);
-              if(variableIterator != variableCache.cend())
+              if(m_OnUnknownIdentifierCallback == nullptr)
               {
-                result.push(variableIterator->second.get());
-              }
-              else
-              {
-                auto newVariable = std::make_unique<VariableType>(identifier);
-                result.push(newVariable.get());
-                variableCache[identifier] = std::move(newVariable);
+                throw SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
               }
 
-              //throw SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
+              auto variable = m_OnUnknownIdentifierCallback(identifier);
+              if(variable == nullptr)
+              {
+                throw SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
+              }
+
+              result.push(variable);
             }
           }
         }
@@ -235,6 +233,7 @@ class ExpressionTokenizer : public Parser
   std::unordered_map<std::string, ExpressionTokenizer<Ts...>::VariableType> m_Constants;
 
   std::function<ValueType*(const std::string&)> m_NumberConverter;
+  std::function<ValueType*(const std::string&)> m_OnUnknownIdentifierCallback;
   char m_CommentIdentifier;
 
   std::vector<std::unique_ptr<IToken>> m_TokenCache;

@@ -102,10 +102,55 @@ constexpr static double ratio()
   return static_cast<double>(T::num) / static_cast<double>(T::den);
 }
 
+inline std::unordered_map<std::string, std::unique_ptr<ArithmeticVariable>> arithmeticVariableCache;
+inline std::unordered_map<std::string, std::unique_ptr<ArithmeticVariable>> arithmeticNewVariableCache;
+inline std::unordered_map<std::string, ArithmeticVariable*> arithmeticVariables;
+
+inline std::unordered_map<std::string, std::unique_ptr<BitwiseVariable>> bitwiseVariableCache;
+inline std::unordered_map<std::string, std::unique_ptr<BitwiseVariable>> bitwiseNewVariableCache;
+inline std::unordered_map<std::string, BitwiseVariable*> bitwiseVariables;
+
+template<class T>
+void arithmeticAddVariable(const std::string identifier, const T& value)
+{
+  auto newVariable                    = std::make_unique<ArithmeticVariable>(identifier, value);
+  auto tmp                            = newVariable.get();
+  arithmeticVariableCache[identifier] = std::move(newVariable);
+  arithmeticVariables[identifier]     = tmp;
+}
+
+ArithmeticValue* arithmeticOnNewVariable(const std::string identifier)
+{
+  auto newVariable                       = std::make_unique<ArithmeticVariable>(identifier);
+  auto result                            = newVariable.get();
+  arithmeticNewVariableCache[identifier] = std::move(newVariable);
+  arithmeticVariables[identifier]        = result;
+  return result;
+}
+
+BitwiseValue* bitwiseOnNewVariable(const std::string identifier)
+{
+  auto newVariable                    = std::make_unique<BitwiseVariable>(identifier);
+  auto result                         = newVariable.get();
+  bitwiseNewVariableCache[identifier] = std::move(newVariable);
+  bitwiseVariables[identifier]        = result;
+  return result;
+}
+
 template<class... Ts>
 ExpressionParser<Ts...> createInstance()
 {
+  arithmeticVariables.clear();
+  arithmeticVariableCache.clear();
+  arithmeticNewVariableCache.clear();
+
   ExpressionParser<Ts...> instance(arithmeticNumberConverter);
+  instance.SetVariables(&arithmeticVariables);
+  instance.SetOnUnknownIdentifierCallback(arithmeticOnNewVariable);
+  instance.SetJuxtapositionOperator(
+      [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() * b->GetValue<ArithmeticType>()); },
+      3,
+      Associativity::Right);
 
   instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(std::abs(value->GetValue<ArithmeticType>())); },
                             '+',
@@ -174,11 +219,13 @@ ExpressionParser<Ts...> createInstance()
 
   instance.AddBinaryOperator(
       [](ArithmeticValue* lhs, ArithmeticValue* rhs) {
-        ArithmeticVariable* variable = dynamic_cast<ArithmeticVariable*>(lhs);
+        ArithmeticVariable* variable = lhs->AsPointer<ArithmeticVariable>();
         if(variable == nullptr)
         {
           throw SyntaxException("Assignment of non-variable type: " + lhs->ToString() + " (" + lhs->GetType().name() + ")");
         }
+
+        bool isNewVariable = !variable->IsInitialized();
 
         if(rhs->GetType() == typeid(ArithmeticType))
         {
@@ -195,6 +242,12 @@ ExpressionParser<Ts...> createInstance()
         else
         {
           throw SyntaxException("Assignment from unsupported type: " + rhs->ToString() + " (" + rhs->GetType().name() + ")");
+        }
+
+        if(isNewVariable)
+        {
+          auto variableIterator = arithmeticNewVariableCache.extract(variable->GetIdentifier());
+          arithmeticVariableCache.insert(std::move(variableIterator));
         }
 
         return variable;
@@ -308,18 +361,23 @@ ExpressionParser<Ts...> createInstance()
       [](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(static_cast<ArithmeticType>(args[0]->GetValue<std::string>().length())); },
       "str.len");
 
-  instance.SetJuxtapositionOperator(
-      [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() * b->GetValue<ArithmeticType>()); },
-      3,
-      Associativity::Right);
-
   return instance;
 }
 
 template<class... Ts>
 ExpressionParser<Ts...> createInstance2()
 {
+  bitwiseVariables.clear();
+  bitwiseVariableCache.clear();
+  bitwiseNewVariableCache.clear();
+
   ExpressionParser<Ts...> instance(bitwiseNumberConverter);
+  instance.SetVariables(&bitwiseVariables);
+  instance.SetOnUnknownIdentifierCallback(bitwiseOnNewVariable);
+  /*instance.SetJuxtapositionOperator(
+      [](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() & b->GetValue<BitwiseType>()); },
+      1,
+      Associativity::Right);*/
 
   instance.AddUnaryOperator([](BitwiseValue* value) { return new BitwiseValue(static_cast<BitwiseType>(!value->GetValue<BitwiseType>())); },
                             '!',
@@ -357,9 +415,31 @@ ExpressionParser<Ts...> createInstance2()
                              Associativity::Left);
 
   instance.AddBinaryOperator(
-      [](BitwiseValue* a, BitwiseValue* b) {
-        (*dynamic_cast<BitwiseVariable*>(a)) = b->GetValue<BitwiseType>();
-        return a;
+      [](BitwiseValue* lhs, BitwiseValue* rhs) {
+        BitwiseVariable* variable = lhs->AsPointer<BitwiseVariable>();
+        if(variable == nullptr)
+        {
+          throw SyntaxException("Assignment of non-variable type: " + lhs->ToString() + " (" + lhs->GetType().name() + ")");
+        }
+
+        bool isNewVariable = !variable->IsInitialized();
+
+        if(rhs->GetType() == typeid(BitwiseType))
+        {
+          (*variable) = rhs->GetValue<BitwiseType>();
+        }
+        else
+        {
+          throw SyntaxException("Assignment from unsupported type: " + rhs->ToString() + " (" + rhs->GetType().name() + ")");
+        }
+
+        if(isNewVariable)
+        {
+          auto variableIterator = bitwiseNewVariableCache.extract(variable->GetIdentifier());
+          bitwiseVariableCache.insert(std::move(variableIterator));
+        }
+
+        return variable;
       },
       "=",
       4,
@@ -378,8 +458,6 @@ ExpressionParser<Ts...> createInstance2()
         return new BitwiseValue(static_cast<std::uint64_t>(std::rand()));
       },
       "random");
-
-  //instance.SetJuxtapositionOperator(&juxtapositionOperator);
 
   return instance;
 }
@@ -760,7 +838,7 @@ namespace UnitTest
       auto var              = 1.0;
       auto expected         = var;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
     }
 
     {
@@ -769,7 +847,7 @@ namespace UnitTest
       auto var              = -1.0;
       auto expected         = var;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
     }
 
     {
@@ -778,7 +856,7 @@ namespace UnitTest
       auto var              = 1.0;
       auto expected         = var + 1.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
     }
 
     {
@@ -787,7 +865,7 @@ namespace UnitTest
       auto var              = -1.0;
       auto expected         = var + 1.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
     }
 
     {
@@ -796,7 +874,7 @@ namespace UnitTest
       auto var              = 1.0 + 1.0;
       auto expected         = var;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
     }
 
     {
@@ -805,7 +883,7 @@ namespace UnitTest
       auto var              = -(1.0 + 1.0);
       auto expected         = var;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
     }
 
     {
@@ -814,7 +892,7 @@ namespace UnitTest
       auto var              = (1.0 + 1.0);
       auto expected         = var * 2.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
 
       auto actual2   = expressionParser.Evaluate("var * 5");
       auto expected2 = var * 5.0;
@@ -827,7 +905,7 @@ namespace UnitTest
       auto var              = std::pow(10.0, std::pow(2.0, 3.0));
       auto expected         = var + var;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
     }
 
     {
@@ -836,20 +914,20 @@ namespace UnitTest
       auto var              = -(1.0 + 1.0);
       auto expected         = (var * 4.0) + (-var);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
     }
 
     {
       auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto x                = 10.0;
       auto y                = 5.0;
-      expressionParser.AddVariable("x", x);
-      expressionParser.AddVariable("y", y);
+      arithmeticAddVariable("x", x);
+      arithmeticAddVariable("y", y);
       auto actual   = expressionParser.Evaluate("x * x - y * y");
-      auto expected = (10.0 * 10.0) - (5.0 * 5.0);
+      auto expected = (x * x) - (y * y);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("x").GetValue<ArithmeticType>(), x);
-      ASSERT_EQ(expressionParser.GetVariable("y").GetValue<ArithmeticType>(), y);
+      ASSERT_EQ(arithmeticVariables["x"]->GetValue<ArithmeticType>(), x);
+      ASSERT_EQ(arithmeticVariables["y"]->GetValue<ArithmeticType>(), y);
     }
 
     {
@@ -859,10 +937,10 @@ namespace UnitTest
       expressionParser.Evaluate("x = 10");
       expressionParser.Evaluate("y = 5");
       auto actual   = expressionParser.Evaluate("x * x - y * y");
-      auto expected = (10.0 * 10.0) - (5.0 * 5.0);
+      auto expected = (x * x) - (y * y);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("x").GetValue<ArithmeticType>(), x);
-      ASSERT_EQ(expressionParser.GetVariable("y").GetValue<ArithmeticType>(), y);
+      ASSERT_EQ(arithmeticVariables["x"]->GetValue<ArithmeticType>(), x);
+      ASSERT_EQ(arithmeticVariables["y"]->GetValue<ArithmeticType>(), y);
     }
 
     {
@@ -871,7 +949,7 @@ namespace UnitTest
       auto var              = 1.0;
       auto expected         = var;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var").GetValue<ArithmeticType>(), var);
+      ASSERT_EQ(arithmeticVariables["var"]->GetValue<ArithmeticType>(), var);
     }
 
     {
@@ -881,8 +959,8 @@ namespace UnitTest
       auto var2             = var1;
       auto expected         = var2;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var1").GetValue<ArithmeticType>(), var1);
-      ASSERT_EQ(expressionParser.GetVariable("var2").GetValue<ArithmeticType>(), var2);
+      ASSERT_EQ(arithmeticVariables["var1"]->GetValue<ArithmeticType>(), var1);
+      ASSERT_EQ(arithmeticVariables["var2"]->GetValue<ArithmeticType>(), var2);
     }
 
     {
@@ -892,8 +970,8 @@ namespace UnitTest
       auto var2             = var1;
       auto expected         = var2 + 1.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var1").GetValue<ArithmeticType>(), var1);
-      ASSERT_EQ(expressionParser.GetVariable("var2").GetValue<ArithmeticType>(), var2);
+      ASSERT_EQ(arithmeticVariables["var1"]->GetValue<ArithmeticType>(), var1);
+      ASSERT_EQ(arithmeticVariables["var2"]->GetValue<ArithmeticType>(), var2);
     }
 
     {
@@ -903,8 +981,8 @@ namespace UnitTest
       auto var2             = var1;
       auto expected         = var2 + 1.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var1").GetValue<ArithmeticType>(), var1);
-      ASSERT_EQ(expressionParser.GetVariable("var2").GetValue<ArithmeticType>(), var2);
+      ASSERT_EQ(arithmeticVariables["var1"]->GetValue<ArithmeticType>(), var1);
+      ASSERT_EQ(arithmeticVariables["var2"]->GetValue<ArithmeticType>(), var2);
     }
 
     {
@@ -914,8 +992,8 @@ namespace UnitTest
       auto var2             = var1 + 1.0;
       auto expected         = var2;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var1").GetValue<ArithmeticType>(), var1);
-      ASSERT_EQ(expressionParser.GetVariable("var2").GetValue<ArithmeticType>(), var2);
+      ASSERT_EQ(arithmeticVariables["var1"]->GetValue<ArithmeticType>(), var1);
+      ASSERT_EQ(arithmeticVariables["var2"]->GetValue<ArithmeticType>(), var2);
     }
 
     {
@@ -925,8 +1003,8 @@ namespace UnitTest
       auto var2             = var1 + 1.0;
       auto expected         = var2;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
-      ASSERT_EQ(expressionParser.GetVariable("var1").GetValue<ArithmeticType>(), var1);
-      ASSERT_EQ(expressionParser.GetVariable("var2").GetValue<ArithmeticType>(), var2);
+      ASSERT_EQ(arithmeticVariables["var1"]->GetValue<ArithmeticType>(), var1);
+      ASSERT_EQ(arithmeticVariables["var2"]->GetValue<ArithmeticType>(), var2);
     }
   }
 
@@ -1054,8 +1132,8 @@ namespace UnitTest
   {
     {
       auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
-      using expected        = SyntaxException;
-      ASSERT_THROW(expressionParser.Evaluate("void"), expected);
+      auto actual           = expressionParser.Evaluate("void");
+      ASSERT_FALSE(actual.IsInitialized());
     }
 
     {
