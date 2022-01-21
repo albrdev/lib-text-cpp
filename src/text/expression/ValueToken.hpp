@@ -55,7 +55,15 @@ class ValueToken : public TokenBase<ValueType<Ts...>>
 
   const bool& IsInitialized() const { return m_IsInitialized; }
 
-  virtual std::string ToString() const override { return std::visit(ToStringVisitor(), this->GetObject()); }
+  virtual std::string ToString() const override
+  {
+    if(!m_IsInitialized)
+    {
+      ThrowOnUninitializedAccess();
+    }
+
+    return std::visit(ToStringVisitor(), this->GetObject());
+  }
 
   template<class T>
   ValueToken<Ts...>& operator=(const T& value)
