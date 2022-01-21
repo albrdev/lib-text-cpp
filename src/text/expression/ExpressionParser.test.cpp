@@ -10,13 +10,19 @@
 #include <mpreal.h>
 #include "ExpressionParser.hpp"
 
-using ArithmeticType     = double;
-using ArithmeticValue    = ExpressionParser<std::uint64_t, ArithmeticType>::ValueType;
-using ArithmeticVariable = ExpressionParser<std::uint64_t, ArithmeticType>::VariableType;
+using ArithmeticType           = double;
+using ArithmeticValue          = ExpressionParser<std::uint64_t, ArithmeticType>::ValueType;
+using ArithmeticVariable       = ExpressionParser<std::uint64_t, ArithmeticType>::VariableType;
+using ArithmeticUnaryOperator  = ExpressionParser<std::uint64_t, ArithmeticType>::UnaryOperatorType;
+using ArithmeticBinaryOperator = ExpressionParser<std::uint64_t, ArithmeticType>::BinaryOperatorType;
+using ArithmeticFunction       = ExpressionParser<std::uint64_t, ArithmeticType>::FunctionType;
 
-using BitwiseType     = std::uint64_t;
-using BitwiseValue    = ExpressionParser<BitwiseType>::ValueType;
-using BitwiseVariable = ExpressionParser<BitwiseType>::VariableType;
+using BitwiseType           = std::uint64_t;
+using BitwiseValue          = ExpressionParser<BitwiseType>::ValueType;
+using BitwiseVariable       = ExpressionParser<BitwiseType>::VariableType;
+using BitwiseUnaryOperator  = ExpressionParser<BitwiseType>::UnaryOperatorType;
+using BitwiseBinaryOperator = ExpressionParser<BitwiseType>::BinaryOperatorType;
+using BitwiseFunction       = ExpressionParser<BitwiseType>::FunctionType;
 
 static ArithmeticValue* arithmeticNumberConverter(const std::string& value)
 {
@@ -102,37 +108,121 @@ constexpr static double ratio()
   return static_cast<double>(T::num) / static_cast<double>(T::den);
 }
 
+inline std::unordered_map<char, std::unique_ptr<ArithmeticUnaryOperator>> arithmeticUnaryOperatorCache;
+inline std::unordered_map<char, ArithmeticUnaryOperator*> arithmeticUnaryOperators;
+
+inline std::unordered_map<std::string, std::unique_ptr<ArithmeticBinaryOperator>> arithmeticBinaryOperatorCache;
+inline std::unordered_map<std::string, ArithmeticBinaryOperator*> arithmeticBinaryOperators;
+
 inline std::unordered_map<std::string, std::unique_ptr<ArithmeticVariable>> arithmeticVariableCache;
 inline std::unordered_map<std::string, std::unique_ptr<ArithmeticVariable>> arithmeticNewVariableCache;
 inline std::unordered_map<std::string, ArithmeticVariable*> arithmeticVariables;
+
+inline std::unordered_map<std::string, std::unique_ptr<ArithmeticFunction>> arithmeticFunctionCache;
+inline std::unordered_map<std::string, ArithmeticFunction*> arithmeticFunctions;
+
+inline std::unordered_map<char, std::unique_ptr<BitwiseUnaryOperator>> bitwiseUnaryOperatorCache;
+inline std::unordered_map<char, BitwiseUnaryOperator*> bitwiseUnaryOperators;
+
+inline std::unordered_map<std::string, std::unique_ptr<BitwiseBinaryOperator>> bitwiseBinaryOperatorCache;
+inline std::unordered_map<std::string, BitwiseBinaryOperator*> bitwiseBinaryOperators;
 
 inline std::unordered_map<std::string, std::unique_ptr<BitwiseVariable>> bitwiseVariableCache;
 inline std::unordered_map<std::string, std::unique_ptr<BitwiseVariable>> bitwiseNewVariableCache;
 inline std::unordered_map<std::string, BitwiseVariable*> bitwiseVariables;
 
-template<class T>
-void arithmeticAddVariable(const std::string& identifier, const T& value)
+inline std::unordered_map<std::string, std::unique_ptr<BitwiseFunction>> bitwiseFunctionCache;
+inline std::unordered_map<std::string, BitwiseFunction*> bitwiseFunctions;
+
+void arithmeticAddUnaryOperator(const ArithmeticUnaryOperator::CallbackType& callback, char identifier, int precedence, Associativity associativity)
 {
-  auto newVariable                    = std::make_unique<ArithmeticVariable>(identifier, value);
-  auto tmp                            = newVariable.get();
-  arithmeticVariableCache[identifier] = std::move(newVariable);
+  auto tmpNew                              = std::make_unique<ArithmeticUnaryOperator>(callback, identifier, precedence, associativity);
+  auto tmp                                 = tmpNew.get();
+  arithmeticUnaryOperatorCache[identifier] = std::move(tmpNew);
+  arithmeticUnaryOperators[identifier]     = tmp;
+}
+
+void arithmeticAddBinaryOperator(const ArithmeticBinaryOperator::CallbackType& callback,
+                                 const std::string& identifier,
+                                 int precedence,
+                                 Associativity associativity)
+{
+  auto tmpNew                               = std::make_unique<ArithmeticBinaryOperator>(callback, identifier, precedence, associativity);
+  auto tmp                                  = tmpNew.get();
+  arithmeticBinaryOperatorCache[identifier] = std::move(tmpNew);
+  arithmeticBinaryOperators[identifier]     = tmp;
+}
+
+template<class T>
+void arithmeticAddVariable(const T& value, const std::string& identifier)
+{
+  auto tmpNew                         = std::make_unique<ArithmeticVariable>(identifier, value);
+  auto tmp                            = tmpNew.get();
+  arithmeticVariableCache[identifier] = std::move(tmpNew);
   arithmeticVariables[identifier]     = tmp;
+}
+
+void arithmeticAddFunction(const ArithmeticFunction::CallbackType& callback,
+                           const std::string& identifier,
+                           std::size_t minArgs = 0u,
+                           std::size_t maxArgs = ArithmeticFunction::GetArgumentCountMaxLimit())
+{
+  auto tmpNew                         = std::make_unique<ArithmeticFunction>(callback, identifier, minArgs, maxArgs);
+  auto tmp                            = tmpNew.get();
+  arithmeticFunctionCache[identifier] = std::move(tmpNew);
+  arithmeticFunctions[identifier]     = tmp;
 }
 
 ArithmeticValue* arithmeticOnNewVariable(const std::string& identifier)
 {
-  auto newVariable                       = std::make_unique<ArithmeticVariable>(identifier);
-  auto result                            = newVariable.get();
-  arithmeticNewVariableCache[identifier] = std::move(newVariable);
+  auto tmpNew                            = std::make_unique<ArithmeticVariable>(identifier);
+  auto result                            = tmpNew.get();
+  arithmeticNewVariableCache[identifier] = std::move(tmpNew);
   arithmeticVariables[identifier]        = result;
   return result;
 }
 
+void bitwiseAddUnaryOperator(const BitwiseUnaryOperator::CallbackType& callback, char identifier, int precedence, Associativity associativity)
+{
+  auto tmpNew                           = std::make_unique<BitwiseUnaryOperator>(callback, identifier, precedence, associativity);
+  auto tmp                              = tmpNew.get();
+  bitwiseUnaryOperatorCache[identifier] = std::move(tmpNew);
+  bitwiseUnaryOperators[identifier]     = tmp;
+}
+
+void bitwiseAddBinaryOperator(const BitwiseBinaryOperator::CallbackType& callback, const std::string& identifier, int precedence, Associativity associativity)
+{
+  auto tmpNew                            = std::make_unique<BitwiseBinaryOperator>(callback, identifier, precedence, associativity);
+  auto tmp                               = tmpNew.get();
+  bitwiseBinaryOperatorCache[identifier] = std::move(tmpNew);
+  bitwiseBinaryOperators[identifier]     = tmp;
+}
+
+template<class T>
+void bitwiseAddVariable(const T& value, const std::string& identifier)
+{
+  auto tmpNew                      = std::make_unique<BitwiseVariable>(identifier, value);
+  auto tmp                         = tmpNew.get();
+  bitwiseVariableCache[identifier] = std::move(tmpNew);
+  bitwiseVariables[identifier]     = tmp;
+}
+
+void bitwiseAddFunction(const BitwiseFunction::CallbackType& callback,
+                        const std::string& identifier,
+                        std::size_t minArgs = 0u,
+                        std::size_t maxArgs = BitwiseFunction::GetArgumentCountMaxLimit())
+{
+  auto tmpNew                      = std::make_unique<BitwiseFunction>(callback, identifier, minArgs, maxArgs);
+  auto tmp                         = tmpNew.get();
+  bitwiseFunctionCache[identifier] = std::move(tmpNew);
+  bitwiseFunctions[identifier]     = tmp;
+}
+
 BitwiseValue* bitwiseOnNewVariable(const std::string& identifier)
 {
-  auto newVariable                    = std::make_unique<BitwiseVariable>(identifier);
-  auto result                         = newVariable.get();
-  bitwiseNewVariableCache[identifier] = std::move(newVariable);
+  auto tmpNew                         = std::make_unique<BitwiseVariable>(identifier);
+  auto result                         = tmpNew.get();
+  bitwiseNewVariableCache[identifier] = std::move(tmpNew);
   bitwiseVariables[identifier]        = result;
   return result;
 }
@@ -140,29 +230,43 @@ BitwiseValue* bitwiseOnNewVariable(const std::string& identifier)
 template<class... Ts>
 ExpressionParser<Ts...> createInstance()
 {
+  arithmeticUnaryOperators.clear();
+  arithmeticUnaryOperatorCache.clear();
+
+  arithmeticBinaryOperators.clear();
+  arithmeticBinaryOperatorCache.clear();
+
   arithmeticVariables.clear();
   arithmeticVariableCache.clear();
   arithmeticNewVariableCache.clear();
 
+  arithmeticFunctions.clear();
+  arithmeticFunctionCache.clear();
+
   ExpressionParser<Ts...> instance(arithmeticNumberConverter);
+  instance.SetUnaryOperators(&arithmeticUnaryOperators);
+  instance.SetBinaryOperators(&arithmeticBinaryOperators);
   instance.SetVariables(&arithmeticVariables);
+  instance.SetFunctions(&arithmeticFunctions);
   instance.SetOnUnknownIdentifierCallback(arithmeticOnNewVariable);
   instance.SetJuxtapositionOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() * b->GetValue<ArithmeticType>()); },
       3,
       Associativity::Right);
 
-  instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(std::abs(value->GetValue<ArithmeticType>())); },
-                            '+',
-                            4,
-                            Associativity::Right);
-  instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(-value->GetValue<ArithmeticType>()); }, '-', 4, Associativity::Right);
-  instance.AddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(static_cast<ArithmeticType>(!value->GetValue<ArithmeticType>())); },
-                            '!',
-                            4,
-                            Associativity::Right);
+  arithmeticAddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(std::abs(value->GetValue<ArithmeticType>())); },
+                             '+',
+                             4,
+                             Associativity::Right);
 
-  instance.AddBinaryOperator(
+  arithmeticAddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(-value->GetValue<ArithmeticType>()); }, '-', 4, Associativity::Right);
+
+  arithmeticAddUnaryOperator([](ArithmeticValue* value) { return new ArithmeticValue(static_cast<ArithmeticType>(!value->GetValue<ArithmeticType>())); },
+                             '!',
+                             4,
+                             Associativity::Right);
+
+  arithmeticAddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) {
         if(a->GetType() == typeid(ArithmeticType) && b->GetType() == typeid(ArithmeticType))
         {
@@ -176,22 +280,26 @@ ExpressionParser<Ts...> createInstance()
       "+",
       1,
       Associativity::Left);
-  instance.AddBinaryOperator(
+
+  arithmeticAddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() - b->GetValue<ArithmeticType>()); },
       "-",
       1,
       Associativity::Left);
-  instance.AddBinaryOperator(
+
+  arithmeticAddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() * b->GetValue<ArithmeticType>()); },
       "*",
       2,
       Associativity::Left);
-  instance.AddBinaryOperator(
+
+  arithmeticAddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(a->GetValue<ArithmeticType>() / b->GetValue<ArithmeticType>()); },
       "/",
       2,
       Associativity::Left);
-  instance.AddBinaryOperator(
+
+  arithmeticAddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) {
         return new ArithmeticValue(
             static_cast<ArithmeticType>(static_cast<long>(a->GetValue<ArithmeticType>()) % static_cast<long>(b->GetValue<ArithmeticType>())));
@@ -199,25 +307,26 @@ ExpressionParser<Ts...> createInstance()
       "%",
       2,
       Associativity::Left);
-  instance.AddBinaryOperator(
+
+  arithmeticAddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(std::pow(a->GetValue<ArithmeticType>(), b->GetValue<ArithmeticType>())); },
       "^",
       3,
       Associativity::Right);
 
-  instance.AddBinaryOperator(
+  arithmeticAddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(std::pow(a->GetValue<ArithmeticType>(), b->GetValue<ArithmeticType>())); },
       "**",
       3,
       Associativity::Right);
 
-  instance.AddBinaryOperator(
+  arithmeticAddBinaryOperator(
       [](ArithmeticValue* a, ArithmeticValue* b) { return new ArithmeticValue(std::trunc(a->GetValue<ArithmeticType>() / b->GetValue<ArithmeticType>())); },
       "//",
       2,
       Associativity::Right);
 
-  instance.AddBinaryOperator(
+  arithmeticAddBinaryOperator(
       [](ArithmeticValue* lhs, ArithmeticValue* rhs) {
         ArithmeticVariable* variable = lhs->AsPointer<ArithmeticVariable>();
         if(variable == nullptr)
@@ -256,66 +365,99 @@ ExpressionParser<Ts...> createInstance()
       4,
       Associativity::Right);
 
-  instance.AddConstant(nullptr, "null");
+  arithmeticAddVariable(nullptr, "null");
 
-  instance.AddConstant(ratio<std::giga>(), "G");
-  instance.AddConstant(ratio<std::mega>(), "M");
-  instance.AddConstant(ratio<std::kilo>(), "k");
-  instance.AddConstant(ratio<std::hecto>(), "h");
-  instance.AddConstant(ratio<std::deca>(), "da");
+  arithmeticAddVariable(ratio<std::giga>(), "G");
+  arithmeticAddVariable(ratio<std::mega>(), "M");
+  arithmeticAddVariable(ratio<std::kilo>(), "k");
+  arithmeticAddVariable(ratio<std::hecto>(), "h");
+  arithmeticAddVariable(ratio<std::deca>(), "da");
 
-  instance.AddConstant(ratio<std::deci>(), "d");
-  instance.AddConstant(ratio<std::centi>(), "c");
-  instance.AddConstant(ratio<std::milli>(), "m");
-  instance.AddConstant(ratio<std::micro>(), "u");
-  instance.AddConstant(ratio<std::nano>(), "n");
+  arithmeticAddVariable(ratio<std::deci>(), "d");
+  arithmeticAddVariable(ratio<std::centi>(), "c");
+  arithmeticAddVariable(ratio<std::milli>(), "m");
+  arithmeticAddVariable(ratio<std::micro>(), "u");
+  arithmeticAddVariable(ratio<std::nano>(), "n");
 
-  instance.AddConstant(M_PI, "math.pi");
-  instance.AddConstant(M_E, "math.e");
+  arithmeticAddVariable(M_PI, "math.pi");
+  arithmeticAddVariable(M_E, "math.e");
 
-  instance.AddConstant(299792458.0, "phys.c");
-  instance.AddConstant(149597870700.0, "phys.au");
+  arithmeticAddVariable(299792458.0, "phys.c");
+  arithmeticAddVariable(149597870700.0, "phys.au");
 
-  instance.AddFunction(arithmeticAns, "ans");
+  arithmeticAddFunction(arithmeticAns, "ans", 0u, 1u);
 
-  instance.AddFunction(
+  arithmeticAddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
         static_cast<void>(args);
         return new ArithmeticValue(static_cast<ArithmeticType>(std::rand()));
       },
-      "random");
+      "random",
+      0u,
+      0u);
 
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::abs(args[0]->GetValue<ArithmeticType>())); }, "abs");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(-std::abs(args[0]->GetValue<ArithmeticType>())); }, "neg");
+  arithmeticAddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::abs(args[0]->GetValue<ArithmeticType>())); },
+                        "abs",
+                        1u,
+                        1u);
 
-  instance.AddFunction(
+  arithmeticAddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(-std::abs(args[0]->GetValue<ArithmeticType>())); },
+                        "neg",
+                        1u,
+                        1u);
+
+  arithmeticAddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
         return new ArithmeticValue(std::pow(args[0]->GetValue<ArithmeticType>(), args[1]->GetValue<ArithmeticType>()));
       },
-      "math.pow");
-  instance.AddFunction(
+      "math.pow",
+      2u,
+      2u);
+
+  arithmeticAddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
         return new ArithmeticValue(std::pow(args[0]->GetValue<ArithmeticType>(), 1.0 / args[1]->GetValue<ArithmeticType>()));
       },
-      "math.root");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::sqrt(args[0]->GetValue<ArithmeticType>())); },
-                       "math.sqrt");
+      "math.root",
+      2u,
+      2u);
 
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log(args[0]->GetValue<ArithmeticType>())); },
-                       "math.log");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log2(args[0]->GetValue<ArithmeticType>())); },
-                       "math.log2");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log10(args[0]->GetValue<ArithmeticType>())); },
-                       "math.log10");
+  arithmeticAddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::sqrt(args[0]->GetValue<ArithmeticType>())); },
+                        "math.sqrt",
+                        1u,
+                        1u);
 
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::sin(args[0]->GetValue<ArithmeticType>())); },
-                       "math.sin");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::cos(args[0]->GetValue<ArithmeticType>())); },
-                       "math.cos");
-  instance.AddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::tan(args[0]->GetValue<ArithmeticType>())); },
-                       "math.tan");
+  arithmeticAddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log(args[0]->GetValue<ArithmeticType>())); },
+                        "math.log",
+                        1u,
+                        1u);
 
-  instance.AddFunction(
+  arithmeticAddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log2(args[0]->GetValue<ArithmeticType>())); },
+                        "math.log2",
+                        1u,
+                        1u);
+
+  arithmeticAddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::log10(args[0]->GetValue<ArithmeticType>())); },
+                        "math.log10",
+                        1u,
+                        1u);
+
+  arithmeticAddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::sin(args[0]->GetValue<ArithmeticType>())); },
+                        "math.sin",
+                        1u,
+                        1u);
+
+  arithmeticAddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::cos(args[0]->GetValue<ArithmeticType>())); },
+                        "math.cos",
+                        1u,
+                        1u);
+
+  arithmeticAddFunction([](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(std::tan(args[0]->GetValue<ArithmeticType>())); },
+                        "math.tan",
+                        1u,
+                        1u);
+
+  arithmeticAddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
         ArithmeticType result = std::numeric_limits<ArithmeticType>::max();
         for(const auto& i : args)
@@ -328,9 +470,10 @@ ExpressionParser<Ts...> createInstance()
 
         return new ArithmeticValue(result);
       },
-      "min");
+      "min",
+      1u);
 
-  instance.AddFunction(
+  arithmeticAddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
         ArithmeticType result = std::numeric_limits<ArithmeticType>::min();
         for(const auto& i : args)
@@ -343,9 +486,10 @@ ExpressionParser<Ts...> createInstance()
 
         return new ArithmeticValue(result);
       },
-      "max");
+      "max",
+      1u);
 
-  instance.AddFunction(
+  arithmeticAddFunction(
       [](const std::vector<ArithmeticValue*>& args) {
         ArithmeticType result = 0.0;
         for(const auto& i : args)
@@ -355,11 +499,14 @@ ExpressionParser<Ts...> createInstance()
 
         return new ArithmeticValue(result / static_cast<ArithmeticType>(args.size()));
       },
-      "math.mean");
+      "math.mean",
+      1u);
 
-  instance.AddFunction(
+  arithmeticAddFunction(
       [](const std::vector<ArithmeticValue*>& args) { return new ArithmeticValue(static_cast<ArithmeticType>(args[0]->GetValue<std::string>().length())); },
-      "str.len");
+      "strlen",
+      1u,
+      1u);
 
   return instance;
 }
@@ -367,54 +514,73 @@ ExpressionParser<Ts...> createInstance()
 template<class... Ts>
 ExpressionParser<Ts...> createInstance2()
 {
+  bitwiseUnaryOperators.clear();
+  bitwiseUnaryOperatorCache.clear();
+
+  bitwiseBinaryOperators.clear();
+  bitwiseBinaryOperatorCache.clear();
+
   bitwiseVariables.clear();
   bitwiseVariableCache.clear();
   bitwiseNewVariableCache.clear();
 
+  bitwiseFunctions.clear();
+  bitwiseFunctionCache.clear();
+
   ExpressionParser<Ts...> instance(bitwiseNumberConverter);
+  instance.SetUnaryOperators(&bitwiseUnaryOperators);
+  instance.SetBinaryOperators(&bitwiseBinaryOperators);
   instance.SetVariables(&bitwiseVariables);
+  instance.SetFunctions(&bitwiseFunctions);
   instance.SetOnUnknownIdentifierCallback(bitwiseOnNewVariable);
   /*instance.SetJuxtapositionOperator(
       [](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() & b->GetValue<BitwiseType>()); },
       1,
       Associativity::Right);*/
 
-  instance.AddUnaryOperator([](BitwiseValue* value) { return new BitwiseValue(static_cast<BitwiseType>(!value->GetValue<BitwiseType>())); },
-                            '!',
-                            4,
-                            Associativity::Right);
-  instance.AddUnaryOperator([](BitwiseValue* value) { return new BitwiseValue(~value->GetValue<BitwiseType>()); }, '~', 4, Associativity::Right);
+  bitwiseAddUnaryOperator([](BitwiseValue* value) { return new BitwiseValue(static_cast<BitwiseType>(!value->GetValue<BitwiseType>())); },
+                          '!',
+                          4,
+                          Associativity::Right);
 
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() | b->GetValue<BitwiseType>()); },
-                             "|",
-                             1,
-                             Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() & b->GetValue<BitwiseType>()); },
-                             "&",
-                             1,
-                             Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() ^ b->GetValue<BitwiseType>()); },
-                             "^",
-                             2,
-                             Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() | b->GetValue<BitwiseType>()); },
-                             "+",
-                             1,
-                             Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() & b->GetValue<BitwiseType>()); },
-                             "*",
-                             1,
-                             Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() << b->GetValue<BitwiseType>()); },
-                             "<<",
-                             1,
-                             Associativity::Left);
-  instance.AddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() >> b->GetValue<BitwiseType>()); },
-                             ">>",
-                             1,
-                             Associativity::Left);
+  bitwiseAddUnaryOperator([](BitwiseValue* value) { return new BitwiseValue(~value->GetValue<BitwiseType>()); }, '~', 4, Associativity::Right);
 
-  instance.AddBinaryOperator(
+  bitwiseAddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() | b->GetValue<BitwiseType>()); },
+                           "|",
+                           1,
+                           Associativity::Left);
+
+  bitwiseAddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() & b->GetValue<BitwiseType>()); },
+                           "&",
+                           1,
+                           Associativity::Left);
+
+  bitwiseAddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() ^ b->GetValue<BitwiseType>()); },
+                           "^",
+                           2,
+                           Associativity::Left);
+
+  bitwiseAddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() | b->GetValue<BitwiseType>()); },
+                           "+",
+                           1,
+                           Associativity::Left);
+
+  bitwiseAddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() & b->GetValue<BitwiseType>()); },
+                           "*",
+                           1,
+                           Associativity::Left);
+
+  bitwiseAddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() << b->GetValue<BitwiseType>()); },
+                           "<<",
+                           1,
+                           Associativity::Left);
+
+  bitwiseAddBinaryOperator([](BitwiseValue* a, BitwiseValue* b) { return new BitwiseValue(a->GetValue<BitwiseType>() >> b->GetValue<BitwiseType>()); },
+                           ">>",
+                           1,
+                           Associativity::Left);
+
+  bitwiseAddBinaryOperator(
       [](BitwiseValue* lhs, BitwiseValue* rhs) {
         BitwiseVariable* variable = lhs->AsPointer<BitwiseVariable>();
         if(variable == nullptr)
@@ -445,19 +611,21 @@ ExpressionParser<Ts...> createInstance2()
       4,
       Associativity::Right);
 
-  instance.AddConstant(static_cast<BitwiseType>(std::numeric_limits<std::uint8_t>::max()), "byte.max");
-  instance.AddConstant(static_cast<BitwiseType>(std::numeric_limits<std::uint16_t>::max()), "ushort.max");
-  instance.AddConstant(static_cast<BitwiseType>(std::numeric_limits<std::uint32_t>::max()), "uint.max");
-  instance.AddConstant(static_cast<BitwiseType>(std::numeric_limits<std::uint64_t>::max()), "ulong.max");
+  bitwiseAddVariable(static_cast<BitwiseType>(std::numeric_limits<std::uint8_t>::max()), "byte.max");
+  bitwiseAddVariable(static_cast<BitwiseType>(std::numeric_limits<std::uint16_t>::max()), "ushort.max");
+  bitwiseAddVariable(static_cast<BitwiseType>(std::numeric_limits<std::uint32_t>::max()), "uint.max");
+  bitwiseAddVariable(static_cast<BitwiseType>(std::numeric_limits<std::uint64_t>::max()), "ulong.max");
 
-  instance.AddFunction(bitwiseAns, "ans");
+  bitwiseAddFunction(bitwiseAns, "ans", 0u, 1u);
 
-  instance.AddFunction(
+  bitwiseAddFunction(
       [](const std::vector<BitwiseValue*>& args) {
         static_cast<void>(args);
         return new BitwiseValue(static_cast<std::uint64_t>(std::rand()));
       },
-      "random");
+      "random",
+      0u,
+      0u);
 
   return instance;
 }
@@ -824,7 +992,7 @@ namespace UnitTest
 
     {
       auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
-      auto actual           = expressionParser.Evaluate("str.len(\"abc123\")");
+      auto actual           = expressionParser.Evaluate("strlen(\"abc123\")");
       auto expected         = static_cast<double>(std::string("abc123").length());
       ASSERT_EQ(actual.GetValue<double>(), expected);
     }
@@ -921,8 +1089,8 @@ namespace UnitTest
       auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto x                = 10.0;
       auto y                = 5.0;
-      arithmeticAddVariable("x", x);
-      arithmeticAddVariable("y", y);
+      arithmeticAddVariable(x, "x");
+      arithmeticAddVariable(y, "y");
       auto actual   = expressionParser.Evaluate("x * x - y * y");
       auto expected = (x * x) - (y * y);
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);

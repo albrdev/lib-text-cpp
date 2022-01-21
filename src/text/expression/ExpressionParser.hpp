@@ -23,14 +23,17 @@ class ExpressionParser : public ExpressionTokenizer<Ts...>, public ExpressionPos
 
   ValueType Evaluate(const std::string& expression)
   {
-    auto tokens  = ExpressionTokenizer<Ts...>::Execute(expression, *m_pVariables);
+    auto tokens  = ExpressionTokenizer<Ts...>::Execute(expression, *m_pUnaryOperators, *m_pBinaryOperators, *m_pVariables, *m_pFunctions);
     auto postfix = ExpressionPostfixParser<Ts...>::Execute(tokens);
     auto result  = ExpressionEvaluator<Ts...>::Execute(postfix);
 
     return result;
   }
 
+  void SetUnaryOperators(const std::unordered_map<char, UnaryOperatorType*>* value) { m_pUnaryOperators = value; }
+  void SetBinaryOperators(const std::unordered_map<std::string, BinaryOperatorType*>* value) { m_pBinaryOperators = value; }
   void SetVariables(const std::unordered_map<std::string, VariableType*>* value) { m_pVariables = value; }
+  void SetFunctions(const std::unordered_map<std::string, FunctionType*>* value) { m_pFunctions = value; }
 
   ExpressionParser(const std::function<ValueType*(const std::string&)>& numberConverter)
       : ExpressionTokenizer<Ts...>(numberConverter)
@@ -60,7 +63,10 @@ class ExpressionParser : public ExpressionTokenizer<Ts...>, public ExpressionPos
   using ExpressionPostfixParser<Ts...>::Execute;
   using ExpressionEvaluator<Ts...>::Execute;
 
+  const std::unordered_map<char, UnaryOperatorType*>* m_pUnaryOperators;
+  const std::unordered_map<std::string, BinaryOperatorType*>* m_pBinaryOperators;
   const std::unordered_map<std::string, VariableType*>* m_pVariables;
+  const std::unordered_map<std::string, FunctionType*>* m_pFunctions;
 };
 
 #endif // __EXPRESSIONPARSER_HPP__

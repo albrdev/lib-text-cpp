@@ -26,43 +26,6 @@ class ExpressionTokenizer : public Parser
 
   constexpr static char DefaultCommentIdentifier = '#';
 
-  std::unordered_map<char, ExpressionTokenizer<Ts...>::UnaryOperatorType>& GetUnaryOperators() { return m_UnaryOperators; }
-  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::BinaryOperatorType>& GetBinaryOperators() { return m_BinaryOperators; }
-  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::FunctionType>& GetFunctions() { return m_Functions; }
-  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::VariableType>& GetConstants() { return m_Constants; }
-
-  void AddUnaryOperator(typename UnaryOperatorType::CallbackType callback, char identifier, int precedence, Associativity associativity)
-  {
-    m_UnaryOperators[identifier] = UnaryOperatorType(callback, identifier, precedence, associativity);
-  }
-
-  void RemoveUnaryOperator(char identifier) { m_UnaryOperators.erase(identifier); }
-
-  void AddBinaryOperator(typename BinaryOperatorType::CallbackType callback, const std::string& identifier, int precedence, Associativity associativity)
-  {
-    m_BinaryOperators[identifier] = BinaryOperatorType(callback, identifier, precedence, associativity);
-  }
-
-  void RemoveBinaryOperator(const std::string& identifier) { m_BinaryOperators.erase(identifier); }
-
-  void AddFunction(typename FunctionType::CallbackType callback,
-                   const std::string& identifier,
-                   std::size_t argsMin = 0u,
-                   std::size_t argsMax = FunctionType::GetArgumentCountMaxLimit())
-  {
-    m_Functions[identifier] = FunctionType(callback, identifier, argsMin, argsMax);
-  }
-
-  void RemoveFunction(const std::string& identifier) { m_Functions.erase(identifier); }
-
-  template<class T>
-  void AddConstant(const T& value, const std::string& identifier)
-  {
-    m_Constants[identifier] = VariableType(identifier, value);
-  }
-
-  void RemoveConstant(const std::string& identifier) { m_Constants.erase(identifier); }
-
   void SetNumberConverter(const std::function<ValueType*(const std::string&)>& value) { m_NumberConverter = value; }
   void SetOnUnknownIdentifierCallback(const std::function<ValueType*(const std::string&)>& value) { m_OnUnknownIdentifierCallback = value; }
 
@@ -71,10 +34,6 @@ class ExpressionTokenizer : public Parser
 
   ExpressionTokenizer(const std::function<ValueType*(const std::string&)>& numberConverter)
       : Parser()
-      , m_UnaryOperators()
-      , m_BinaryOperators()
-      , m_Functions()
-      , m_Constants()
       , m_NumberConverter(numberConverter)
       , m_CommentIdentifier(ExpressionTokenizer<Ts...>::DefaultCommentIdentifier)
       , m_TokenCache()
@@ -82,10 +41,6 @@ class ExpressionTokenizer : public Parser
 
   ExpressionTokenizer(const ExpressionTokenizer<Ts...>& other)
       : Parser(other)
-      , m_UnaryOperators(other.m_UnaryOperators)
-      , m_BinaryOperators(other.m_BinaryOperators)
-      , m_Functions(other.m_Functions)
-      , m_Constants(other.m_Constants)
       , m_NumberConverter(other.m_NumberConverter)
       , m_CommentIdentifier(other.m_CommentIdentifier)
       , m_TokenCache(other.m_TokenCache)
@@ -93,10 +48,6 @@ class ExpressionTokenizer : public Parser
 
   ExpressionTokenizer(ExpressionTokenizer<Ts...>&& other)
       : Parser(std::move(other))
-      , m_UnaryOperators(std::move(other.m_UnaryOperators))
-      , m_BinaryOperators(std::move(other.m_BinaryOperators))
-      , m_Functions(std::move(other.m_Functions))
-      , m_Constants(std::move(other.m_Constants))
       , m_NumberConverter(std::move(other.m_NumberConverter))
       , m_CommentIdentifier(std::move(other.m_CommentIdentifier))
       , m_TokenCache(std::move(other.m_TokenCache))
@@ -104,15 +55,19 @@ class ExpressionTokenizer : public Parser
 
   virtual ~ExpressionTokenizer() override = default;
 
-  std::queue<IToken*> Execute(const std::string& text, const std::unordered_map<std::string, VariableType*>& variables)
+  std::queue<IToken*> Execute(const std::string& expression,
+                              const std::unordered_map<char, UnaryOperatorType*>& unaryOperators,
+                              const std::unordered_map<std::string, BinaryOperatorType*>& binaryOperators,
+                              const std::unordered_map<std::string, VariableType*>& variables,
+                              const std::unordered_map<std::string, FunctionType*>& functions)
   {
     m_TokenCache.clear();
-    this->SetText(text);
+    this->SetText(expression);
 
     std::unordered_set<char> unOps;
     std::unordered_set<char> binOps;
-    std::transform(m_UnaryOperators.begin(), m_UnaryOperators.end(), std::inserter(unOps, unOps.end()), [](const auto& pair) { return pair.first; });
-    for(const auto& i : m_BinaryOperators)
+    std::transform(unaryOperators.begin(), unaryOperators.end(), std::inserter(unOps, unOps.end()), [](const auto& pair) { return pair.first; });
+    for(const auto& i : binaryOperators)
     {
       std::transform(i.first.begin(), i.first.end(), std::inserter(binOps, binOps.end()), [](const auto& ch) { return ch; });
     }
@@ -144,13 +99,13 @@ class ExpressionTokenizer : public Parser
         if(result.empty() || result.back()->IsType<OperatorToken>() ||
            ((misc = result.back()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ',')))
         {
-          const auto op = m_UnaryOperators.find(GetCurrent());
-          if(op == m_UnaryOperators.cend())
+          const auto iter = unaryOperators.find(GetCurrent());
+          if(iter == unaryOperators.cend())
           {
             throw SyntaxException("Unknown unary operator: " + GetCurrent(), GetIndex());
           }
 
-          result.push(&op->second);
+          result.push(iter->second);
           Next();
         }
         else
@@ -158,53 +113,45 @@ class ExpressionTokenizer : public Parser
           std::string identifier = Get(1u);
           identifier += Get([unOps, binOps](char c) { return binOps.find(c) != binOps.end() && unOps.find(c) == unOps.end(); });
 
-          const auto op = m_BinaryOperators.find(identifier);
-          if(op == m_BinaryOperators.cend())
+          const auto iter = binaryOperators.find(identifier);
+          if(iter == binaryOperators.cend())
           {
             throw SyntaxException("Unknown binary operator: " + identifier, GetIndex() - identifier.length());
           }
 
-          result.push(&op->second);
+          result.push(iter->second);
         }
       }
       else if(IsIdentifier(GetCurrent()))
       {
         std::string identifier = ParseIdentifier();
 
-        const auto function = m_Functions.find(identifier);
-        if(function != m_Functions.cend())
+        const auto function = functions.find(identifier);
+        if(function != functions.cend())
         {
-          result.push(&function->second);
+          result.push(function->second);
         }
         else
         {
-          const auto constant = m_Constants.find(identifier);
-          if(constant != m_Constants.cend())
+          const auto variable = variables.find(identifier);
+          if(variable != variables.cend())
           {
-            result.push(&constant->second);
+            result.push(variable->second);
           }
           else
           {
-            const auto variable = variables.find(identifier);
-            if(variable != variables.cend())
+            if(m_OnUnknownIdentifierCallback == nullptr)
             {
-              result.push(variable->second);
+              throw SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
             }
-            else
+
+            auto variable = m_OnUnknownIdentifierCallback(identifier);
+            if(variable == nullptr)
             {
-              if(m_OnUnknownIdentifierCallback == nullptr)
-              {
-                throw SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
-              }
-
-              auto variable = m_OnUnknownIdentifierCallback(identifier);
-              if(variable == nullptr)
-              {
-                throw SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
-              }
-
-              result.push(variable);
+              throw SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
             }
+
+            result.push(variable);
           }
         }
       }
@@ -225,12 +172,6 @@ class ExpressionTokenizer : public Parser
 
   private:
   using Parser::SetText;
-
-  std::unordered_map<char, ExpressionTokenizer<Ts...>::UnaryOperatorType> m_UnaryOperators;
-  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::BinaryOperatorType> m_BinaryOperators;
-
-  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::FunctionType> m_Functions;
-  std::unordered_map<std::string, ExpressionTokenizer<Ts...>::VariableType> m_Constants;
 
   std::function<ValueType*(const std::string&)> m_NumberConverter;
   std::function<ValueType*(const std::string&)> m_OnUnknownIdentifierCallback;
