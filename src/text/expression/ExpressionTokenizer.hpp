@@ -66,10 +66,20 @@ class ExpressionTokenizer : public Parser
 
     std::unordered_set<char> unOps;
     std::unordered_set<char> binOps;
-    std::transform(unaryOperators->begin(), unaryOperators->end(), std::inserter(unOps, unOps.end()), [](const auto& pair) { return pair.first; });
-    for(const auto& i : *binaryOperators)
+
+    const bool hasUnOps  = unaryOperators != nullptr;
+    const bool hasBinOps = binaryOperators != nullptr;
+    if(hasUnOps)
     {
-      std::transform(i.first.begin(), i.first.end(), std::inserter(binOps, binOps.end()), [](const auto& ch) { return ch; });
+      std::transform(unaryOperators->begin(), unaryOperators->end(), std::inserter(unOps, unOps.end()), [](const auto& pair) { return pair.first; });
+    }
+
+    if(hasBinOps)
+    {
+      for(const auto& i : *binaryOperators)
+      {
+        std::transform(i.first.begin(), i.first.end(), std::inserter(binOps, binOps.end()), [](const auto& ch) { return ch; });
+      }
     }
 
     std::queue<IToken*> result;
@@ -95,9 +105,9 @@ class ExpressionTokenizer : public Parser
       }
       else if(unOps.find(GetCurrent()) != unOps.end() || binOps.find(GetCurrent()) != binOps.end())
       {
-        MiscType* misc = nullptr;
-        if(result.empty() || result.back()->IsType<OperatorToken>() ||
-           ((misc = result.back()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ',')))
+        MiscType* misc;
+        if(hasUnOps && (result.empty() || result.back()->IsType<OperatorToken>() ||
+                        ((misc = result.back()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ','))))
         {
           const auto iter = unaryOperators->find(GetCurrent());
           if(iter == unaryOperators->cend())
@@ -108,7 +118,7 @@ class ExpressionTokenizer : public Parser
           result.push(iter->second);
           Next();
         }
-        else
+        else if(hasBinOps)
         {
           std::string identifier = Get(1u);
           identifier += Get([unOps, binOps](char c) { return binOps.find(c) != binOps.end() && unOps.find(c) == unOps.end(); });
@@ -120,6 +130,10 @@ class ExpressionTokenizer : public Parser
           }
 
           result.push(iter->second);
+        }
+        else
+        {
+          throw SyntaxException("Unknown operator: " + GetCurrent(), GetIndex());
         }
       }
       else if(IsIdentifier(GetCurrent()))
