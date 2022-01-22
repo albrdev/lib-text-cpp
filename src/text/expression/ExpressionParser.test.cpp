@@ -958,6 +958,12 @@ namespace UnitTest
       auto expected         = (std::min(std::min(50.0, 0.0), -50.0) + std::max(std::max(-100.0, 0.0), 100.0)) / 2.0;
       ASSERT_EQ(actual.GetValue<ArithmeticType>(), expected);
     }
+
+    {
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
+      using expected        = SyntaxException;
+      ASSERT_THROW(expressionParser.Evaluate("random"), expected);
+    }
   }
 
   TEST(ExpressionParser, Strings)

@@ -82,6 +82,7 @@ class ExpressionTokenizer : public Parser
       }
     }
 
+    IToken* current = nullptr;
     std::queue<IToken*> result;
     while(GetState())
     {
@@ -95,13 +96,13 @@ class ExpressionTokenizer : public Parser
       {
         auto value = m_NumberConverter(ParseNumber());
         m_TokenCache.push_back(std::unique_ptr<IToken>(value));
-        result.push(m_TokenCache.back().get());
+        current = m_TokenCache.back().get();
       }
       else if(IsString(GetCurrent()))
       {
         std::string value = ParseString();
         m_TokenCache.push_back(std::unique_ptr<IToken>(new ValueType(value)));
-        result.push(m_TokenCache.back().get());
+        current = m_TokenCache.back().get();
       }
       else if(unOps.find(GetCurrent()) != unOps.end() || binOps.find(GetCurrent()) != binOps.end())
       {
@@ -115,7 +116,7 @@ class ExpressionTokenizer : public Parser
             throw SyntaxException("Unknown unary operator: " + GetCurrent(), GetIndex());
           }
 
-          result.push(iter->second);
+          current = iter->second;
           Next();
         }
         else if(hasBinOps)
@@ -129,7 +130,7 @@ class ExpressionTokenizer : public Parser
             throw SyntaxException("Unknown binary operator: " + identifier, GetIndex() - identifier.length());
           }
 
-          result.push(iter->second);
+          current = iter->second;
         }
         else
         {
@@ -144,11 +145,17 @@ class ExpressionTokenizer : public Parser
         typename std::unordered_map<std::string, VariableType*>::const_iterator variableIter;
         if(functions != nullptr && (functionIter = functions->find(identifier)) != functions->cend())
         {
-          result.push(functionIter->second);
+          current = functionIter->second;
+
+          Next(Parser::IsWhitespace);
+          if(GetCurrent() != '(')
+          {
+            throw SyntaxException("Expected function opening parenthesis: " + functionIter->second->GetIdentifier(), GetIndex());
+          }
         }
         else if(variables != nullptr && (variableIter = variables->find(identifier)) != variables->cend())
         {
-          result.push(variableIter->second);
+          current = variableIter->second;
         }
         else
         {
@@ -163,19 +170,21 @@ class ExpressionTokenizer : public Parser
             throw SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
           }
 
-          result.push(value);
+          current = value;
         }
       }
       else if(GetCurrent() == '(' || GetCurrent() == ')' || GetCurrent() == ',')
       {
         m_TokenCache.push_back(std::unique_ptr<IToken>(new MiscType(GetCurrent())));
-        result.push(m_TokenCache.back().get());
+        current = m_TokenCache.back().get();
         Next();
       }
       else
       {
         throw SyntaxException("Unknown token: " + GetCurrent(), GetIndex());
       }
+
+      result.push(current);
     }
 
     return result;
