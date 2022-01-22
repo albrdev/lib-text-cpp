@@ -16,11 +16,21 @@ class GenericToken : public TokenBase<T>
     return oss.str();
   }
 
+  GenericToken<T>& operator=(const T& value)
+  {
+    TokenBase<T>::operator=(value);
+    return *this;
+  }
+
   GenericToken(const T& value)
       : TokenBase<T>(value)
   {}
 
   virtual ~GenericToken() override = default;
+
+  GenericToken()
+      : TokenBase<T>()
+  {}
 
   GenericToken(const GenericToken<T>& other)
       : TokenBase<T>(other)
