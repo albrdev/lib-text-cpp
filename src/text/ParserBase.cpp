@@ -5,7 +5,9 @@ bool ParserBase::GetState() const { return m_Index < m_Text.length(); }
 
 char ParserBase::GetCurrent() const { return GetState() ? m_Text[m_Index] : ParserBase::Invalid; }
 
-std::size_t ParserBase::GetIndex() const { return GetState() ? m_Index : ParserBase::NoPos; }
+std::size_t ParserBase::GetIndex() const { return m_Index; }
+
+std::size_t ParserBase::GetPosition() const { return GetState() ? m_Index : ParserBase::NoPos; }
 
 std::string ParserBase::GetText() const { return m_Text; }
 

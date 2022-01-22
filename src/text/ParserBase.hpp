@@ -15,6 +15,7 @@ class ParserBase
   bool GetState() const;
   char GetCurrent() const;
   std::size_t GetIndex() const;
+  std::size_t GetPosition() const;
 
   std::string GetText() const;
   void SetText(const std::string& value);
