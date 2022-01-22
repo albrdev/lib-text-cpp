@@ -150,7 +150,7 @@ class ExpressionTokenizer : public Parser
           Next(Parser::IsWhitespace);
           if(GetCurrent() != '(')
           {
-            throw SyntaxException("Expected function opening parenthesis: " + functionIter->second->GetIdentifier(), GetIndex());
+            throw SyntaxException("Expected function opening parenthesis: " + functionIter->second->GetIdentifier(), GetIndex() - identifier.length());
           }
         }
         else if(variables != nullptr && (variableIter = variables->find(identifier)) != variables->cend())
