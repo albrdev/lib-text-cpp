@@ -56,18 +56,18 @@ class ExpressionTokenizer : public Parser
   virtual ~ExpressionTokenizer() override = default;
 
   std::queue<IToken*> Execute(const std::string& expression,
-                              const std::unordered_map<char, UnaryOperatorType*>& unaryOperators,
-                              const std::unordered_map<std::string, BinaryOperatorType*>& binaryOperators,
-                              const std::unordered_map<std::string, VariableType*>& variables,
-                              const std::unordered_map<std::string, FunctionType*>& functions)
+                              const std::unordered_map<char, UnaryOperatorType*>* unaryOperators,
+                              const std::unordered_map<std::string, BinaryOperatorType*>* binaryOperators,
+                              const std::unordered_map<std::string, VariableType*>* variables,
+                              const std::unordered_map<std::string, FunctionType*>* functions)
   {
     m_TokenCache.clear();
     this->SetText(expression);
 
     std::unordered_set<char> unOps;
     std::unordered_set<char> binOps;
-    std::transform(unaryOperators.begin(), unaryOperators.end(), std::inserter(unOps, unOps.end()), [](const auto& pair) { return pair.first; });
-    for(const auto& i : binaryOperators)
+    std::transform(unaryOperators->begin(), unaryOperators->end(), std::inserter(unOps, unOps.end()), [](const auto& pair) { return pair.first; });
+    for(const auto& i : *binaryOperators)
     {
       std::transform(i.first.begin(), i.first.end(), std::inserter(binOps, binOps.end()), [](const auto& ch) { return ch; });
     }
@@ -99,8 +99,8 @@ class ExpressionTokenizer : public Parser
         if(result.empty() || result.back()->IsType<OperatorToken>() ||
            ((misc = result.back()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ',')))
         {
-          const auto iter = unaryOperators.find(GetCurrent());
-          if(iter == unaryOperators.cend())
+          const auto iter = unaryOperators->find(GetCurrent());
+          if(iter == unaryOperators->cend())
           {
             throw SyntaxException("Unknown unary operator: " + GetCurrent(), GetIndex());
           }
@@ -113,8 +113,8 @@ class ExpressionTokenizer : public Parser
           std::string identifier = Get(1u);
           identifier += Get([unOps, binOps](char c) { return binOps.find(c) != binOps.end() && unOps.find(c) == unOps.end(); });
 
-          const auto iter = binaryOperators.find(identifier);
-          if(iter == binaryOperators.cend())
+          const auto iter = binaryOperators->find(identifier);
+          if(iter == binaryOperators->cend())
           {
             throw SyntaxException("Unknown binary operator: " + identifier, GetIndex() - identifier.length());
           }
@@ -126,33 +126,30 @@ class ExpressionTokenizer : public Parser
       {
         std::string identifier = ParseIdentifier();
 
-        const auto function = functions.find(identifier);
-        if(function != functions.cend())
+        typename std::unordered_map<std::string, FunctionType*>::const_iterator functionIter;
+        typename std::unordered_map<std::string, VariableType*>::const_iterator variableIter;
+        if(functions != nullptr && (functionIter = functions->find(identifier)) != functions->cend())
         {
-          result.push(function->second);
+          result.push(functionIter->second);
+        }
+        else if(variables != nullptr && (variableIter = variables->find(identifier)) != variables->cend())
+        {
+          result.push(variableIter->second);
         }
         else
         {
-          const auto variable = variables.find(identifier);
-          if(variable != variables.cend())
+          if(m_OnUnknownIdentifierCallback == nullptr)
           {
-            result.push(variable->second);
+            throw SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
           }
-          else
+
+          auto value = m_OnUnknownIdentifierCallback(identifier);
+          if(value == nullptr)
           {
-            if(m_OnUnknownIdentifierCallback == nullptr)
-            {
-              throw SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
-            }
-
-            auto variable = m_OnUnknownIdentifierCallback(identifier);
-            if(variable == nullptr)
-            {
-              throw SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
-            }
-
-            result.push(variable);
+            throw SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
           }
+
+          result.push(value);
         }
       }
       else if(GetCurrent() == '(' || GetCurrent() == ')' || GetCurrent() == ',')

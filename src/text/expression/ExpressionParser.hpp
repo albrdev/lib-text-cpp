@@ -23,7 +23,7 @@ class ExpressionParser : public ExpressionTokenizer<Ts...>, public ExpressionPos
 
   ValueType Evaluate(const std::string& expression)
   {
-    auto tokens  = ExpressionTokenizer<Ts...>::Execute(expression, *m_pUnaryOperators, *m_pBinaryOperators, *m_pVariables, *m_pFunctions);
+    auto tokens  = ExpressionTokenizer<Ts...>::Execute(expression, m_pUnaryOperators, m_pBinaryOperators, m_pVariables, m_pFunctions);
     auto postfix = ExpressionPostfixParser<Ts...>::Execute(tokens);
     auto result  = ExpressionEvaluator<Ts...>::Execute(postfix);
 
