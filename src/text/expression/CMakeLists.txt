@@ -26,6 +26,7 @@ target_sources(${LIBRARY_TEXT}
     SyntaxException.hpp
 
   PRIVATE
+    FunctionToken.cpp
 )
 
 target_sources(${UNITTEST_TEXT}

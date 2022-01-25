@@ -6,8 +6,6 @@
 #include "IValueToken.hpp"
 #include <string>
 #include <functional>
-#include <limits>
-#include <exception>
 
 class FunctionToken : public IFunctionToken, public TokenBase<std::function<IValueToken*(const std::vector<IValueToken*>&)>>
 {
@@ -94,7 +92,5 @@ class FunctionToken : public IFunctionToken, public TokenBase<std::function<IVal
   std::size_t m_MinArgumentCount;
   std::size_t m_MaxArgumentCount;
 };
-
-std::size_t FunctionToken::s_ArgumentsMaxLimit = std::numeric_limits<std::size_t>::max();
 
 #endif // __FUNCTIONTOKEN_HPP__

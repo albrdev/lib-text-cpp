@@ -1,6 +1,7 @@
 #ifndef __IUNARYOPERATORTOKEN_HPP__
 #define __IUNARYOPERATORTOKEN_HPP__
 
+#include <functional>
 #include "IOperatorToken.hpp"
 #include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"

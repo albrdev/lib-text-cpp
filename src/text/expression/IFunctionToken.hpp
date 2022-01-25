@@ -2,7 +2,9 @@
 #define __IFUNCTIONTOKEN_HPP__
 
 #include <vector>
+#include <functional>
 #include "IToken.hpp"
+#include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"
 
 class IFunctionToken : public virtual IToken, public IIdentifiable<std::string>
