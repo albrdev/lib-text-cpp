@@ -22,6 +22,7 @@ class ExpressionTokenizer : public Parser
   void SetOnParseNumberCallback(const std::function<IValueToken*(const std::string&)>& value) { m_OnParseNumberCallback = value; }
   void SetOnParseStringCallback(const std::function<IValueToken*(const std::string&)>& value) { m_OnParseStringCallback = value; }
   void SetOnUnknownIdentifierCallback(const std::function<IValueToken*(const std::string&)>& value) { m_OnParseUnknownIdentifier = value; }
+  void SetJuxtapositionOperator(IBinaryOperatorToken* value) { m_pJuxtapositionOperator = value; }
 
   const char& GetCommentIdentifier() const { return m_CommentIdentifier; }
   void SetCommentIdentifier(char value) { m_CommentIdentifier = value; }
@@ -31,6 +32,7 @@ class ExpressionTokenizer : public Parser
       , m_OnParseNumberCallback()
       , m_OnParseStringCallback()
       , m_OnParseUnknownIdentifier()
+      , m_pJuxtapositionOperator()
       , m_CommentIdentifier(ExpressionTokenizer::DefaultCommentIdentifier)
       , m_TokenCache()
   {}
@@ -40,6 +42,7 @@ class ExpressionTokenizer : public Parser
       , m_OnParseNumberCallback(other.m_OnParseNumberCallback)
       , m_OnParseStringCallback(other.m_OnParseStringCallback)
       , m_OnParseUnknownIdentifier(other.m_OnParseUnknownIdentifier)
+      , m_pJuxtapositionOperator(other.m_pJuxtapositionOperator)
       , m_CommentIdentifier(other.m_CommentIdentifier)
       , m_TokenCache()
   {}
@@ -49,6 +52,7 @@ class ExpressionTokenizer : public Parser
       , m_OnParseNumberCallback(std::move(other.m_OnParseNumberCallback))
       , m_OnParseStringCallback(std::move(other.m_OnParseStringCallback))
       , m_OnParseUnknownIdentifier(std::move(other.m_OnParseUnknownIdentifier))
+      , m_pJuxtapositionOperator(std::move(other.m_pJuxtapositionOperator))
       , m_CommentIdentifier(std::move(other.m_CommentIdentifier))
       , m_TokenCache(std::move(other.m_TokenCache))
   {}
@@ -196,6 +200,22 @@ class ExpressionTokenizer : public Parser
         throw SyntaxException("Unknown token: " + GetCurrent(), GetIndex());
       }
 
+      if(m_pJuxtapositionOperator != nullptr && !result.empty())
+      {
+        auto previous = result.back();
+        MiscType* misc;
+
+        bool previousIsValue            = previous->IsType<IValueToken>();
+        bool previousIsRightParenthesis = (misc = previous->AsPointer<MiscType>()) != nullptr && misc->GetObject() == ')';
+        bool currentIsLeftParenthesis   = (misc = current->AsPointer<MiscType>()) && misc->GetObject() == '(';
+
+        if((current->IsType<IValueToken>() && (previousIsRightParenthesis || (current->IsType<IVariableToken>() && previousIsValue))) ||
+           (current->IsType<IFunctionToken>() && (previousIsRightParenthesis || previousIsValue)) || (currentIsLeftParenthesis && previousIsValue))
+        {
+          result.push(m_pJuxtapositionOperator);
+        }
+      }
+
       result.push(current);
     }
 
@@ -208,6 +228,7 @@ class ExpressionTokenizer : public Parser
   std::function<IValueToken*(const std::string&)> m_OnParseNumberCallback;
   std::function<IValueToken*(const std::string&)> m_OnParseStringCallback;
   std::function<IValueToken*(const std::string&)> m_OnParseUnknownIdentifier;
+  IBinaryOperatorToken* m_pJuxtapositionOperator;
   char m_CommentIdentifier;
 
   std::vector<std::unique_ptr<IToken>> m_TokenCache;

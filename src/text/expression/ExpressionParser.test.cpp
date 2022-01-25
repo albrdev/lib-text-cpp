@@ -232,6 +232,14 @@ static BinaryOperatorToken arithmeticJuxtapositionOperator(
     },
     "",
     2,
+    Associativity::Left);
+
+static BinaryOperatorToken arithmeticJuxtapositionOperator2(
+    [](IValueToken* lhs, IValueToken* rhs) {
+      return new ArithmeticValue(lhs->AsPointer<ArithmeticValue>()->GetValue<ArithmeticType>() * rhs->AsPointer<ArithmeticValue>()->GetValue<ArithmeticType>());
+    },
+    "",
+    2,
     Associativity::Right);
 
 template<class... Ts>
@@ -1446,6 +1454,21 @@ namespace UnitTest
 
     {
       auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
+      auto actual           = expressionParser.Evaluate("6 / 2(1 + 2)");
+      auto expected         = (6.0 / 2.0) * (1.0 + 2.0);
+      ASSERT_EQ(actual->AsPointer<ArithmeticValue>()->GetValue<ArithmeticType>(), expected);
+    }
+
+    {
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
+      expressionParser.SetJuxtapositionOperator(&arithmeticJuxtapositionOperator2);
+      auto actual   = expressionParser.Evaluate("6 / 2(1 + 2)");
+      auto expected = 6.0 / (2.0 * (1.0 + 2.0));
+      ASSERT_EQ(actual->AsPointer<ArithmeticValue>()->GetValue<ArithmeticType>(), expected);
+    }
+
+    {
+      auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
       auto actual           = expressionParser.Evaluate("3 + 4 * 2 / (1 - 5) ^ 2 ^ 3");
       auto expected         = 3.0 + (4.0 * (2.0 / std::pow(1.0 - 5.0, std::pow(2.0, 3.0))));
       ASSERT_EQ(actual->AsPointer<ArithmeticValue>()->GetValue<ArithmeticType>(), expected);
@@ -1453,7 +1476,7 @@ namespace UnitTest
 
     {
       auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
-      auto actual           = expressionParser.Evaluate("2^1da^-5");
+      auto actual           = expressionParser.Evaluate("2^(1da)^-5");
       auto expected         = std::pow(2.0, std::pow(ratio<std::deca>(), -5.0));
       ASSERT_EQ(actual->AsPointer<ArithmeticValue>()->GetValue<ArithmeticType>(), expected);
     }

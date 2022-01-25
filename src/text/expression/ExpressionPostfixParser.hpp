@@ -14,19 +14,21 @@ class ExpressionPostfixParser
   public:
   using MiscType = GenericToken<char>;
 
-  void SetJuxtapositionOperator(IBinaryOperatorToken* value) { m_pJuxtapositionOperator = value; }
-
   ExpressionPostfixParser()
-      : m_pJuxtapositionOperator()
+      : m_FunctionHelperCache()
   {}
 
   ExpressionPostfixParser(const ExpressionPostfixParser& other)
-      : m_pJuxtapositionOperator(other.m_pJuxtapositionOperator)
-  {}
+      : m_FunctionHelperCache()
+  {
+    static_cast<void>(other);
+  }
 
   ExpressionPostfixParser(ExpressionPostfixParser&& other)
-      : m_pJuxtapositionOperator(std::move(other.m_pJuxtapositionOperator))
-  {}
+      : m_FunctionHelperCache()
+  {
+    static_cast<void>(other);
+  }
 
   virtual ~ExpressionPostfixParser() = default;
 
@@ -48,15 +50,6 @@ class ExpressionPostfixParser
       const auto current = tokens.front();
       if(current->IsType<IValueToken>())
       {
-        if(m_pJuxtapositionOperator != nullptr)
-        {
-          if(((misc = previous->AsPointer<MiscType>()) != nullptr && misc->GetObject() == ')') ||
-             (current->IsType<IVariableToken>() && previous->IsType<IValueToken>()))
-          {
-            stack.push(m_pJuxtapositionOperator);
-          }
-        }
-
         queue.push(current);
       }
       else if((anyOperator = current->AsPointer<IOperatorToken>()) != nullptr)
@@ -80,14 +73,6 @@ class ExpressionPostfixParser
       }
       else if((function = current->AsPointer<IFunctionToken>()) != nullptr)
       {
-        if(m_pJuxtapositionOperator != nullptr)
-        {
-          if(((misc = previous->AsPointer<MiscType>()) != nullptr && misc->GetObject() == ')') || previous->IsType<IValueToken>())
-          {
-            stack.push(m_pJuxtapositionOperator);
-          }
-        }
-
         auto functionHelper = std::make_unique<FunctionTokenHelper>(*function);
         m_FunctionHelperCache.push_back(std::move(functionHelper));
         stack.push(m_FunctionHelperCache.back().get());
@@ -99,11 +84,6 @@ class ExpressionPostfixParser
         {
           case '(':
           {
-            if(m_pJuxtapositionOperator != nullptr && previous->IsType<IValueToken>())
-            {
-              stack.push(m_pJuxtapositionOperator);
-            }
-
             if(!functionHelpers.empty())
             {
               functionHelpers.top()->IncrementBracketBalance();
@@ -197,8 +177,6 @@ class ExpressionPostfixParser
   }
 
   private:
-  IBinaryOperatorToken* m_pJuxtapositionOperator;
-
   std::vector<std::unique_ptr<FunctionTokenHelper>> m_FunctionHelperCache;
 };
 
