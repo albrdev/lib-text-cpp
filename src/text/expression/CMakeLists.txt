@@ -3,13 +3,17 @@ cmake_minimum_required(VERSION 3.14)
 target_sources(${LIBRARY_TEXT}
   PUBLIC
     IToken.hpp
+    IValueToken.hpp
+    IVariableToken.hpp
+    IOperatorToken.hpp
+    IUnaryOperatorToken.hpp
+    IBinaryOperatorToken.hpp
+    IFunctionToken.hpp
     Token.hpp
     TokenBase.hpp
-    SymbolicToken.hpp
     GenericToken.hpp
     ValueToken.hpp
     VariableToken.hpp
-    OperatorToken.hpp
     UnaryOperatorToken.hpp
     BinaryOperatorToken.hpp
     FunctionToken.hpp
@@ -22,7 +26,6 @@ target_sources(${LIBRARY_TEXT}
     SyntaxException.hpp
 
   PRIVATE
-    OperatorToken.cpp
 )
 
 target_sources(${UNITTEST_TEXT}

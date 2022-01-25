@@ -1,14 +1,16 @@
 #ifndef __VARIABLETOKEN_HPP__
 #define __VARIABLETOKEN_HPP__
 
+#include "IVariableToken.hpp"
 #include "ValueToken.hpp"
-#include "SymbolicToken.hpp"
 #include <string>
 
 template<class... Ts>
-class VariableToken : public ValueToken<Ts...>, public SymbolicToken<std::string>
+class VariableToken : public IVariableToken, public ValueToken<Ts...>
 {
   public:
+  virtual const std::string& GetIdentifier() const override { return m_Identifier; }
+
   virtual std::string ToString() const override { return this->GetIdentifier(); }
 
   template<class T>
@@ -19,49 +21,57 @@ class VariableToken : public ValueToken<Ts...>, public SymbolicToken<std::string
   }
 
   VariableToken()
-      : ValueToken<Ts...>()
-      , SymbolicToken<std::string>()
+      : IVariableToken()
+      , ValueToken<Ts...>()
+      , m_Identifier()
   {}
 
   VariableToken(const std::string& identifier)
-      : ValueToken<Ts...>()
-      , SymbolicToken<std::string>(identifier)
+      : IVariableToken()
+      , ValueToken<Ts...>()
+      , m_Identifier(identifier)
   {}
 
   template<class T>
   explicit VariableToken(const std::string& identifier, const T& value)
-      : ValueToken<Ts...>(value)
-      , SymbolicToken<std::string>(identifier)
+      : IVariableToken()
+      , ValueToken<Ts...>(value)
+      , m_Identifier(identifier)
   {}
 
   virtual ~VariableToken() override = default;
 
   VariableToken(const VariableToken<Ts...>& other)
-      : ValueToken<Ts...>(other)
-      , SymbolicToken<std::string>(other)
+      : IVariableToken()
+      , ValueToken<Ts...>(other)
+      , m_Identifier(other.m_Identifier)
   {}
 
   VariableToken(VariableToken<Ts...>&& other)
-      : ValueToken<Ts...>(std::move(other))
-      , SymbolicToken<std::string>(std::move(other))
+      : IVariableToken()
+      , ValueToken<Ts...>(std::move(other))
+      , m_Identifier(std::move(other.m_Identifier))
   {}
 
   VariableToken<Ts...>& operator=(const VariableToken<Ts...>& other)
   {
-    ValueToken<Ts...>::operator         =(other);
-    SymbolicToken<std::string>::operator=(other);
+    ValueToken<Ts...>::operator=(other);
+    m_Identifier               = other.m_Identifier;
     return *this;
   }
 
   VariableToken<Ts...>& operator=(VariableToken<Ts...>&& other)
   {
-    ValueToken<Ts...>::operator         =(std::move(other));
-    SymbolicToken<std::string>::operator=(std::move(other));
+    ValueToken<Ts...>::operator=(std::move(other));
+    m_Identifier               = std::move(other.m_Identifier);
     return *this;
   }
 
   protected:
   virtual void ThrowOnUninitializedAccess() const override { throw std::runtime_error("Accessing uninitialized variable: " + GetIdentifier()); }
+
+  private:
+  std::string m_Identifier;
 };
 
 #endif // __VARIABLETOKEN_HPP__

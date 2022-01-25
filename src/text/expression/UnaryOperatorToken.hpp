@@ -2,61 +2,71 @@
 #define __UNARYOPERATORTOKEN_HPP__
 
 #include "TokenBase.hpp"
-#include "OperatorToken.hpp"
-#include "SymbolicToken.hpp"
+#include "IUnaryOperatorToken.hpp"
+#include "IValueToken.hpp"
 #include <string>
 #include <functional>
 
-template<class T>
-class UnaryOperatorToken : public TokenBase<std::function<T(T)>>, public OperatorToken, public SymbolicToken<char>
+class UnaryOperatorToken : public IUnaryOperatorToken, public TokenBase<std::function<IValueToken*(IValueToken*)>>
 {
   public:
-  using CallbackType = typename TokenBase<std::function<T(T)>>::ObjectType;
+  virtual IValueToken* operator()(IValueToken* rhs) const override { return this->GetObject()(rhs); }
+  virtual const char& GetIdentifier() const override { return m_Identifier; }
+  virtual const int& GetPrecedence() const override { return m_Precedence; }
+  virtual const Associativity& GetAssociativity() const override { return m_Associativity; }
 
   virtual std::string ToString() const override { return std::string(1u, this->GetIdentifier()); }
 
-  T operator()(T rhs) const { return this->GetObject()(rhs); }
-
   UnaryOperatorToken(const CallbackType& callback, const char identifier, int precedence, Associativity associativity)
-      : TokenBase<CallbackType>(callback)
-      , OperatorToken(precedence, associativity)
-      , SymbolicToken<char>(identifier)
+      : IUnaryOperatorToken()
+      , TokenBase<CallbackType>(callback)
+      , m_Identifier(identifier)
+      , m_Precedence(precedence)
+      , m_Associativity(associativity)
   {}
 
   UnaryOperatorToken()
-      : TokenBase<CallbackType>()
-      , OperatorToken()
-      , SymbolicToken<char>()
+      : IUnaryOperatorToken()
+      , TokenBase<CallbackType>()
+      , m_Identifier()
+      , m_Precedence(0)
+      , m_Associativity(Associativity::Any)
   {}
 
-  UnaryOperatorToken(const UnaryOperatorToken<T>& other)
-      : TokenBase<CallbackType>(other)
-      , OperatorToken(other)
-      , SymbolicToken<char>(other)
+  UnaryOperatorToken(const UnaryOperatorToken& other)
+      : IUnaryOperatorToken()
+      , TokenBase<CallbackType>(other)
+      , m_Identifier(other.m_Identifier)
+      , m_Precedence(other.m_Precedence)
+      , m_Associativity(other.m_Associativity)
   {}
 
-  UnaryOperatorToken(UnaryOperatorToken<T>&& other)
-      : TokenBase<CallbackType>(std::move(other))
-      , OperatorToken(std::move(other))
-      , SymbolicToken<char>(std::move(other))
+  UnaryOperatorToken(UnaryOperatorToken&& other)
+      : IUnaryOperatorToken()
+      , TokenBase<CallbackType>(std::move(other))
+      , m_Identifier(std::move(other.m_Identifier))
+      , m_Precedence(std::move(other.m_Precedence))
+      , m_Associativity(std::move(other.m_Associativity))
   {}
 
   virtual ~UnaryOperatorToken() override = default;
 
-  UnaryOperatorToken<T>& operator=(const UnaryOperatorToken<T>& other)
+  UnaryOperatorToken& operator=(const UnaryOperatorToken& other)
   {
     TokenBase<CallbackType>::operator=(other);
-    OperatorToken::operator          =(other);
-    SymbolicToken<char>::operator    =(other);
+    m_Identifier                     = other.m_Identifier;
+    m_Precedence                     = other.m_Precedence;
+    m_Associativity                  = other.m_Associativity;
 
     return *this;
   }
 
-  UnaryOperatorToken<T>& operator=(UnaryOperatorToken<T>&& other)
+  UnaryOperatorToken& operator=(UnaryOperatorToken&& other)
   {
     TokenBase<CallbackType>::operator=(std::move(other));
-    OperatorToken::operator          =(std::move(other));
-    SymbolicToken<char>::operator    =(std::move(other));
+    m_Identifier                     = std::move(other.m_Identifier);
+    m_Precedence                     = std::move(other.m_Precedence);
+    m_Associativity                  = std::move(other.m_Associativity);
 
     return *this;
   }
@@ -64,6 +74,10 @@ class UnaryOperatorToken : public TokenBase<std::function<T(T)>>, public Operato
   private:
   using TokenBase<CallbackType>::GetObject;
   using TokenBase<CallbackType>::SetObject;
+
+  char m_Identifier;
+  int m_Precedence;
+  Associativity m_Associativity;
 };
 
 #endif // __UNARYOPERATORTOKEN_HPP__

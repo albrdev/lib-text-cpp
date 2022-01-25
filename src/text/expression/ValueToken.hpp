@@ -4,7 +4,9 @@
 #include <string>
 #include <variant>
 #include <sstream>
+#include <typeinfo>
 #include "TokenBase.hpp"
+#include "IValueToken.hpp"
 
 template<class... Ts>
 struct overloaded : Ts...
@@ -19,7 +21,7 @@ template<class... Ts>
 using ValueType = std::variant<std::nullptr_t, std::string, Ts...>;
 
 template<class... Ts>
-class ValueToken : public TokenBase<ValueType<Ts...>>
+class ValueToken : public virtual IValueToken, public TokenBase<ValueType<Ts...>>
 {
   public:
   template<class T>
@@ -51,7 +53,7 @@ class ValueToken : public TokenBase<ValueType<Ts...>>
     m_IsInitialized = true;
   }
 
-  const std::type_info& GetType() const { return std::visit(TypeIdVisitor(), this->GetObject()); }
+  const std::type_info& GetType() const override { return std::visit(TypeIdVisitor(), this->GetObject()); }
 
   const bool& IsInitialized() const { return m_IsInitialized; }
 
@@ -73,28 +75,32 @@ class ValueToken : public TokenBase<ValueType<Ts...>>
     return *this;
   }
 
-  ValueToken()
-      : TokenBase<ValueType<Ts...>>(ValueType<Ts...>(nullptr))
-      , m_IsInitialized(false)
-  {}
-
   template<class T>
   explicit ValueToken(const T& value)
-      : TokenBase<ValueType<Ts...>>(ValueType<Ts...>(value))
+      : IValueToken()
+      , TokenBase<ValueType<Ts...>>(ValueType<Ts...>(value))
       , m_IsInitialized(true)
   {}
 
+  virtual ~ValueToken() override = default;
+
+  ValueToken()
+      : IValueToken()
+      , TokenBase<ValueType<Ts...>>(ValueType<Ts...>(nullptr))
+      , m_IsInitialized(false)
+  {}
+
   ValueToken(const ValueToken<Ts...>& other)
-      : TokenBase<ValueType<Ts...>>(other)
+      : IValueToken()
+      , TokenBase<ValueType<Ts...>>(other)
       , m_IsInitialized(other.m_IsInitialized)
   {}
 
   ValueToken(ValueToken<Ts...>&& other)
-      : TokenBase<ValueType<Ts...>>(std::move(other))
+      : IValueToken()
+      , TokenBase<ValueType<Ts...>>(std::move(other))
       , m_IsInitialized(std::move(other.m_IsInitialized))
   {}
-
-  virtual ~ValueToken() override = default;
 
   ValueToken<Ts...>& operator=(const ValueToken<Ts...>& other)
   {

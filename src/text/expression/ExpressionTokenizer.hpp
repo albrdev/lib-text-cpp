@@ -8,47 +8,47 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <memory>
-#include <sstream>
 #include "text/Parser.hpp"
 #include "Token.hpp"
 #include "SyntaxException.hpp"
 
-template<class... Ts>
 class ExpressionTokenizer : public Parser
 {
   public:
-  using ValueType          = ValueToken<Ts...>;
-  using UnaryOperatorType  = UnaryOperatorToken<ValueType*>;
-  using BinaryOperatorType = BinaryOperatorToken<ValueType*>;
-  using FunctionType       = FunctionToken<ValueType*>;
-  using VariableType       = VariableToken<Ts...>;
-  using MiscType           = GenericToken<char>;
+  using MiscType = GenericToken<char>;
 
   constexpr static char DefaultCommentIdentifier = '#';
 
-  void SetNumberConverter(const std::function<ValueType*(const std::string&)>& value) { m_NumberConverter = value; }
-  void SetOnUnknownIdentifierCallback(const std::function<ValueType*(const std::string&)>& value) { m_OnUnknownIdentifierCallback = value; }
+  void SetOnParseNumberCallback(const std::function<IValueToken*(const std::string&)>& value) { m_OnParseNumberCallback = value; }
+  void SetOnParseStringCallback(const std::function<IValueToken*(const std::string&)>& value) { m_OnParseStringCallback = value; }
+  void SetOnUnknownIdentifierCallback(const std::function<IValueToken*(const std::string&)>& value) { m_OnParseUnknownIdentifier = value; }
 
   const char& GetCommentIdentifier() const { return m_CommentIdentifier; }
   void SetCommentIdentifier(char value) { m_CommentIdentifier = value; }
 
-  ExpressionTokenizer(const std::function<ValueType*(const std::string&)>& numberConverter)
+  ExpressionTokenizer()
       : Parser()
-      , m_NumberConverter(numberConverter)
-      , m_CommentIdentifier(ExpressionTokenizer<Ts...>::DefaultCommentIdentifier)
+      , m_OnParseNumberCallback()
+      , m_OnParseStringCallback()
+      , m_OnParseUnknownIdentifier()
+      , m_CommentIdentifier(ExpressionTokenizer::DefaultCommentIdentifier)
       , m_TokenCache()
   {}
 
-  ExpressionTokenizer(const ExpressionTokenizer<Ts...>& other)
+  ExpressionTokenizer(const ExpressionTokenizer& other)
       : Parser(other)
-      , m_NumberConverter(other.m_NumberConverter)
+      , m_OnParseNumberCallback(other.m_OnParseNumberCallback)
+      , m_OnParseStringCallback(other.m_OnParseStringCallback)
+      , m_OnParseUnknownIdentifier(other.m_OnParseUnknownIdentifier)
       , m_CommentIdentifier(other.m_CommentIdentifier)
-      , m_TokenCache(other.m_TokenCache)
+      , m_TokenCache()
   {}
 
-  ExpressionTokenizer(ExpressionTokenizer<Ts...>&& other)
+  ExpressionTokenizer(ExpressionTokenizer&& other)
       : Parser(std::move(other))
-      , m_NumberConverter(std::move(other.m_NumberConverter))
+      , m_OnParseNumberCallback(std::move(other.m_OnParseNumberCallback))
+      , m_OnParseStringCallback(std::move(other.m_OnParseStringCallback))
+      , m_OnParseUnknownIdentifier(std::move(other.m_OnParseUnknownIdentifier))
       , m_CommentIdentifier(std::move(other.m_CommentIdentifier))
       , m_TokenCache(std::move(other.m_TokenCache))
   {}
@@ -56,10 +56,10 @@ class ExpressionTokenizer : public Parser
   virtual ~ExpressionTokenizer() override = default;
 
   std::queue<IToken*> Execute(const std::string& expression,
-                              const std::unordered_map<char, UnaryOperatorType*>* unaryOperators,
-                              const std::unordered_map<std::string, BinaryOperatorType*>* binaryOperators,
-                              const std::unordered_map<std::string, VariableType*>* variables,
-                              const std::unordered_map<std::string, FunctionType*>* functions)
+                              const std::unordered_map<char, IUnaryOperatorToken*>* unaryOperators,
+                              const std::unordered_map<std::string, IBinaryOperatorToken*>* binaryOperators,
+                              const std::unordered_map<std::string, IVariableToken*>* variables,
+                              const std::unordered_map<std::string, IFunctionToken*>* functions)
   {
     m_TokenCache.clear();
     this->SetText(expression);
@@ -94,20 +94,32 @@ class ExpressionTokenizer : public Parser
       }
       else if(IsNumber(GetCurrent()))
       {
-        auto value = m_NumberConverter(ParseNumber());
+        std::string stringValue = ParseNumber();
+        if(m_OnParseNumberCallback == nullptr)
+        {
+          throw SyntaxException("Unhandled numeric token: " + stringValue, GetIndex() - stringValue.length());
+        }
+
+        auto value = m_OnParseNumberCallback(stringValue);
         m_TokenCache.push_back(std::unique_ptr<IToken>(value));
         current = m_TokenCache.back().get();
       }
       else if(IsString(GetCurrent()))
       {
-        std::string value = ParseString();
-        m_TokenCache.push_back(std::unique_ptr<IToken>(new ValueType(value)));
+        std::string stringValue = ParseString();
+        if(m_OnParseStringCallback == nullptr)
+        {
+          throw SyntaxException("Unhandled string token: " + stringValue, GetIndex() - stringValue.length());
+        }
+
+        auto value = m_OnParseStringCallback(stringValue);
+        m_TokenCache.push_back(std::unique_ptr<IToken>(value));
         current = m_TokenCache.back().get();
       }
       else if(unOps.find(GetCurrent()) != unOps.end() || binOps.find(GetCurrent()) != binOps.end())
       {
         MiscType* misc;
-        if(hasUnOps && (result.empty() || result.back()->IsType<OperatorToken>() ||
+        if(hasUnOps && (result.empty() || result.back()->IsType<IOperatorToken>() ||
                         ((misc = result.back()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ','))))
         {
           const auto iter = unaryOperators->find(GetCurrent());
@@ -141,8 +153,8 @@ class ExpressionTokenizer : public Parser
       {
         std::string identifier = ParseIdentifier();
 
-        typename std::unordered_map<std::string, FunctionType*>::const_iterator functionIter;
-        typename std::unordered_map<std::string, VariableType*>::const_iterator variableIter;
+        typename std::unordered_map<std::string, IFunctionToken*>::const_iterator functionIter;
+        typename std::unordered_map<std::string, IVariableToken*>::const_iterator variableIter;
         if(functions != nullptr && (functionIter = functions->find(identifier)) != functions->cend())
         {
           current = functionIter->second;
@@ -159,12 +171,12 @@ class ExpressionTokenizer : public Parser
         }
         else
         {
-          if(m_OnUnknownIdentifierCallback == nullptr)
+          if(m_OnParseUnknownIdentifier == nullptr)
           {
             throw SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
           }
 
-          auto value = m_OnUnknownIdentifierCallback(identifier);
+          auto value = m_OnParseUnknownIdentifier(identifier);
           if(value == nullptr)
           {
             throw SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
@@ -193,8 +205,9 @@ class ExpressionTokenizer : public Parser
   private:
   using Parser::SetText;
 
-  std::function<ValueType*(const std::string&)> m_NumberConverter;
-  std::function<ValueType*(const std::string&)> m_OnUnknownIdentifierCallback;
+  std::function<IValueToken*(const std::string&)> m_OnParseNumberCallback;
+  std::function<IValueToken*(const std::string&)> m_OnParseStringCallback;
+  std::function<IValueToken*(const std::string&)> m_OnParseUnknownIdentifier;
   char m_CommentIdentifier;
 
   std::vector<std::unique_ptr<IToken>> m_TokenCache;
