@@ -2,35 +2,20 @@
 #define __SYNTAXEXCEPTION_HPP__
 
 #include <string>
-#include <exception>
+#include <stdexcept>
 
 class SyntaxException : public std::runtime_error
 {
   public:
-  const std::size_t& GetIndex() const { return m_Index; }
+  const std::size_t& GetIndex() const;
 
-  SyntaxException()
-      : std::runtime_error(k_DefaultMessage)
-      , m_Index(-1)
-  {}
-
-  SyntaxException(const std::string& message)
-      : std::runtime_error(message)
-      , m_Index(-1)
-  {}
-
-  SyntaxException(std::size_t index)
-      : std::runtime_error(CreateMessage(k_DefaultMessage, index))
-      , m_Index(index)
-  {}
-
-  SyntaxException(const std::string& message, std::size_t index)
-      : std::runtime_error(CreateMessage(message, index))
-      , m_Index(index)
-  {}
+  SyntaxException(const std::string& message);
+  SyntaxException(std::size_t index);
+  SyntaxException(const std::string& message, std::size_t index);
+  SyntaxException();
 
   private:
-  static std::string CreateMessage(const std::string& message, std::size_t index) { return message + "(Index: " + std::to_string(index) + ")"; }
+  static std::string CreateMessage(const std::string& message, std::size_t index);
 
   constexpr static const char* k_DefaultMessage = "Syntax error";
 

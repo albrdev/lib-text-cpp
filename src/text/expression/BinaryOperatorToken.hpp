@@ -10,66 +10,26 @@
 class BinaryOperatorToken : public IBinaryOperatorToken, public TokenBase<std::function<IValueToken*(IValueToken*, IValueToken*)>>
 {
   public:
-  virtual IValueToken* operator()(IValueToken* lhs, IValueToken* rhs) const override { return this->GetObject()(lhs, rhs); }
-  virtual const std::string& GetIdentifier() const override { return m_Identifier; }
-  virtual const int& GetPrecedence() const override { return m_Precedence; }
-  virtual const Associativity& GetAssociativity() const override { return m_Associativity; }
+  using CallbackType = TokenBase<std::function<IValueToken*(IValueToken*, IValueToken*)>>::ObjectType;
 
-  virtual std::string ToString() const override { return this->GetIdentifier(); }
+  virtual IValueToken* operator()(IValueToken* lhs, IValueToken* rhs) const override;
+  virtual const std::string& GetIdentifier() const override;
+  virtual const int& GetPrecedence() const override;
+  virtual const Associativity& GetAssociativity() const override;
 
-  BinaryOperatorToken(const CallbackType& callback, const std::string& identifier, int precedence, Associativity associativity)
-      : TokenBase<CallbackType>(callback)
-      , m_Identifier(identifier)
-      , m_Precedence(precedence)
-      , m_Associativity(associativity)
-  {}
+  virtual std::string ToString() const override;
 
-  BinaryOperatorToken()
-      : TokenBase<CallbackType>()
-      , m_Identifier()
-      , m_Precedence(0)
-      , m_Associativity(Associativity::Any)
-  {}
-
-  BinaryOperatorToken(const BinaryOperatorToken& other)
-      : TokenBase<CallbackType>(other)
-      , m_Identifier(other.m_Identifier)
-      , m_Precedence(other.m_Precedence)
-      , m_Associativity(other.m_Associativity)
-  {}
-
-  BinaryOperatorToken(BinaryOperatorToken&& other)
-      : TokenBase<CallbackType>(std::move(other))
-      , m_Identifier(std::move(other.m_Identifier))
-      , m_Precedence(std::move(other.m_Precedence))
-      , m_Associativity(std::move(other.m_Associativity))
-  {}
-
+  BinaryOperatorToken(const BinaryOperatorToken::CallbackType& callback, const std::string& identifier, int precedence, Associativity associativity);
   virtual ~BinaryOperatorToken() override = default;
-
-  BinaryOperatorToken& operator=(const BinaryOperatorToken& other)
-  {
-    TokenBase<CallbackType>::operator=(other);
-    m_Identifier                     = other.m_Identifier;
-    m_Precedence                     = other.m_Precedence;
-    m_Associativity                  = other.m_Associativity;
-
-    return *this;
-  }
-
-  BinaryOperatorToken& operator=(BinaryOperatorToken&& other)
-  {
-    TokenBase<CallbackType>::operator=(std::move(other));
-    m_Identifier                     = std::move(other.m_Identifier);
-    m_Precedence                     = std::move(other.m_Precedence);
-    m_Associativity                  = std::move(other.m_Associativity);
-
-    return *this;
-  }
+  BinaryOperatorToken();
+  BinaryOperatorToken(const BinaryOperatorToken& other);
+  BinaryOperatorToken(BinaryOperatorToken&& other);
+  BinaryOperatorToken& operator=(const BinaryOperatorToken& other);
+  BinaryOperatorToken& operator=(BinaryOperatorToken&& other);
 
   private:
-  using TokenBase<CallbackType>::GetObject;
-  using TokenBase<CallbackType>::SetObject;
+  using TokenBase<BinaryOperatorToken::CallbackType>::GetObject;
+  using TokenBase<BinaryOperatorToken::CallbackType>::SetObject;
 
   std::string m_Identifier;
   int m_Precedence;

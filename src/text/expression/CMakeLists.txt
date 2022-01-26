@@ -9,7 +9,7 @@ target_sources(${LIBRARY_TEXT}
     IUnaryOperatorToken.hpp
     IBinaryOperatorToken.hpp
     IFunctionToken.hpp
-    Token.hpp
+
     TokenBase.hpp
     GenericToken.hpp
     ValueToken.hpp
@@ -18,15 +18,25 @@ target_sources(${LIBRARY_TEXT}
     BinaryOperatorToken.hpp
     FunctionToken.hpp
     FunctionTokenHelper.hpp
+    SyntaxException.hpp
+
     Token.hpp
     ExpressionTokenizer.hpp
     ExpressionPostfixParser.hpp
     ExpressionEvaluator.hpp
     ExpressionParser.hpp
-    SyntaxException.hpp
 
   PRIVATE
+    UnaryOperatorToken.cpp
+    BinaryOperatorToken.cpp
     FunctionToken.cpp
+    FunctionTokenHelper.cpp
+    SyntaxException.cpp
+
+    ExpressionTokenizer.cpp
+    ExpressionPostfixParser.cpp
+    ExpressionEvaluator.cpp
+    ExpressionParser.cpp
 )
 
 target_sources(${UNITTEST_TEXT}

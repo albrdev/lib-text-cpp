@@ -10,81 +10,32 @@
 class FunctionToken : public IFunctionToken, public TokenBase<std::function<IValueToken*(const std::vector<IValueToken*>&)>>
 {
   public:
-  static const std::size_t& GetArgumentCountMaxLimit() { return s_ArgumentsMaxLimit; }
-  static void SetArgumentsMaxLimit(std::size_t value) { s_ArgumentsMaxLimit = value; }
+  using CallbackType = TokenBase<std::function<IValueToken*(const std::vector<IValueToken*>&)>>::ObjectType;
 
-  virtual IValueToken* operator()(const std::vector<IValueToken*>& args) const override { return this->GetObject()(args); }
-  virtual const std::string& GetIdentifier() const override { return m_Identifier; }
-  virtual const std::size_t& GetMinArgumentCount() const override { return m_MinArgumentCount; }
-  virtual const std::size_t& GetMaxArgumentCount() const override { return m_MaxArgumentCount; }
+  static const std::size_t& GetArgumentCountMaxLimit();
+  static void SetArgumentsMaxLimit(std::size_t value);
 
-  virtual std::string ToString() const override { return this->GetIdentifier(); }
+  virtual IValueToken* operator()(const std::vector<IValueToken*>& args) const override;
+  virtual const std::string& GetIdentifier() const override;
+  virtual const std::size_t& GetMinArgumentCount() const override;
+  virtual const std::size_t& GetMaxArgumentCount() const override;
 
-  FunctionToken(const CallbackType& callback,
+  virtual std::string ToString() const override;
+
+  FunctionToken(const FunctionToken::CallbackType& callback,
                 const std::string& identifier,
                 std::size_t minArguments = 0u,
-                std::size_t maxArguments = FunctionToken::s_ArgumentsMaxLimit)
-      : IFunctionToken()
-      , TokenBase<CallbackType>(callback)
-      , m_Identifier(identifier)
-      , m_MinArgumentCount(minArguments)
-      , m_MaxArgumentCount(maxArguments)
-  {
-    if(m_MinArgumentCount > m_MaxArgumentCount)
-    {
-      throw std::invalid_argument("Invalid function argument count");
-    }
-  }
-
+                std::size_t maxArguments = FunctionToken::s_ArgumentsMaxLimit);
   virtual ~FunctionToken() override = default;
-
-  FunctionToken()
-      : IFunctionToken()
-      , TokenBase<CallbackType>()
-      , m_Identifier()
-      , m_MinArgumentCount(0u)
-      , m_MaxArgumentCount(FunctionToken::s_ArgumentsMaxLimit)
-  {}
-
-  FunctionToken(const FunctionToken& other)
-      : IFunctionToken()
-      , TokenBase<CallbackType>(other)
-      , m_Identifier(other.m_Identifier)
-      , m_MinArgumentCount(other.m_MinArgumentCount)
-      , m_MaxArgumentCount(other.m_MaxArgumentCount)
-  {}
-
-  FunctionToken(FunctionToken&& other)
-      : IFunctionToken()
-      , TokenBase<CallbackType>(std::move(other))
-      , m_Identifier(std::move(other.m_Identifier))
-      , m_MinArgumentCount(std::move(other.m_MinArgumentCount))
-      , m_MaxArgumentCount(std::move(other.m_MaxArgumentCount))
-  {}
-
-  FunctionToken& operator=(const FunctionToken& other)
-  {
-    TokenBase<CallbackType>::operator=(other);
-    m_Identifier                     = other.m_Identifier;
-    m_MinArgumentCount               = other.m_MinArgumentCount;
-    m_MaxArgumentCount               = other.m_MaxArgumentCount;
-
-    return *this;
-  }
-
-  FunctionToken& operator=(FunctionToken&& other)
-  {
-    TokenBase<CallbackType>::operator=(std::move(other));
-    m_Identifier                     = std::move(other.m_Identifier);
-    m_MinArgumentCount               = std::move(other.m_MinArgumentCount);
-    m_MaxArgumentCount               = std::move(other.m_MaxArgumentCount);
-
-    return *this;
-  }
+  FunctionToken();
+  FunctionToken(const FunctionToken& other);
+  FunctionToken(FunctionToken&& other);
+  FunctionToken& operator=(const FunctionToken& other);
+  FunctionToken& operator=(FunctionToken&& other);
 
   private:
-  using TokenBase<CallbackType>::GetObject;
-  using TokenBase<CallbackType>::SetObject;
+  using TokenBase<FunctionToken::CallbackType>::GetObject;
+  using TokenBase<FunctionToken::CallbackType>::SetObject;
 
   static std::size_t s_ArgumentsMaxLimit;
 

@@ -10,8 +10,6 @@
 class IFunctionToken : public virtual IToken, public IIdentifiable<std::string>
 {
   public:
-  using CallbackType = typename TokenBase<std::function<IValueToken*(const std::vector<IValueToken*>&)>>::ObjectType;
-
   virtual IValueToken* operator()(const std::vector<IValueToken*>&) const = 0;
 
   virtual const std::size_t& GetMinArgumentCount() const = 0;

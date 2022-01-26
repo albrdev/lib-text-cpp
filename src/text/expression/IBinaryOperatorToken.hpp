@@ -9,8 +9,6 @@
 class IBinaryOperatorToken : public virtual IOperatorToken, public IIdentifiable<std::string>
 {
   public:
-  using CallbackType = typename TokenBase<std::function<IValueToken*(IValueToken*, IValueToken*)>>::ObjectType;
-
   virtual IValueToken* operator()(IValueToken*, IValueToken*) const = 0;
 
   virtual ~IBinaryOperatorToken() override = default;

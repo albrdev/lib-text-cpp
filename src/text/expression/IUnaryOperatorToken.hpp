@@ -9,8 +9,6 @@
 class IUnaryOperatorToken : public virtual IOperatorToken, public IIdentifiable<char>
 {
   public:
-  using CallbackType = typename TokenBase<std::function<IValueToken*(IValueToken*)>>::ObjectType;
-
   virtual IValueToken* operator()(IValueToken*) const = 0;
 
   virtual ~IUnaryOperatorToken() override = default;
