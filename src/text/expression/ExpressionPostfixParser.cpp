@@ -119,7 +119,7 @@ std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens
 
           if(misc == nullptr || misc->GetObject() != '(')
           {
-            throw std::runtime_error("Missing matching opening bracket");
+            throw SyntaxException("Missing matching opening bracket");
           }
 
           break;
@@ -139,7 +139,7 @@ std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens
   {
     if((misc = stack.top()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ')'))
     {
-      throw std::runtime_error("Missing matching closing bracket");
+      throw SyntaxException("Missing matching closing bracket");
     }
 
     queue.push(stack.top());
