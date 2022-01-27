@@ -17,7 +17,6 @@ target_sources(${LIBRARY_TEXT}
     UnaryOperatorToken.hpp
     BinaryOperatorToken.hpp
     FunctionToken.hpp
-    FunctionTokenHelper.hpp
     SyntaxException.hpp
 
     Token.hpp
@@ -30,7 +29,6 @@ target_sources(${LIBRARY_TEXT}
     UnaryOperatorToken.cpp
     BinaryOperatorToken.cpp
     FunctionToken.cpp
-    FunctionTokenHelper.cpp
     SyntaxException.cpp
 
     ExpressionTokenizer.cpp

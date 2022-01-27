@@ -3,7 +3,6 @@
 #include "IUnaryOperatorToken.hpp"
 #include "IBinaryOperatorToken.hpp"
 #include "FunctionToken.hpp"
-#include "FunctionTokenHelper.hpp"
 #include "SyntaxException.hpp"
 
 IValueToken* ExpressionEvaluator::Execute(std::queue<IToken*> postfix)
@@ -15,7 +14,7 @@ IValueToken* ExpressionEvaluator::Execute(std::queue<IToken*> postfix)
   IValueToken* value                   = nullptr;
   IUnaryOperatorToken* unaryOperator   = nullptr;
   IBinaryOperatorToken* binaryOperator = nullptr;
-  FunctionTokenHelper* functionHelper  = nullptr;
+  FunctionToken* function              = nullptr;
 
   while(!postfix.empty())
   {
@@ -59,26 +58,26 @@ IValueToken* ExpressionEvaluator::Execute(std::queue<IToken*> postfix)
 
       stack.push_back(value);
     }
-    else if((functionHelper = current->AsPointer<FunctionTokenHelper>()) != nullptr)
+    else if((function = current->AsPointer<FunctionToken>()) != nullptr)
     {
-      if(functionHelper->GetArgumentCount() < functionHelper->GetFunction().GetMinArgumentCount() ||
-         functionHelper->GetArgumentCount() > std::min(functionHelper->GetFunction().GetMaxArgumentCount(), FunctionToken::GetArgumentCountMaxLimit()))
+      if(function->m_ArgumentCount < function->GetMinArgumentCount() ||
+         function->m_ArgumentCount > std::min(function->GetMaxArgumentCount(), FunctionToken::GetArgumentCountMaxLimit()))
       {
-        throw SyntaxException("Invalid number of arguments provided for function: " + functionHelper->GetFunction().GetIdentifier());
+        throw SyntaxException("Invalid number of arguments provided for function: " + function->GetIdentifier());
       }
-      else if(stack.size() < functionHelper->GetArgumentCount())
+      else if(stack.size() < function->m_ArgumentCount)
       {
-        throw SyntaxException("Insufficient arguments provided for function: " + functionHelper->GetFunction().GetIdentifier());
+        throw SyntaxException("Insufficient arguments provided for function: " + function->GetIdentifier());
       }
 
       std::vector<IValueToken*> args;
-      if(functionHelper->GetArgumentCount() > 0u)
+      if(function->m_ArgumentCount > 0u)
       {
-        std::copy(stack.cend() - functionHelper->GetArgumentCount(), stack.cend(), std::back_inserter(args));
+        std::copy(stack.cend() - function->m_ArgumentCount, stack.cend(), std::back_inserter(args));
       }
 
-      auto value = functionHelper->GetFunction()(args);
-      stack.erase(stack.end() - functionHelper->GetArgumentCount(), stack.end());
+      auto value = (*function)(args);
+      stack.erase(stack.end() - function->m_ArgumentCount, stack.end());
 
       m_ResultCache.push_back(std::unique_ptr<IValueToken>(value));
       stack.push_back(value);

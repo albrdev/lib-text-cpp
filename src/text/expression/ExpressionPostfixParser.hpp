@@ -6,7 +6,7 @@
 #include <queue>
 #include <memory>
 #include "IValueToken.hpp"
-#include "FunctionTokenHelper.hpp"
+#include "FunctionToken.hpp"
 
 class ExpressionPostfixParser
 {
@@ -19,7 +19,7 @@ class ExpressionPostfixParser
   ExpressionPostfixParser(ExpressionPostfixParser&& other);
 
   private:
-  std::vector<std::unique_ptr<FunctionTokenHelper>> m_FunctionHelperCache;
+  std::vector<std::unique_ptr<FunctionToken>> m_FunctionCache;
 };
 
 #endif // __EXPRESSIONPOSTFIXPARSER_HPP__

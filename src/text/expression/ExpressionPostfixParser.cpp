@@ -1,6 +1,5 @@
 #include "ExpressionPostfixParser.hpp"
 #include "IOperatorToken.hpp"
-#include "IFunctionToken.hpp"
 #include "GenericToken.hpp"
 #include "SyntaxException.hpp"
 
@@ -8,15 +7,15 @@ std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens
 {
   using MiscType = GenericToken<char>;
 
-  m_FunctionHelperCache.clear();
+  m_FunctionCache.clear();
 
   const IOperatorToken* anyOperator = nullptr;
-  const IFunctionToken* function    = nullptr;
+  const FunctionToken* function     = nullptr;
   const MiscType* misc              = nullptr;
 
   std::queue<IToken*> queue;
   std::stack<IToken*> stack;
-  std::stack<FunctionTokenHelper*> functionHelpers;
+  std::stack<FunctionToken*> functions;
 
   const IToken* previous = nullptr;
   while(!tokens.empty())
@@ -45,12 +44,12 @@ std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens
 
       stack.push(current);
     }
-    else if((function = current->AsPointer<IFunctionToken>()) != nullptr)
+    else if((function = current->AsPointer<FunctionToken>()) != nullptr)
     {
-      auto functionHelper = std::make_unique<FunctionTokenHelper>(*function);
-      m_FunctionHelperCache.push_back(std::move(functionHelper));
-      stack.push(m_FunctionHelperCache.back().get());
-      functionHelpers.push(m_FunctionHelperCache.back().get());
+      auto functionClone = std::make_unique<FunctionToken>(*function);
+      m_FunctionCache.push_back(std::move(functionClone));
+      stack.push(m_FunctionCache.back().get());
+      functions.push(m_FunctionCache.back().get());
     }
     else if((misc = current->AsPointer<MiscType>()) != nullptr)
     {
@@ -58,9 +57,9 @@ std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens
       {
         case '(':
         {
-          if(!functionHelpers.empty())
+          if(!functions.empty())
           {
-            functionHelpers.top()->IncrementBracketBalance();
+            functions.top()->m_BracketBalance++;
           }
 
           stack.push(current);
@@ -68,18 +67,18 @@ std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens
         }
         case ')':
         {
-          if(!functionHelpers.empty())
+          if(!functions.empty())
           {
-            functionHelpers.top()->DecrementBracketBalance();
+            functions.top()->m_BracketBalance--;
 
-            if(functionHelpers.top()->GetBracketBalance() == 0)
+            if(functions.top()->m_BracketBalance == 0)
             {
               if(previous != nullptr && ((misc = previous->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
               {
-                functionHelpers.top()->IncrementArgumentCount();
+                functions.top()->m_ArgumentCount++;
               }
 
-              functionHelpers.pop();
+              functions.pop();
             }
           }
 
@@ -97,7 +96,7 @@ std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens
 
           stack.pop();
 
-          if(!stack.empty() && stack.top()->IsType<FunctionTokenHelper>())
+          if(!stack.empty() && stack.top()->IsType<FunctionToken>())
           {
             queue.push(stack.top());
             stack.pop();
@@ -107,9 +106,9 @@ std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens
         }
         case ',':
         {
-          if(!functionHelpers.empty())
+          if(!functions.empty())
           {
-            functionHelpers.top()->IncrementArgumentCount();
+            functions.top()->m_ArgumentCount++;
           }
 
           while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
@@ -151,17 +150,17 @@ std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens
 }
 
 ExpressionPostfixParser::ExpressionPostfixParser()
-    : m_FunctionHelperCache()
+    : m_FunctionCache()
 {}
 
 ExpressionPostfixParser::ExpressionPostfixParser(const ExpressionPostfixParser& other)
-    : m_FunctionHelperCache()
+    : m_FunctionCache()
 {
   static_cast<void>(other);
 }
 
 ExpressionPostfixParser::ExpressionPostfixParser(ExpressionPostfixParser&& other)
-    : m_FunctionHelperCache()
+    : m_FunctionCache()
 {
   static_cast<void>(other);
 }

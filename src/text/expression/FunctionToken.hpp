@@ -7,8 +7,14 @@
 #include <string>
 #include <functional>
 
+class ExpressionPostfixParser;
+class ExpressionEvaluator;
+
 class FunctionToken : public IFunctionToken, public TokenBase<std::function<IValueToken*(const std::vector<IValueToken*>&)>>
 {
+  friend class ExpressionPostfixParser;
+  friend class ExpressionEvaluator;
+
   public:
   using CallbackType = TokenBase<std::function<IValueToken*(const std::vector<IValueToken*>&)>>::ObjectType;
 
@@ -42,6 +48,9 @@ class FunctionToken : public IFunctionToken, public TokenBase<std::function<IVal
   std::string m_Identifier;
   std::size_t m_MinArgumentCount;
   std::size_t m_MaxArgumentCount;
+
+  std::size_t m_ArgumentCount;
+  int m_BracketBalance;
 };
 
 #endif // __FUNCTIONTOKEN_HPP__
