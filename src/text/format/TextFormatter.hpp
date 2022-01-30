@@ -18,26 +18,17 @@ class TextFormatter : protected Parser
   void SetQualifier(char value);
 
   std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& GetMacros();
-
   void SetMacros(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& value);
-
-  void SetMacros(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>&& value);
 
   void SetOnMissingIdentifier(const std::function<std::string(const std::string&, const std::vector<std::string>&)>& value);
 
   TextFormatter(char qualifier, const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros);
-
-  TextFormatter(char qualifier, const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>&& macros);
-
-  TextFormatter(char qualifier);
-
   TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros);
-
-  TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>&& macros);
-
-  TextFormatter();
-
+  TextFormatter(char qualifier);
   ~TextFormatter() override = default;
+  TextFormatter();
+  TextFormatter(const TextFormatter& other);
+  TextFormatter(TextFormatter&& other);
 
   private:
   char m_Qualifier;

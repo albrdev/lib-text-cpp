@@ -1,6 +1,6 @@
 #include "TextFormatter.hpp"
 #include <cctype>
-#include <exception>
+#include "../SyntaxException.hpp"
 
 std::string TextFormatter::ParseValue()
 {
@@ -41,7 +41,7 @@ std::string TextFormatter::ParseExpression()
   ParseIdentifier(identifier);
   if(identifier.empty())
   {
-    throw "Invalid identifier";
+    throw SyntaxException("Empty identifier", GetIndex());
   }
 
   std::vector<std::string> args;
@@ -56,7 +56,7 @@ std::string TextFormatter::ParseExpression()
     Next(Parser::IsWhitespace);
     if(GetCurrent() != '}')
     {
-      throw "Unterminated macro";
+      throw SyntaxException("Unterminated macro", GetIndex());
     }
 
     Next();
@@ -71,7 +71,7 @@ std::string TextFormatter::ParseExpression()
     }
     else
     {
-      throw "Unkown identifier";
+      throw SyntaxException("Unkown identifier", GetIndex() - identifier.length());
     }
   }
 
@@ -118,7 +118,6 @@ void TextFormatter::SetQualifier(char value)
 std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& TextFormatter::GetMacros() { return m_Macros; }
 
 void TextFormatter::SetMacros(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& value) { m_Macros = value; }
-void TextFormatter::SetMacros(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>&& value) { m_Macros = value; }
 
 void TextFormatter::SetOnMissingIdentifier(const std::function<std::string(const std::string&, const std::vector<std::string>&)>& value)
 {
@@ -133,13 +132,11 @@ TextFormatter::TextFormatter(char qualifier, const std::unordered_map<std::strin
   SetQualifier(qualifier);
 }
 
-TextFormatter::TextFormatter(char qualifier, const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>&& macros)
+TextFormatter::TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros)
     : Parser()
-    , m_Qualifier()
+    , m_Qualifier(TextFormatter::DefaultQualifier)
     , m_Macros(macros)
-{
-  SetQualifier(qualifier);
-}
+{}
 
 TextFormatter::TextFormatter(char qualifier)
     : Parser()
@@ -149,20 +146,20 @@ TextFormatter::TextFormatter(char qualifier)
   SetQualifier(qualifier);
 }
 
-TextFormatter::TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros)
-    : Parser()
-    , m_Qualifier(TextFormatter::DefaultQualifier)
-    , m_Macros(macros)
-{}
-
-TextFormatter::TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>&& macros)
-    : Parser()
-    , m_Qualifier(TextFormatter::DefaultQualifier)
-    , m_Macros(macros)
-{}
-
 TextFormatter::TextFormatter()
     : Parser()
     , m_Qualifier(TextFormatter::DefaultQualifier)
     , m_Macros()
+{}
+
+TextFormatter::TextFormatter(const TextFormatter& other)
+    : Parser(other)
+    , m_Qualifier(other.m_Qualifier)
+    , m_Macros(other.m_Macros)
+{}
+
+TextFormatter::TextFormatter(TextFormatter&& other)
+    : Parser(std::move(other))
+    , m_Qualifier(std::move(other.m_Qualifier))
+    , m_Macros(std::move(other.m_Macros))
 {}
