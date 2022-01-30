@@ -9,6 +9,7 @@
 #include <exception>
 #include <mpreal.h>
 #include "ExpressionParser.hpp"
+#include "../SyntaxException.hpp"
 
 using UnaryOperator  = UnaryOperatorToken;
 using BinaryOperator = BinaryOperatorToken;

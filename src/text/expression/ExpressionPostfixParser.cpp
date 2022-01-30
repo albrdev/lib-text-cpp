@@ -1,7 +1,7 @@
 #include "ExpressionPostfixParser.hpp"
 #include "IOperatorToken.hpp"
 #include "GenericToken.hpp"
-#include "SyntaxException.hpp"
+#include "../SyntaxException.hpp"
 
 std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens)
 {

@@ -7,6 +7,5 @@
 #include "UnaryOperatorToken.hpp"
 #include "BinaryOperatorToken.hpp"
 #include "FunctionToken.hpp"
-#include "SyntaxException.hpp"
 
 #endif // __TOKEN_HPP__

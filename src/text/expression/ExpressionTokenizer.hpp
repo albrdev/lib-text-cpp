@@ -14,7 +14,6 @@
 #include "IUnaryOperatorToken.hpp"
 #include "IBinaryOperatorToken.hpp"
 #include "IFunctionToken.hpp"
-#include "SyntaxException.hpp"
 
 class ExpressionTokenizer : public Parser
 {

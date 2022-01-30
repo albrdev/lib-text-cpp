@@ -3,7 +3,7 @@
 #include "IUnaryOperatorToken.hpp"
 #include "IBinaryOperatorToken.hpp"
 #include "FunctionToken.hpp"
-#include "SyntaxException.hpp"
+#include "../SyntaxException.hpp"
 
 IValueToken* ExpressionEvaluator::Execute(std::queue<IToken*> postfix)
 {

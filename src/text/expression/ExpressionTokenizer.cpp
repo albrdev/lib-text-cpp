@@ -1,5 +1,6 @@
 #include "ExpressionTokenizer.hpp"
 #include "GenericToken.hpp"
+#include "../SyntaxException.hpp"
 
 std::queue<IToken*> ExpressionTokenizer::Execute(const std::string& expression,
                                                  const std::unordered_map<char, IUnaryOperatorToken*>* unaryOperators,
