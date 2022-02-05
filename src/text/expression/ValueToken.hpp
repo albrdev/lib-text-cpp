@@ -18,7 +18,7 @@ template<class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
 
 template<class... Ts>
-using ValueType = std::variant<std::nullptr_t, std::string, Ts...>;
+using ValueType = std::variant<Ts...>;
 
 template<class... Ts>
 class ValueToken : public virtual IValueToken, public TokenBase<ValueType<Ts...>>

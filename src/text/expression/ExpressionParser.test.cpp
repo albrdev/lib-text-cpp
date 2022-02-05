@@ -16,12 +16,12 @@ using BinaryOperator = BinaryOperatorToken;
 using Function       = FunctionToken;
 
 using ArithmeticType     = double;
-using ArithmeticValue    = ValueToken<std::uint64_t, ArithmeticType>;
-using ArithmeticVariable = VariableToken<std::uint64_t, ArithmeticType>;
+using ArithmeticValue    = ValueToken<std::nullptr_t, std::string, std::uint64_t, ArithmeticType>;
+using ArithmeticVariable = VariableToken<std::nullptr_t, std::string, std::uint64_t, ArithmeticType>;
 
 using BitwiseType     = std::uint64_t;
-using BitwiseValue    = ValueToken<BitwiseType>;
-using BitwiseVariable = VariableToken<BitwiseType>;
+using BitwiseValue    = ValueToken<std::nullptr_t, std::string, BitwiseType>;
+using BitwiseVariable = VariableToken<std::nullptr_t, std::string, BitwiseType>;
 
 static ArithmeticValue* arithmeticNumberConverter(const std::string& value)
 {
