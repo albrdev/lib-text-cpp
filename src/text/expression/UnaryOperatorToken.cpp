@@ -24,7 +24,9 @@ UnaryOperatorToken::UnaryOperatorToken()
 {}
 
 UnaryOperatorToken::UnaryOperatorToken(const UnaryOperatorToken& other)
-    : IUnaryOperatorToken()
+    : IToken()
+    , IOperatorToken()
+    , IUnaryOperatorToken()
     , TokenBase<UnaryOperatorToken::CallbackType>(other)
     , m_Identifier(other.m_Identifier)
     , m_Precedence(other.m_Precedence)

@@ -11,28 +11,34 @@ BinaryOperatorToken::BinaryOperatorToken(const BinaryOperatorToken::CallbackType
                                          const std::string& identifier,
                                          int precedence,
                                          Associativity associativity)
-    : TokenBase<BinaryOperatorToken::CallbackType>(callback)
+    : IBinaryOperatorToken()
+    , TokenBase<BinaryOperatorToken::CallbackType>(callback)
     , m_Identifier(identifier)
     , m_Precedence(precedence)
     , m_Associativity(associativity)
 {}
 
 BinaryOperatorToken::BinaryOperatorToken()
-    : TokenBase<BinaryOperatorToken::CallbackType>()
+    : IBinaryOperatorToken()
+    , TokenBase<BinaryOperatorToken::CallbackType>()
     , m_Identifier()
     , m_Precedence(0)
     , m_Associativity(Associativity::Any)
 {}
 
 BinaryOperatorToken::BinaryOperatorToken(const BinaryOperatorToken& other)
-    : TokenBase<BinaryOperatorToken::CallbackType>(other)
+    : IToken()
+    , IOperatorToken()
+    , IBinaryOperatorToken()
+    , TokenBase<BinaryOperatorToken::CallbackType>(other)
     , m_Identifier(other.m_Identifier)
     , m_Precedence(other.m_Precedence)
     , m_Associativity(other.m_Associativity)
 {}
 
 BinaryOperatorToken::BinaryOperatorToken(BinaryOperatorToken&& other)
-    : TokenBase<BinaryOperatorToken::CallbackType>(std::move(other))
+    : IBinaryOperatorToken()
+    , TokenBase<BinaryOperatorToken::CallbackType>(std::move(other))
     , m_Identifier(std::move(other.m_Identifier))
     , m_Precedence(std::move(other.m_Precedence))
     , m_Associativity(std::move(other.m_Associativity))

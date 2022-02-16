@@ -38,7 +38,8 @@ FunctionToken::FunctionToken()
 {}
 
 FunctionToken::FunctionToken(const FunctionToken& other)
-    : IFunctionToken()
+    : IToken()
+    , IFunctionToken()
     , TokenBase<FunctionToken::CallbackType>(other)
     , m_Identifier(other.m_Identifier)
     , m_MinArgumentCount(other.m_MinArgumentCount)
