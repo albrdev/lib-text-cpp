@@ -91,7 +91,8 @@ class ValueToken : public virtual IValueToken, public TokenBase<ValueType<Ts...>
   {}
 
   ValueToken(const ValueToken<Ts...>& other)
-      : IValueToken()
+      : IToken()
+      , IValueToken()
       , TokenBase<ValueType<Ts...>>(other)
       , m_IsInitialized(other.m_IsInitialized)
   {}
