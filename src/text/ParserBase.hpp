@@ -1,6 +1,7 @@
 #ifndef __PARSERBASE_HPP__
 #define __PARSERBASE_HPP__
 
+#include <cstdio>
 #include <string>
 #include <functional>
 #include <regex>
@@ -10,7 +11,7 @@ class ParserBase
 {
   public:
   static constexpr std::size_t NoPos = std::string::npos;
-  static constexpr char Invalid      = std::numeric_limits<char>::min();
+  static constexpr char Invalid      = static_cast<char>(EOF);
 
   bool GetState() const;
   char GetCurrent() const;
