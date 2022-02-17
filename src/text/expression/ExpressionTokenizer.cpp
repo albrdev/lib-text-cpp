@@ -37,7 +37,7 @@ std::queue<IToken*> ExpressionTokenizer::Execute(const std::string& expression,
   {
     Next(Parser::IsWhitespace);
 
-    if(!GetState() || GetCurrent() == m_CommentIdentifier)
+    if(!GetState() || m_TerminatorCharacters.find(GetCurrent()) != std::string::npos)
     {
       break;
     }
@@ -172,8 +172,8 @@ void ExpressionTokenizer::SetOnParseStringCallback(const std::function<IValueTok
 void ExpressionTokenizer::SetOnUnknownIdentifierCallback(const std::function<IValueToken*(const std::string&)>& value) { m_OnParseUnknownIdentifier = value; }
 void ExpressionTokenizer::SetJuxtapositionOperator(IBinaryOperatorToken* value) { m_pJuxtapositionOperator = value; }
 
-const char& ExpressionTokenizer::GetCommentIdentifier() const { return m_CommentIdentifier; }
-void ExpressionTokenizer::SetCommentIdentifier(char value) { m_CommentIdentifier = value; }
+const std::string& ExpressionTokenizer::GetTerminatorCharacters() const { return m_TerminatorCharacters; }
+void ExpressionTokenizer::SetTerminatorCharacters(const std::string& value) { m_TerminatorCharacters = value; }
 
 ExpressionTokenizer::ExpressionTokenizer()
     : Parser()
@@ -181,7 +181,7 @@ ExpressionTokenizer::ExpressionTokenizer()
     , m_OnParseStringCallback()
     , m_OnParseUnknownIdentifier()
     , m_pJuxtapositionOperator()
-    , m_CommentIdentifier(ExpressionTokenizer::DefaultCommentIdentifier)
+    , m_TerminatorCharacters(ExpressionTokenizer::DefaultTerminatorCharacters)
     , m_TokenCache()
 {}
 
@@ -191,7 +191,7 @@ ExpressionTokenizer::ExpressionTokenizer(const ExpressionTokenizer& other)
     , m_OnParseStringCallback(other.m_OnParseStringCallback)
     , m_OnParseUnknownIdentifier(other.m_OnParseUnknownIdentifier)
     , m_pJuxtapositionOperator(other.m_pJuxtapositionOperator)
-    , m_CommentIdentifier(other.m_CommentIdentifier)
+    , m_TerminatorCharacters(other.m_TerminatorCharacters)
     , m_TokenCache()
 {}
 
@@ -201,6 +201,6 @@ ExpressionTokenizer::ExpressionTokenizer(ExpressionTokenizer&& other)
     , m_OnParseStringCallback(std::move(other.m_OnParseStringCallback))
     , m_OnParseUnknownIdentifier(std::move(other.m_OnParseUnknownIdentifier))
     , m_pJuxtapositionOperator(std::move(other.m_pJuxtapositionOperator))
-    , m_CommentIdentifier(std::move(other.m_CommentIdentifier))
+    , m_TerminatorCharacters(std::move(other.m_TerminatorCharacters))
     , m_TokenCache(std::move(other.m_TokenCache))
 {}

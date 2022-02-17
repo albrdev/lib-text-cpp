@@ -18,7 +18,7 @@
 class ExpressionTokenizer : public Parser
 {
   public:
-  constexpr static char DefaultCommentIdentifier = '#';
+  constexpr static char DefaultTerminatorCharacters[] = ";#";
 
   std::queue<IToken*> Execute(const std::string& expression,
                               const std::unordered_map<char, IUnaryOperatorToken*>* unaryOperators,
@@ -31,8 +31,8 @@ class ExpressionTokenizer : public Parser
   void SetOnUnknownIdentifierCallback(const std::function<IValueToken*(const std::string&)>& value);
   void SetJuxtapositionOperator(IBinaryOperatorToken* value);
 
-  const char& GetCommentIdentifier() const;
-  void SetCommentIdentifier(char value);
+  const std::string& GetTerminatorCharacters() const;
+  void SetTerminatorCharacters(const std::string& value);
 
   virtual ~ExpressionTokenizer() override = default;
   ExpressionTokenizer();
@@ -46,7 +46,7 @@ class ExpressionTokenizer : public Parser
   std::function<IValueToken*(const std::string&)> m_OnParseStringCallback;
   std::function<IValueToken*(const std::string&)> m_OnParseUnknownIdentifier;
   IBinaryOperatorToken* m_pJuxtapositionOperator;
-  char m_CommentIdentifier;
+  std::string m_TerminatorCharacters;
 
   std::vector<std::unique_ptr<IToken>> m_TokenCache;
 };
