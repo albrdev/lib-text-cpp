@@ -1,6 +1,7 @@
 DIR_BUILD	:= build
 
 CMD_MKDIR	:= mkdir -p
+CMD_RM := rm
 
 .PHONY: all
 all: build
@@ -13,6 +14,10 @@ build: generate
 generate:
 	mkdir -p ./$(DIR_BUILD)
 	cmake -B ./$(DIR_BUILD)
+
+.PHONY: clean
+clean:
+	$(CMD_RM) --force --recursive ./$(DIR_BUILD)/*
 
 .PHONY: unittest
 unittest:
