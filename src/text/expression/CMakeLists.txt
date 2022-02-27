@@ -22,6 +22,7 @@ target_sources(${LIBRARY_TEXT}
     ExpressionTokenizer.hpp
     ExpressionPostfixParser.hpp
     ExpressionEvaluator.hpp
+    ExpressionParserBase.hpp
     ExpressionParser.hpp
 
   PRIVATE
@@ -32,6 +33,7 @@ target_sources(${LIBRARY_TEXT}
     ExpressionTokenizer.cpp
     ExpressionPostfixParser.cpp
     ExpressionEvaluator.cpp
+    ExpressionParserBase.cpp
     ExpressionParser.cpp
 )
 
