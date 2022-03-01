@@ -8,9 +8,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 #set(CMAKE_CXX_COMPILER "g++")
 
-# Main
 set(LIBRARY_TEXT text)
 set(UNITTEST_TEXT text-test)
+
 project(lib-text VERSION 1.0.0)
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
@@ -29,7 +29,6 @@ target_link_libraries(${UNITTEST_TEXT} gtest_main gmock_main)
 # Traverse directories
 add_subdirectory(src)
 
-# Unit test
 set(PROJECT_TEST unit_testsuite-text)
 set(EXECUTABLE_TEST unit_testsuite-text)
 
