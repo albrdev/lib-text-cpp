@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include <functional>
-#include "text/parser/Parser.hpp"
+#include "text/parse/Parser.hpp"
 
 namespace text::format
 {
