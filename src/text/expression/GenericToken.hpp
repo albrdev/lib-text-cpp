@@ -1,56 +1,59 @@
-#ifndef __GENERICTOKEN_HPP__
-#define __GENERICTOKEN_HPP__
+#ifndef __TEXT_EXPRESSION_GENERICTOKEN_HPP__
+#define __TEXT_EXPRESSION_GENERICTOKEN_HPP__
 
 #include "TokenBase.hpp"
 #include <string>
 #include <sstream>
 
-template<class T>
-class GenericToken : public TokenBase<T>
+namespace text::expression
 {
-  public:
-  virtual std::string ToString() const override
+  template<class T>
+  class GenericToken : public TokenBase<T>
   {
-    std::ostringstream oss;
-    oss << this->GetObject();
-    return oss.str();
-  }
+    public:
+    virtual std::string ToString() const override
+    {
+      std::ostringstream oss;
+      oss << this->GetObject();
+      return oss.str();
+    }
 
-  GenericToken<T>& operator=(const T& value)
-  {
-    TokenBase<T>::operator=(value);
-    return *this;
-  }
+    GenericToken<T>& operator=(const T& value)
+    {
+      TokenBase<T>::operator=(value);
+      return *this;
+    }
 
-  GenericToken(const T& value)
-      : TokenBase<T>(value)
-  {}
+    GenericToken(const T& value)
+        : TokenBase<T>(value)
+    {}
 
-  virtual ~GenericToken() override = default;
+    virtual ~GenericToken() override = default;
 
-  GenericToken()
-      : TokenBase<T>()
-  {}
+    GenericToken()
+        : TokenBase<T>()
+    {}
 
-  GenericToken(const GenericToken<T>& other)
-      : TokenBase<T>(other)
-  {}
+    GenericToken(const GenericToken<T>& other)
+        : TokenBase<T>(other)
+    {}
 
-  GenericToken(GenericToken<T>&& other)
-      : TokenBase<T>(std::move(other))
-  {}
+    GenericToken(GenericToken<T>&& other)
+        : TokenBase<T>(std::move(other))
+    {}
 
-  GenericToken<T>& operator=(const GenericToken<T>& other)
-  {
-    TokenBase<T>::operator=(other);
-    return *this;
-  }
+    GenericToken<T>& operator=(const GenericToken<T>& other)
+    {
+      TokenBase<T>::operator=(other);
+      return *this;
+    }
 
-  GenericToken<T>& operator=(GenericToken<T>&& other)
-  {
-    TokenBase<T>::operator=(std::move(other));
-    return *this;
-  }
-};
+    GenericToken<T>& operator=(GenericToken<T>&& other)
+    {
+      TokenBase<T>::operator=(std::move(other));
+      return *this;
+    }
+  };
+} // namespace text::expression
 
-#endif // __GENERICTOKEN_HPP__
+#endif // __TEXT_EXPRESSION_GENERICTOKEN_HPP__

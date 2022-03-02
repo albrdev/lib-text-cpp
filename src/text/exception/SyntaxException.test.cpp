@@ -2,6 +2,7 @@
 #include "SyntaxException.hpp"
 
 using namespace ::testing;
+using namespace text::exception;
 
 namespace UnitTest
 {

@@ -1,166 +1,169 @@
 #include "ExpressionPostfixParser.hpp"
 #include "IOperatorToken.hpp"
 #include "GenericToken.hpp"
-#include "../SyntaxException.hpp"
+#include "text/exception/SyntaxException.hpp"
 
-std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens)
+namespace text::expression
 {
-  using MiscType = GenericToken<char>;
-
-  m_FunctionCache.clear();
-
-  const IOperatorToken* anyOperator = nullptr;
-  const FunctionToken* function     = nullptr;
-  const MiscType* misc              = nullptr;
-
-  std::queue<IToken*> queue;
-  std::stack<IToken*> stack;
-  std::stack<FunctionToken*> functions;
-
-  const IToken* previous = nullptr;
-  while(!tokens.empty())
+  std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens)
   {
-    const auto current = tokens.front();
-    if(current->IsType<IValueToken>())
+    using MiscType = GenericToken<char>;
+
+    m_FunctionCache.clear();
+
+    const IOperatorToken* anyOperator = nullptr;
+    const FunctionToken* function     = nullptr;
+    const MiscType* misc              = nullptr;
+
+    std::queue<IToken*> queue;
+    std::stack<IToken*> stack;
+    std::stack<FunctionToken*> functions;
+
+    const IToken* previous = nullptr;
+    while(!tokens.empty())
     {
-      queue.push(current);
-    }
-    else if((anyOperator = current->AsPointer<IOperatorToken>()) != nullptr)
-    {
-      IOperatorToken* tmpOperator;
-      while(!stack.empty() && (tmpOperator = stack.top()->AsPointer<IOperatorToken>()) != nullptr)
+      const auto current = tokens.front();
+      if(current->IsType<IValueToken>())
       {
-        if(((anyOperator->GetAssociativity() & Associativity::Left) != 0 && anyOperator->GetPrecedence() <= tmpOperator->GetPrecedence()) ||
-           anyOperator->GetPrecedence() < tmpOperator->GetPrecedence())
-        {
-          queue.push(stack.top());
-          stack.pop();
-        }
-        else
-        {
-          break;
-        }
+        queue.push(current);
       }
-
-      stack.push(current);
-    }
-    else if((function = current->AsPointer<FunctionToken>()) != nullptr)
-    {
-      auto functionClone = std::make_unique<FunctionToken>(*function);
-      m_FunctionCache.push_back(std::move(functionClone));
-      stack.push(m_FunctionCache.back().get());
-      functions.push(m_FunctionCache.back().get());
-    }
-    else if((misc = current->AsPointer<MiscType>()) != nullptr)
-    {
-      switch(misc->GetObject())
+      else if((anyOperator = current->AsPointer<IOperatorToken>()) != nullptr)
       {
-        case '(':
+        IOperatorToken* tmpOperator;
+        while(!stack.empty() && (tmpOperator = stack.top()->AsPointer<IOperatorToken>()) != nullptr)
         {
-          if(!functions.empty())
+          if(((anyOperator->GetAssociativity() & Associativity::Left) != 0 && anyOperator->GetPrecedence() <= tmpOperator->GetPrecedence()) ||
+             anyOperator->GetPrecedence() < tmpOperator->GetPrecedence())
           {
-            functions.top()->m_BracketBalance++;
+            queue.push(stack.top());
+            stack.pop();
           }
-
-          stack.push(current);
-          break;
-        }
-        case ')':
-        {
-          if(!functions.empty())
+          else
           {
-            functions.top()->m_BracketBalance--;
+            break;
+          }
+        }
 
-            if(functions.top()->m_BracketBalance == 0)
+        stack.push(current);
+      }
+      else if((function = current->AsPointer<FunctionToken>()) != nullptr)
+      {
+        auto functionClone = std::make_unique<FunctionToken>(*function);
+        m_FunctionCache.push_back(std::move(functionClone));
+        stack.push(m_FunctionCache.back().get());
+        functions.push(m_FunctionCache.back().get());
+      }
+      else if((misc = current->AsPointer<MiscType>()) != nullptr)
+      {
+        switch(misc->GetObject())
+        {
+          case '(':
+          {
+            if(!functions.empty())
             {
-              if(previous != nullptr && ((misc = previous->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
-              {
-                functions.top()->m_ArgumentCount++;
-              }
-
-              functions.pop();
+              functions.top()->m_BracketBalance++;
             }
-          }
 
-          misc = nullptr;
-          while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
+            stack.push(current);
+            break;
+          }
+          case ')':
           {
-            queue.push(stack.top());
+            if(!functions.empty())
+            {
+              functions.top()->m_BracketBalance--;
+
+              if(functions.top()->m_BracketBalance == 0)
+              {
+                if(previous != nullptr && ((misc = previous->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
+                {
+                  functions.top()->m_ArgumentCount++;
+                }
+
+                functions.pop();
+              }
+            }
+
+            misc = nullptr;
+            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
+            {
+              queue.push(stack.top());
+              stack.pop();
+            }
+
+            if(misc == nullptr || misc->GetObject() != '(')
+            {
+              throw exception::SyntaxException("Missing matching closing bracket");
+            }
+
             stack.pop();
-          }
 
-          if(misc == nullptr || misc->GetObject() != '(')
+            if(!stack.empty() && stack.top()->IsType<FunctionToken>())
+            {
+              queue.push(stack.top());
+              stack.pop();
+            }
+
+            break;
+          }
+          case ',':
           {
-            throw SyntaxException("Missing matching closing bracket");
+            if(!functions.empty())
+            {
+              functions.top()->m_ArgumentCount++;
+            }
+
+            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
+            {
+              queue.push(stack.top());
+              stack.pop();
+            }
+
+            if(misc == nullptr || misc->GetObject() != '(')
+            {
+              throw exception::SyntaxException("Missing matching opening bracket");
+            }
+
+            break;
           }
-
-          stack.pop();
-
-          if(!stack.empty() && stack.top()->IsType<FunctionToken>())
-          {
-            queue.push(stack.top());
-            stack.pop();
-          }
-
-          break;
-        }
-        case ',':
-        {
-          if(!functions.empty())
-          {
-            functions.top()->m_ArgumentCount++;
-          }
-
-          while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
-          {
-            queue.push(stack.top());
-            stack.pop();
-          }
-
-          if(misc == nullptr || misc->GetObject() != '(')
-          {
-            throw SyntaxException("Missing matching opening bracket");
-          }
-
-          break;
         }
       }
-    }
-    else
-    {
-      throw SyntaxException("Unknown token encountered during postfix process: " + current->ToString());
+      else
+      {
+        throw exception::SyntaxException("Unknown token encountered during postfix process: " + current->ToString());
+      }
+
+      previous = current;
+      tokens.pop();
     }
 
-    previous = current;
-    tokens.pop();
+    while(!stack.empty())
+    {
+      if((misc = stack.top()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ')'))
+      {
+        throw exception::SyntaxException("Missing matching closing bracket");
+      }
+
+      queue.push(stack.top());
+      stack.pop();
+    }
+
+    return queue;
   }
 
-  while(!stack.empty())
+  ExpressionPostfixParser::ExpressionPostfixParser()
+      : m_FunctionCache()
+  {}
+
+  ExpressionPostfixParser::ExpressionPostfixParser(const ExpressionPostfixParser& other)
+      : m_FunctionCache()
   {
-    if((misc = stack.top()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ')'))
-    {
-      throw SyntaxException("Missing matching closing bracket");
-    }
-
-    queue.push(stack.top());
-    stack.pop();
+    static_cast<void>(other);
   }
 
-  return queue;
-}
-
-ExpressionPostfixParser::ExpressionPostfixParser()
-    : m_FunctionCache()
-{}
-
-ExpressionPostfixParser::ExpressionPostfixParser(const ExpressionPostfixParser& other)
-    : m_FunctionCache()
-{
-  static_cast<void>(other);
-}
-
-ExpressionPostfixParser::ExpressionPostfixParser(ExpressionPostfixParser&& other)
-    : m_FunctionCache()
-{
-  static_cast<void>(other);
-}
+  ExpressionPostfixParser::ExpressionPostfixParser(ExpressionPostfixParser&& other)
+      : m_FunctionCache()
+  {
+    static_cast<void>(other);
+  }
+} // namespace text::expression

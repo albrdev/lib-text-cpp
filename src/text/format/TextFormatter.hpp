@@ -1,42 +1,45 @@
-#ifndef __TEXTFORMATTER_HPP__
-#define __TEXTFORMATTER_HPP__
+#ifndef __TEXT_FORMAT_TEXTFORMATTER_HPP__
+#define __TEXT_FORMAT_TEXTFORMATTER_HPP__
 
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <functional>
-#include "../Parser.hpp"
+#include "text/parser/Parser.hpp"
 
-class TextFormatter : protected Parser
+namespace text::format
 {
-  public:
-  static const char DefaultQualifier = '$';
+  class TextFormatter : protected parse::Parser
+  {
+    public:
+    static const char DefaultQualifier = '$';
 
-  std::string Format(const std::string& text);
+    std::string Format(const std::string& text);
 
-  char GetQualifier() const;
-  void SetQualifier(char value);
+    char GetQualifier() const;
+    void SetQualifier(char value);
 
-  std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& GetMacros();
-  void SetMacros(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& value);
+    std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& GetMacros();
+    void SetMacros(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& value);
 
-  void SetOnMissingIdentifier(const std::function<std::string(const std::string&, const std::vector<std::string>&)>& value);
+    void SetOnMissingIdentifier(const std::function<std::string(const std::string&, const std::vector<std::string>&)>& value);
 
-  TextFormatter(char qualifier, const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros);
-  TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros);
-  TextFormatter(char qualifier);
-  ~TextFormatter() override = default;
-  TextFormatter();
-  TextFormatter(const TextFormatter& other);
-  TextFormatter(TextFormatter&& other);
+    TextFormatter(char qualifier, const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros);
+    TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros);
+    TextFormatter(char qualifier);
+    ~TextFormatter() override = default;
+    TextFormatter();
+    TextFormatter(const TextFormatter& other);
+    TextFormatter(TextFormatter&& other);
 
-  private:
-  char m_Qualifier;
-  std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>> m_Macros;
-  std::function<std::string(const std::string&, const std::vector<std::string>&)> m_OnMissingIdentifier;
+    private:
+    char m_Qualifier;
+    std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>> m_Macros;
+    std::function<std::string(const std::string&, const std::vector<std::string>&)> m_OnMissingIdentifier;
 
-  std::string ParseValue();
-  std::string ParseExpression();
-};
+    std::string ParseValue();
+    std::string ParseExpression();
+  };
+} // namespace text::format
 
-#endif // __TEXTFORMATTER_HPP__
+#endif // __TEXT_FORMAT_TEXTFORMATTER_HPP__

@@ -1,23 +1,26 @@
-#ifndef __EXPRESSIONEVALUATOR_HPP__
-#define __EXPRESSIONEVALUATOR_HPP__
+#ifndef __TEXT_EXPRESSION_EXPRESSIONEVALUATOR_HPP__
+#define __TEXT_EXPRESSION_EXPRESSIONEVALUATOR_HPP__
 
 #include <vector>
 #include <queue>
 #include <memory>
 #include "IValueToken.hpp"
 
-class ExpressionEvaluator
+namespace text::expression
 {
-  public:
-  IValueToken* Execute(std::queue<IToken*> postfix);
+  class ExpressionEvaluator
+  {
+    public:
+    IValueToken* Execute(std::queue<IToken*> postfix);
 
-  virtual ~ExpressionEvaluator() = default;
-  ExpressionEvaluator();
-  ExpressionEvaluator(const ExpressionEvaluator& other);
-  ExpressionEvaluator(ExpressionEvaluator&& other);
+    virtual ~ExpressionEvaluator() = default;
+    ExpressionEvaluator();
+    ExpressionEvaluator(const ExpressionEvaluator& other);
+    ExpressionEvaluator(ExpressionEvaluator&& other);
 
-  private:
-  std::vector<std::unique_ptr<IValueToken>> m_ResultCache;
-};
+    private:
+    std::vector<std::unique_ptr<IValueToken>> m_ResultCache;
+  };
+} // namespace text::expression
 
-#endif // __EXPRESSIONEVALUATOR_HPP__
+#endif // __TEXT_EXPRESSION_EXPRESSIONEVALUATOR_HPP__

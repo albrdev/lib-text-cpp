@@ -1,21 +1,24 @@
 #include "ExpressionParser.hpp"
 
-IValueToken* ExpressionParser::Evaluate(const std::string& expression)
+namespace text::expression
 {
-  auto postfix = ExpressionParserBase::Parse(expression);
-  auto result  = ExpressionParserBase::Evaluate(postfix);
+  IValueToken* ExpressionParser::Evaluate(const std::string& expression)
+  {
+    auto postfix = ExpressionParserBase::Parse(expression);
+    auto result  = ExpressionParserBase::Evaluate(postfix);
 
-  return result;
-}
+    return result;
+  }
 
-ExpressionParser::ExpressionParser()
-    : ExpressionParserBase()
-{}
+  ExpressionParser::ExpressionParser()
+      : ExpressionParserBase()
+  {}
 
-ExpressionParser::ExpressionParser(const ExpressionParser& other)
-    : ExpressionParserBase(other)
-{}
+  ExpressionParser::ExpressionParser(const ExpressionParser& other)
+      : ExpressionParserBase(other)
+  {}
 
-ExpressionParser::ExpressionParser(ExpressionParser&& other)
-    : ExpressionParserBase(std::move(other))
-{}
+  ExpressionParser::ExpressionParser(ExpressionParser&& other)
+      : ExpressionParserBase(std::move(other))
+  {}
+} // namespace text::expression

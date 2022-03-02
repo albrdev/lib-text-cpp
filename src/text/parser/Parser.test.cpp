@@ -2,6 +2,7 @@
 #include "Parser.hpp"
 
 using namespace ::testing;
+using namespace text::parse;
 
 namespace UnitTest
 {

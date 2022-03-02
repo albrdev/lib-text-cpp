@@ -3,6 +3,9 @@
 #include <cstdlib>
 #include <string>
 
+using namespace ::testing;
+using namespace text::format;
+
 TEST(testTextFormatter, testFormat)
 {
   TextFormatter formatter('$');

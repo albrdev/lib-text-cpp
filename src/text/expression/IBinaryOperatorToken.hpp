@@ -1,24 +1,27 @@
-#ifndef __IBINARYOPERATORTOKEN_HPP__
-#define __IBINARYOPERATORTOKEN_HPP__
+#ifndef __TEXT_EXPRESSION_IBINARYOPERATORTOKEN_HPP__
+#define __TEXT_EXPRESSION_IBINARYOPERATORTOKEN_HPP__
 
 #include <functional>
 #include "IOperatorToken.hpp"
 #include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"
 
-class IBinaryOperatorToken : public virtual IOperatorToken, public IIdentifiable<std::string>
+namespace text::expression
 {
-  public:
-  virtual IValueToken* operator()(IValueToken*, IValueToken*) const = 0;
+  class IBinaryOperatorToken : public virtual IOperatorToken, public IIdentifiable<std::string>
+  {
+    public:
+    virtual IValueToken* operator()(IValueToken*, IValueToken*) const = 0;
 
-  virtual ~IBinaryOperatorToken() override = default;
+    virtual ~IBinaryOperatorToken() override = default;
 
-  protected:
-  IBinaryOperatorToken() = default;
+    protected:
+    IBinaryOperatorToken() = default;
 
-  private:
-  IBinaryOperatorToken(const IBinaryOperatorToken&) = delete;
-  IBinaryOperatorToken& operator=(const IBinaryOperatorToken&) = delete;
-};
+    private:
+    IBinaryOperatorToken(const IBinaryOperatorToken&) = delete;
+    IBinaryOperatorToken& operator=(const IBinaryOperatorToken&) = delete;
+  };
+} // namespace text::expression
 
-#endif // __IBINARYOPERATORTOKEN_HPP__
+#endif // __TEXT_EXPRESSION_IBINARYOPERATORTOKEN_HPP__

@@ -1,5 +1,5 @@
-#ifndef __IFUNCTIONTOKEN_HPP__
-#define __IFUNCTIONTOKEN_HPP__
+#ifndef __TEXT_EXPRESSION_IFUNCTIONTOKEN_HPP__
+#define __TEXT_EXPRESSION_IFUNCTIONTOKEN_HPP__
 
 #include <vector>
 #include <functional>
@@ -7,22 +7,25 @@
 #include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"
 
-class IFunctionToken : public virtual IToken, public IIdentifiable<std::string>
+namespace text::expression
 {
-  public:
-  virtual IValueToken* operator()(const std::vector<IValueToken*>&) const = 0;
+  class IFunctionToken : public virtual IToken, public IIdentifiable<std::string>
+  {
+    public:
+    virtual IValueToken* operator()(const std::vector<IValueToken*>&) const = 0;
 
-  virtual const std::size_t& GetMinArgumentCount() const = 0;
-  virtual const std::size_t& GetMaxArgumentCount() const = 0;
+    virtual const std::size_t& GetMinArgumentCount() const = 0;
+    virtual const std::size_t& GetMaxArgumentCount() const = 0;
 
-  virtual ~IFunctionToken() override = default;
+    virtual ~IFunctionToken() override = default;
 
-  protected:
-  IFunctionToken() = default;
+    protected:
+    IFunctionToken() = default;
 
-  private:
-  IFunctionToken(const IFunctionToken&) = delete;
-  IFunctionToken& operator=(const IFunctionToken&) = delete;
-};
+    private:
+    IFunctionToken(const IFunctionToken&) = delete;
+    IFunctionToken& operator=(const IFunctionToken&) = delete;
+  };
+} // namespace text::expression
 
-#endif // __IFUNCTIONTOKEN_HPP__
+#endif // __TEXT_EXPRESSION_IFUNCTIONTOKEN_HPP__

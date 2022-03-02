@@ -9,7 +9,10 @@
 #include <exception>
 #include <mpreal.h>
 #include "ExpressionParser.hpp"
-#include "../SyntaxException.hpp"
+#include "text/exception/SyntaxException.hpp"
+
+using namespace ::testing;
+using namespace text::expression;
 
 using UnaryOperator  = UnaryOperatorToken;
 using BinaryOperator = BinaryOperatorToken;
@@ -370,7 +373,7 @@ ExpressionParser createInstance()
         ArithmeticVariable* variable = lhs->AsPointer<ArithmeticVariable>();
         if(variable == nullptr)
         {
-          throw SyntaxException("Assignment of non-variable type: " + lhs->ToString() + " (" + lhs->GetTypeInfo().name() + ")");
+          throw text::exception::SyntaxException("Assignment of non-variable type: " + lhs->ToString() + " (" + lhs->GetTypeInfo().name() + ")");
         }
 
         bool isNewVariable = !variable->IsInitialized();
@@ -390,7 +393,7 @@ ExpressionParser createInstance()
         }
         else
         {
-          throw SyntaxException("Assignment from unsupported type: " + rhs->ToString() + " (" + rhs->GetType().name() + ")");
+          throw text::exception::SyntaxException("Assignment from unsupported type: " + rhs->ToString() + " (" + rhs->GetType().name() + ")");
         }
 
         if(isNewVariable)
@@ -665,7 +668,7 @@ ExpressionParser createInstance2()
         BitwiseVariable* variable = lhs->AsPointer<BitwiseVariable>();
         if(variable == nullptr)
         {
-          throw SyntaxException("Assignment of non-variable type: " + lhs->ToString() + " (" + lhs->GetTypeInfo().name() + ")");
+          throw text::exception::SyntaxException("Assignment of non-variable type: " + lhs->ToString() + " (" + lhs->GetTypeInfo().name() + ")");
         }
 
         bool isNewVariable = !variable->IsInitialized();
@@ -677,7 +680,7 @@ ExpressionParser createInstance2()
         }
         else
         {
-          throw SyntaxException("Assignment from unsupported type: " + rhs->ToString() + " (" + rhs->GetType().name() + ")");
+          throw text::exception::SyntaxException("Assignment from unsupported type: " + rhs->ToString() + " (" + rhs->GetType().name() + ")");
         }
 
         if(isNewVariable)
@@ -710,8 +713,6 @@ ExpressionParser createInstance2()
 
   return instance;
 }
-
-using namespace ::testing;
 
 namespace UnitTest
 {
@@ -1042,7 +1043,7 @@ namespace UnitTest
 
     {
       auto expressionParser = createInstance<std::uint64_t, ArithmeticType>();
-      using expected        = SyntaxException;
+      using expected        = text::exception::SyntaxException;
       ASSERT_THROW(expressionParser.Evaluate("random"), expected);
     }
   }

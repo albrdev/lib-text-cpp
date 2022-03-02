@@ -1,22 +1,25 @@
-#ifndef __IVALUETOKEN_HPP__
-#define __IVALUETOKEN_HPP__
+#ifndef __TEXT_EXPRESSION_IVALUETOKEN_HPP__
+#define __TEXT_EXPRESSION_IVALUETOKEN_HPP__
 
 #include <typeinfo>
 #include "IToken.hpp"
 
-class IValueToken : public virtual IToken
+namespace text::expression
 {
-  public:
-  virtual const std::type_info& GetType() const = 0;
+  class IValueToken : public virtual IToken
+  {
+    public:
+    virtual const std::type_info& GetType() const = 0;
 
-  virtual ~IValueToken() override = default;
+    virtual ~IValueToken() override = default;
 
-  protected:
-  IValueToken() = default;
+    protected:
+    IValueToken() = default;
 
-  private:
-  IValueToken(const IValueToken&) = delete;
-  IValueToken& operator=(const IValueToken&) = delete;
-};
+    private:
+    IValueToken(const IValueToken&) = delete;
+    IValueToken& operator=(const IValueToken&) = delete;
+  };
+} // namespace text::expression
 
-#endif // __IVALUETOKEN_HPP__
+#endif // __TEXT_EXPRESSION_IVALUETOKEN_HPP__

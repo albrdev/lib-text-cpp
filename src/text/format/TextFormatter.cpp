@@ -1,165 +1,168 @@
 #include "TextFormatter.hpp"
 #include <cctype>
-#include "../SyntaxException.hpp"
+#include "text/exception/SyntaxException.hpp"
 
-std::string TextFormatter::ParseValue()
+namespace text::format
 {
-  std::string result;
-  if(Parser::IsNumber(GetCurrent()) || (GetCurrent() == '+' || GetCurrent() == '-'))
+  std::string TextFormatter::ParseValue()
   {
-    ParseNumber(result);
-  }
-  if(Parser::IsString(GetCurrent()))
-  {
-    ParseString(result);
-  }
-  else
-  {}
+    std::string result;
+    if(Parser::IsNumber(GetCurrent()) || (GetCurrent() == '+' || GetCurrent() == '-'))
+    {
+      ParseNumber(result);
+    }
+    if(Parser::IsString(GetCurrent()))
+    {
+      ParseString(result);
+    }
+    else
+    {}
 
-  return result;
-}
-
-std::string TextFormatter::ParseExpression()
-{
-  Next(Parser::IsWhitespace);
-
-  if(GetCurrent() != m_Qualifier)
-  {
-    return ParseValue();
+    return result;
   }
 
-  Next();
-  const bool hasArgs = GetCurrent() == '{';
-  if(hasArgs)
+  std::string TextFormatter::ParseExpression()
   {
+    Next(Parser::IsWhitespace);
+
+    if(GetCurrent() != m_Qualifier)
+    {
+      return ParseValue();
+    }
+
     Next();
-  }
-
-  Next(Parser::IsWhitespace);
-
-  std::string identifier;
-  ParseIdentifier(identifier);
-  if(identifier.empty())
-  {
-    throw SyntaxException("Empty identifier", GetIndex());
-  }
-
-  std::vector<std::string> args;
-  if(hasArgs)
-  {
-    while(GetCurrent() == ',')
+    const bool hasArgs = GetCurrent() == '{';
+    if(hasArgs)
     {
       Next();
-      args.push_back(ParseExpression());
     }
 
     Next(Parser::IsWhitespace);
-    if(GetCurrent() != '}')
+
+    std::string identifier;
+    ParseIdentifier(identifier);
+    if(identifier.empty())
     {
-      throw SyntaxException("Unterminated macro", GetIndex());
+      throw exception::SyntaxException("Empty identifier", GetIndex());
     }
 
-    Next();
-  }
-
-  const auto macro = m_Macros.find(identifier);
-  if(macro == m_Macros.cend())
-  {
-    if(m_OnMissingIdentifier)
+    std::vector<std::string> args;
+    if(hasArgs)
     {
-      return m_OnMissingIdentifier(identifier, args);
-    }
-    else
-    {
-      throw SyntaxException("Unkown identifier", GetIndex() - identifier.length());
-    }
-  }
-
-  return macro->second(args);
-}
-
-std::string TextFormatter::Format(const std::string& text)
-{
-  SetText(text);
-  std::string result;
-  while(GetState())
-  {
-    if(GetCurrent() == m_Qualifier)
-    {
-      std::string qualifiers;
-      Get(qualifiers, [this](char c) { return c == m_Qualifier; });
-      result.append(qualifiers.length() / 2u, m_Qualifier);
-      if((qualifiers.length() % 2u) != 0)
+      while(GetCurrent() == ',')
       {
-        Prev();
-        result.append(ParseExpression());
+        Next();
+        args.push_back(ParseExpression());
       }
-    }
-    else
-    {
-      result += GetCurrent();
+
+      Next(Parser::IsWhitespace);
+      if(GetCurrent() != '}')
+      {
+        throw exception::SyntaxException("Unterminated macro", GetIndex());
+      }
+
       Next();
     }
+
+    const auto macro = m_Macros.find(identifier);
+    if(macro == m_Macros.cend())
+    {
+      if(m_OnMissingIdentifier)
+      {
+        return m_OnMissingIdentifier(identifier, args);
+      }
+      else
+      {
+        throw exception::SyntaxException("Unkown identifier", GetIndex() - identifier.length());
+      }
+    }
+
+    return macro->second(args);
   }
 
-  return result;
-}
-
-char TextFormatter::GetQualifier() const { return m_Qualifier; }
-
-void TextFormatter::SetQualifier(char value)
-{
-  if(std::isgraph(value) != 0)
+  std::string TextFormatter::Format(const std::string& text)
   {
-    m_Qualifier = value;
+    SetText(text);
+    std::string result;
+    while(GetState())
+    {
+      if(GetCurrent() == m_Qualifier)
+      {
+        std::string qualifiers;
+        Get(qualifiers, [this](char c) { return c == m_Qualifier; });
+        result.append(qualifiers.length() / 2u, m_Qualifier);
+        if((qualifiers.length() % 2u) != 0)
+        {
+          Prev();
+          result.append(ParseExpression());
+        }
+      }
+      else
+      {
+        result += GetCurrent();
+        Next();
+      }
+    }
+
+    return result;
   }
-}
 
-std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& TextFormatter::GetMacros() { return m_Macros; }
+  char TextFormatter::GetQualifier() const { return m_Qualifier; }
 
-void TextFormatter::SetMacros(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& value) { m_Macros = value; }
+  void TextFormatter::SetQualifier(char value)
+  {
+    if(std::isgraph(value) != 0)
+    {
+      m_Qualifier = value;
+    }
+  }
 
-void TextFormatter::SetOnMissingIdentifier(const std::function<std::string(const std::string&, const std::vector<std::string>&)>& value)
-{
-  m_OnMissingIdentifier = value;
-}
+  std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& TextFormatter::GetMacros() { return m_Macros; }
 
-TextFormatter::TextFormatter(char qualifier, const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros)
-    : Parser()
-    , m_Qualifier()
-    , m_Macros(macros)
-{
-  SetQualifier(qualifier);
-}
+  void TextFormatter::SetMacros(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& value) { m_Macros = value; }
 
-TextFormatter::TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros)
-    : Parser()
-    , m_Qualifier(TextFormatter::DefaultQualifier)
-    , m_Macros(macros)
-{}
+  void TextFormatter::SetOnMissingIdentifier(const std::function<std::string(const std::string&, const std::vector<std::string>&)>& value)
+  {
+    m_OnMissingIdentifier = value;
+  }
 
-TextFormatter::TextFormatter(char qualifier)
-    : Parser()
-    , m_Qualifier(qualifier)
-    , m_Macros()
-{
-  SetQualifier(qualifier);
-}
+  TextFormatter::TextFormatter(char qualifier, const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros)
+      : parse::Parser()
+      , m_Qualifier()
+      , m_Macros(macros)
+  {
+    SetQualifier(qualifier);
+  }
 
-TextFormatter::TextFormatter()
-    : Parser()
-    , m_Qualifier(TextFormatter::DefaultQualifier)
-    , m_Macros()
-{}
+  TextFormatter::TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros)
+      : parse::Parser()
+      , m_Qualifier(TextFormatter::DefaultQualifier)
+      , m_Macros(macros)
+  {}
 
-TextFormatter::TextFormatter(const TextFormatter& other)
-    : Parser(other)
-    , m_Qualifier(other.m_Qualifier)
-    , m_Macros(other.m_Macros)
-{}
+  TextFormatter::TextFormatter(char qualifier)
+      : parse::Parser()
+      , m_Qualifier(qualifier)
+      , m_Macros()
+  {
+    SetQualifier(qualifier);
+  }
 
-TextFormatter::TextFormatter(TextFormatter&& other)
-    : Parser(std::move(other))
-    , m_Qualifier(std::move(other.m_Qualifier))
-    , m_Macros(std::move(other.m_Macros))
-{}
+  TextFormatter::TextFormatter()
+      : parse::Parser()
+      , m_Qualifier(TextFormatter::DefaultQualifier)
+      , m_Macros()
+  {}
+
+  TextFormatter::TextFormatter(const TextFormatter& other)
+      : parse::Parser(other)
+      , m_Qualifier(other.m_Qualifier)
+      , m_Macros(other.m_Macros)
+  {}
+
+  TextFormatter::TextFormatter(TextFormatter&& other)
+      : parse::Parser(std::move(other))
+      , m_Qualifier(std::move(other.m_Qualifier))
+      , m_Macros(std::move(other.m_Macros))
+  {}
+} // namespace text::format
