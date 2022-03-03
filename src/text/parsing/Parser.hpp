@@ -1,5 +1,5 @@
-#ifndef __TEXT_PARSE_PARSER_HPP__
-#define __TEXT_PARSE_PARSER_HPP__
+#ifndef __TEXT_PARSING__PARSER_HPP__
+#define __TEXT_PARSING__PARSER_HPP__
 
 #include <string>
 #include "ParserBase.hpp"
@@ -41,4 +41,4 @@ namespace Text::Parsing
   };
 } // namespace Text::Parsing
 
-#endif // __TEXT_PARSE_PARSER_HPP__
+#endif // __TEXT_PARSING__PARSER_HPP__

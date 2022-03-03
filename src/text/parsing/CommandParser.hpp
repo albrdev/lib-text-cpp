@@ -1,5 +1,5 @@
-#ifndef __TEXT_PARSE_COMMANDPARSER_HPP__
-#define __TEXT_PARSE_COMMANDPARSER_HPP__
+#ifndef __TEXT_PARSING__COMMANDPARSER_HPP__
+#define __TEXT_PARSING__COMMANDPARSER_HPP__
 
 #include <string>
 #include <vector>
@@ -39,4 +39,4 @@ namespace Text::Parsing
   };
 } // namespace Text::Parsing
 
-#endif // __TEXT_PARSE_COMMANDPARSER_HPP__
+#endif // __TEXT_PARSING__COMMANDPARSER_HPP__

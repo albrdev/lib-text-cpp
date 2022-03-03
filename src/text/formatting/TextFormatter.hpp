@@ -1,11 +1,11 @@
-#ifndef __TEXT_FORMAT_TEXTFORMATTER_HPP__
-#define __TEXT_FORMAT_TEXTFORMATTER_HPP__
+#ifndef __TEXT_FORMATTING__TEXTFORMATTER_HPP__
+#define __TEXT_FORMATTING__TEXTFORMATTER_HPP__
 
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include <functional>
-#include "text/parse/Parser.hpp"
+#include "text/parsing/Parser.hpp"
 
 namespace Text::Formatting
 {
@@ -42,4 +42,4 @@ namespace Text::Formatting
   };
 } // namespace Text::Formatting
 
-#endif // __TEXT_FORMAT_TEXTFORMATTER_HPP__
+#endif // __TEXT_FORMATTING__TEXTFORMATTER_HPP__

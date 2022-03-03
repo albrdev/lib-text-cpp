@@ -13,7 +13,7 @@ target_sources(${UNITTEST_TEXT}
   Common.test.cpp
 )
 
-add_subdirectory(parse)
-add_subdirectory(format)
+add_subdirectory(parsing)
+add_subdirectory(formatting)
 add_subdirectory(expression)
 add_subdirectory(exception)

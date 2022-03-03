@@ -1,5 +1,5 @@
-#ifndef __TEXT_PARSE_PARSERBASE_HPP__
-#define __TEXT_PARSE_PARSERBASE_HPP__
+#ifndef __TEXT_PARSING__PARSERBASE_HPP__
+#define __TEXT_PARSING__PARSERBASE_HPP__
 
 #include <cstdio>
 #include <string>
@@ -58,4 +58,4 @@ namespace Text::Parsing
   };
 } // namespace Text::Parsing
 
-#endif // __TEXT_PARSE_PARSERBASE_HPP__
+#endif // __TEXT_PARSING__PARSERBASE_HPP__
