@@ -24,11 +24,14 @@ set_target_properties(${LIBRARY_TEXT} PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${LIBRARY_TEXT} PUBLIC src ext/lib-common-cpp/src)
 
 add_library(${UNITTEST_TEXT} STATIC)
-target_include_directories(${UNITTEST_TEXT} PUBLIC src ext/lib-common-cpp/src)
-target_link_libraries(${UNITTEST_TEXT} gtest_main gmock_main)
+target_link_libraries(${UNITTEST_TEXT} ${LIBRARY_TEXT} gtest_main gmock_main)
 
 # Traverse directories
 add_subdirectory(src)
+add_subdirectory(ext/lib-common-cpp)
+
+set(LIBRARY_COMMON common)
+target_link_libraries(${LIBRARY_TEXT} ${LIBRARY_COMMON})
 
 set(PROJECT_TEST unit_testsuite-text)
 set(EXECUTABLE_TEST unit_testsuite-text)
@@ -48,6 +51,6 @@ FetchContent_MakeAvailable(googletest)
 
 get_target_property(SOURCES ${UNITTEST_TEXT} SOURCES)
 add_executable(${EXECUTABLE_TEST} main-test.cpp ${SOURCES})
-target_link_libraries(${EXECUTABLE_TEST} ${LIBRARY_TEXT} ${UNITTEST_TEXT})
+target_link_libraries(${EXECUTABLE_TEST} ${UNITTEST_TEXT})
 enable_testing()
 add_test(NAME ${PROJECT_TEST} COMMAND ${EXECUTABLE_TEST})
