@@ -5,7 +5,7 @@
 #include <string>
 #include <sstream>
 
-namespace text::expression
+namespace Text::Expression
 {
   template<class T>
   class GenericToken : public TokenBase<T>
@@ -54,6 +54,6 @@ namespace text::expression
       return *this;
     }
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_GENERICTOKEN_HPP__

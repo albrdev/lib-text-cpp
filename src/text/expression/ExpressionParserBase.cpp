@@ -1,6 +1,6 @@
 #include "ExpressionParserBase.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   std::queue<IToken*> ExpressionParserBase::Parse(const std::string& expression)
   {
@@ -37,4 +37,4 @@ namespace text::expression
       , ExpressionEvaluator(std::move(other))
       , m_pVariables(std::move(other.m_pVariables))
   {}
-} // namespace text::expression
+} // namespace Text::Expression

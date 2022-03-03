@@ -7,7 +7,7 @@
 #include <functional>
 #include "Parser.hpp"
 
-namespace text::parse
+namespace Text::Parsing
 {
   class CommandParser : public Parser
   {
@@ -37,6 +37,6 @@ namespace text::parse
 
     const CommandParser::CallbackCollection* m_pCallbacks;
   };
-} // namespace text::parse
+} // namespace Text::Parsing
 
 #endif // __TEXT_PARSE_COMMANDPARSER_HPP__

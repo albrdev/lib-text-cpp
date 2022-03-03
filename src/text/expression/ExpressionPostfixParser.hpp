@@ -8,7 +8,7 @@
 #include "IValueToken.hpp"
 #include "FunctionToken.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   class ExpressionPostfixParser
   {
@@ -23,6 +23,6 @@ namespace text::expression
     private:
     std::vector<std::unique_ptr<FunctionToken>> m_FunctionCache;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_EXPRESSIONPOSTFIXPARSER_HPP__

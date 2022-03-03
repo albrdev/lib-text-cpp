@@ -15,7 +15,7 @@
 #include "ExpressionEvaluator.hpp"
 #include "Token.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   class ExpressionParserBase : public ExpressionTokenizer, public ExpressionPostfixParser, public ExpressionEvaluator
   {
@@ -43,6 +43,6 @@ namespace text::expression
     const std::unordered_map<std::string, IVariableToken*>* m_pVariables;
     const std::unordered_map<std::string, IFunctionToken*>* m_pFunctions;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_EXPRESSIONPARSERBASE_HPP__

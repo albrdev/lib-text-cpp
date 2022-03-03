@@ -3,7 +3,7 @@
 
 #include "IToken.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   enum class Associativity : std::uint32_t
   {
@@ -30,6 +30,6 @@ namespace text::expression
     IOperatorToken(const IOperatorToken&) = delete;
     IOperatorToken& operator=(const IOperatorToken&) = delete;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_IOPERATORTOKEN_HPP__

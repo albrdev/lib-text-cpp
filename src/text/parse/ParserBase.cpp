@@ -1,7 +1,7 @@
 #include "ParserBase.hpp"
 #include <algorithm>
 
-namespace text::parse
+namespace Text::Parsing
 {
   bool ParserBase::GetState() const { return m_Index < m_Text.length(); }
 
@@ -170,4 +170,4 @@ namespace text::parse
       : m_Text(std::move(other.m_Text))
       , m_Index(std::move(other.m_Index))
   {}
-} // namespace text::parse
+} // namespace Text::Parsing

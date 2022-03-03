@@ -2,7 +2,7 @@
 #include <cstddef>
 #include <limits>
 
-namespace text::expression
+namespace Text::Expression
 {
   const std::size_t& FunctionToken::GetArgumentCountMaxLimit() { return s_ArgumentsMaxLimit; }
   void FunctionToken::SetArgumentsMaxLimit(std::size_t value) { s_ArgumentsMaxLimit = value; }
@@ -85,4 +85,4 @@ namespace text::expression
   }
 
   std::size_t FunctionToken::s_ArgumentsMaxLimit = std::numeric_limits<std::size_t>::max();
-} // namespace text::expression
+} // namespace Text::Expression

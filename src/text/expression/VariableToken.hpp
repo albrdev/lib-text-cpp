@@ -5,7 +5,7 @@
 #include "ValueToken.hpp"
 #include <string>
 
-namespace text::expression
+namespace Text::Expression
 {
   template<class... Ts>
   class VariableToken : public IVariableToken, public ValueToken<Ts...>
@@ -75,6 +75,6 @@ namespace text::expression
     private:
     std::string m_Identifier;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_VARIABLETOKEN_HPP__

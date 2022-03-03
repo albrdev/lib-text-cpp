@@ -15,9 +15,9 @@
 #include "IBinaryOperatorToken.hpp"
 #include "IFunctionToken.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
-  class ExpressionTokenizer : public parse::Parser
+  class ExpressionTokenizer : public Parsing::Parser
   {
     public:
     constexpr static char DefaultTerminatorCharacters[] = ";#";
@@ -52,6 +52,6 @@ namespace text::expression
 
     std::vector<std::unique_ptr<IToken>> m_TokenCache;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_EXPRESSIONTOKENIZER_HPP__

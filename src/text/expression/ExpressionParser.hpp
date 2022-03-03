@@ -5,7 +5,7 @@
 #include "IValueToken.hpp"
 #include "ExpressionParserBase.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   class ExpressionParser : public ExpressionParserBase
   {
@@ -21,6 +21,6 @@ namespace text::expression
     using ExpressionParserBase::Parse;
     using ExpressionParserBase::Evaluate;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_EXPRESSIONPARSER_HPP__

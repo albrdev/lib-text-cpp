@@ -1,6 +1,6 @@
 #include "UnaryOperatorToken.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   IValueToken* UnaryOperatorToken::operator()(IValueToken* rhs) const { return this->GetObject()(rhs); }
   const char& UnaryOperatorToken::GetIdentifier() const { return m_Identifier; }
@@ -62,4 +62,4 @@ namespace text::expression
 
     return *this;
   }
-} // namespace text::expression
+} // namespace Text::Expression

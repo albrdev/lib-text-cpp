@@ -7,9 +7,9 @@
 #include <functional>
 #include "text/parse/Parser.hpp"
 
-namespace text::format
+namespace Text::Formatting
 {
-  class TextFormatter : protected parse::Parser
+  class TextFormatter : protected Parsing::Parser
   {
     public:
     static const char DefaultQualifier = '$';
@@ -40,6 +40,6 @@ namespace text::format
     std::string ParseValue();
     std::string ParseExpression();
   };
-} // namespace text::format
+} // namespace Text::Formatting
 
 #endif // __TEXT_FORMAT_TEXTFORMATTER_HPP__

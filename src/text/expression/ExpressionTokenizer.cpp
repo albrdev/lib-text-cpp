@@ -2,7 +2,7 @@
 #include "GenericToken.hpp"
 #include "text/exception/SyntaxException.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   std::queue<IToken*> ExpressionTokenizer::Execute(const std::string& expression,
                                                    const std::unordered_map<char, IUnaryOperatorToken*>* unaryOperators,
@@ -48,7 +48,7 @@ namespace text::expression
         std::string stringValue = ParseNumber();
         if(m_OnParseNumberCallback == nullptr)
         {
-          throw exception::SyntaxException("Unhandled numeric token: " + stringValue, GetIndex() - stringValue.length());
+          throw Exception::SyntaxException("Unhandled numeric token: " + stringValue, GetIndex() - stringValue.length());
         }
 
         auto value = m_OnParseNumberCallback(stringValue);
@@ -60,7 +60,7 @@ namespace text::expression
         std::string stringValue = ParseString();
         if(m_OnParseStringCallback == nullptr)
         {
-          throw exception::SyntaxException("Unhandled string token: " + stringValue, GetIndex() - stringValue.length());
+          throw Exception::SyntaxException("Unhandled string token: " + stringValue, GetIndex() - stringValue.length());
         }
 
         auto value = m_OnParseStringCallback(stringValue);
@@ -76,7 +76,7 @@ namespace text::expression
           const auto iter = unaryOperators->find(GetCurrent());
           if(iter == unaryOperators->cend())
           {
-            throw exception::SyntaxException("Unknown unary operator: " + GetCurrent(), GetIndex());
+            throw Exception::SyntaxException("Unknown unary operator: " + GetCurrent(), GetIndex());
           }
 
           current = iter->second;
@@ -90,14 +90,14 @@ namespace text::expression
           const auto iter = binaryOperators->find(identifier);
           if(iter == binaryOperators->cend())
           {
-            throw exception::SyntaxException("Unknown binary operator: " + identifier, GetIndex() - identifier.length());
+            throw Exception::SyntaxException("Unknown binary operator: " + identifier, GetIndex() - identifier.length());
           }
 
           current = iter->second;
         }
         else
         {
-          throw exception::SyntaxException("Unknown operator: " + GetCurrent(), GetIndex());
+          throw Exception::SyntaxException("Unknown operator: " + GetCurrent(), GetIndex());
         }
       }
       else if(IsIdentifier(GetCurrent()))
@@ -113,7 +113,7 @@ namespace text::expression
           Next(Parser::IsWhitespace);
           if(GetCurrent() != '(')
           {
-            throw exception::SyntaxException("Expected function opening parenthesis: " + functionIter->second->GetIdentifier(),
+            throw Exception::SyntaxException("Expected function opening parenthesis: " + functionIter->second->GetIdentifier(),
                                              GetIndex() - identifier.length());
           }
         }
@@ -125,13 +125,13 @@ namespace text::expression
         {
           if(m_OnParseUnknownIdentifier == nullptr)
           {
-            throw exception::SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
+            throw Exception::SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
           }
 
           auto value = m_OnParseUnknownIdentifier(identifier);
           if(value == nullptr)
           {
-            throw exception::SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
+            throw Exception::SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
           }
 
           current = value;
@@ -145,7 +145,7 @@ namespace text::expression
       }
       else
       {
-        throw exception::SyntaxException("Unknown token: " + GetCurrent(), GetIndex());
+        throw Exception::SyntaxException("Unknown token: " + GetCurrent(), GetIndex());
       }
 
       if(m_pJuxtapositionOperator != nullptr && !result.empty())
@@ -179,7 +179,7 @@ namespace text::expression
   void ExpressionTokenizer::SetTerminatorCharacters(const std::string& value) { m_TerminatorCharacters = value; }
 
   ExpressionTokenizer::ExpressionTokenizer()
-      : parse::Parser()
+      : Parsing::Parser()
       , m_OnParseNumberCallback()
       , m_OnParseStringCallback()
       , m_OnParseUnknownIdentifier()
@@ -189,7 +189,7 @@ namespace text::expression
   {}
 
   ExpressionTokenizer::ExpressionTokenizer(const ExpressionTokenizer& other)
-      : parse::Parser(other)
+      : Parsing::Parser(other)
       , m_OnParseNumberCallback(other.m_OnParseNumberCallback)
       , m_OnParseStringCallback(other.m_OnParseStringCallback)
       , m_OnParseUnknownIdentifier(other.m_OnParseUnknownIdentifier)
@@ -199,7 +199,7 @@ namespace text::expression
   {}
 
   ExpressionTokenizer::ExpressionTokenizer(ExpressionTokenizer&& other)
-      : parse::Parser(std::move(other))
+      : Parsing::Parser(std::move(other))
       , m_OnParseNumberCallback(std::move(other.m_OnParseNumberCallback))
       , m_OnParseStringCallback(std::move(other.m_OnParseStringCallback))
       , m_OnParseUnknownIdentifier(std::move(other.m_OnParseUnknownIdentifier))
@@ -207,4 +207,4 @@ namespace text::expression
       , m_TerminatorCharacters(std::move(other.m_TerminatorCharacters))
       , m_TokenCache(std::move(other.m_TokenCache))
   {}
-} // namespace text::expression
+} // namespace Text::Expression

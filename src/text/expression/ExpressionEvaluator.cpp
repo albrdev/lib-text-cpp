@@ -5,7 +5,7 @@
 #include "FunctionToken.hpp"
 #include "text/exception/SyntaxException.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   IValueToken* ExpressionEvaluator::Execute(std::queue<IToken*> postfix)
   {
@@ -30,7 +30,7 @@ namespace text::expression
       {
         if(stack.size() < 1u)
         {
-          throw exception::SyntaxException("Insufficient arguments provided for unary operator: " + unaryOperator->GetIdentifier());
+          throw Exception::SyntaxException("Insufficient arguments provided for unary operator: " + unaryOperator->GetIdentifier());
         }
 
         const auto rhs = stack.back();
@@ -44,7 +44,7 @@ namespace text::expression
       {
         if(stack.size() < 2u)
         {
-          throw exception::SyntaxException("Insufficient arguments provided for binary operator: " + binaryOperator->GetIdentifier());
+          throw Exception::SyntaxException("Insufficient arguments provided for binary operator: " + binaryOperator->GetIdentifier());
         }
 
         const auto rhs = stack.back();
@@ -65,11 +65,11 @@ namespace text::expression
         if(function->m_ArgumentCount < function->GetMinArgumentCount() ||
            function->m_ArgumentCount > std::min(function->GetMaxArgumentCount(), FunctionToken::GetArgumentCountMaxLimit()))
         {
-          throw exception::SyntaxException("Invalid number of arguments provided for function: " + function->GetIdentifier());
+          throw Exception::SyntaxException("Invalid number of arguments provided for function: " + function->GetIdentifier());
         }
         else if(stack.size() < function->m_ArgumentCount)
         {
-          throw exception::SyntaxException("Insufficient arguments provided for function: " + function->GetIdentifier());
+          throw Exception::SyntaxException("Insufficient arguments provided for function: " + function->GetIdentifier());
         }
 
         std::vector<IValueToken*> args;
@@ -86,7 +86,7 @@ namespace text::expression
       }
       else
       {
-        throw exception::SyntaxException("Unknown token encountered during evaluation process: " + current->ToString());
+        throw Exception::SyntaxException("Unknown token encountered during evaluation process: " + current->ToString());
       }
 
       postfix.pop();
@@ -94,7 +94,7 @@ namespace text::expression
 
     if(stack.size() != 1u)
     {
-      throw exception::SyntaxException("Excessive values provided: " + std::to_string(stack.size()));
+      throw Exception::SyntaxException("Excessive values provided: " + std::to_string(stack.size()));
     }
 
     return stack.back();
@@ -113,4 +113,4 @@ namespace text::expression
   ExpressionEvaluator::ExpressionEvaluator(ExpressionEvaluator&& other)
       : m_ResultCache(std::move(other.m_ResultCache))
   {}
-} // namespace text::expression
+} // namespace Text::Expression

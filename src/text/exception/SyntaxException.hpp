@@ -4,7 +4,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace text::exception
+namespace Text::Exception
 {
   class SyntaxException : public std::runtime_error
   {
@@ -23,6 +23,6 @@ namespace text::exception
 
     const std::size_t m_Index;
   };
-} // namespace text::exception
+} // namespace Text::Exception
 
 #endif // __TEXT_EXCEPTION_SYNTAXEXCEPTION_HPP__

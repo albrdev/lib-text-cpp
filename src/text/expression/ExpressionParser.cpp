@@ -1,6 +1,6 @@
 #include "ExpressionParser.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   IValueToken* ExpressionParser::Evaluate(const std::string& expression)
   {
@@ -21,4 +21,4 @@ namespace text::expression
   ExpressionParser::ExpressionParser(ExpressionParser&& other)
       : ExpressionParserBase(std::move(other))
   {}
-} // namespace text::expression
+} // namespace Text::Expression

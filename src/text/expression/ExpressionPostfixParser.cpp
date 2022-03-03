@@ -3,7 +3,7 @@
 #include "GenericToken.hpp"
 #include "text/exception/SyntaxException.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   std::queue<IToken*> ExpressionPostfixParser::Execute(std::queue<IToken*>& tokens)
   {
@@ -93,7 +93,7 @@ namespace text::expression
 
             if(misc == nullptr || misc->GetObject() != '(')
             {
-              throw exception::SyntaxException("Missing matching closing bracket");
+              throw Exception::SyntaxException("Missing matching closing bracket");
             }
 
             stack.pop();
@@ -121,7 +121,7 @@ namespace text::expression
 
             if(misc == nullptr || misc->GetObject() != '(')
             {
-              throw exception::SyntaxException("Missing matching opening bracket");
+              throw Exception::SyntaxException("Missing matching opening bracket");
             }
 
             break;
@@ -130,7 +130,7 @@ namespace text::expression
       }
       else
       {
-        throw exception::SyntaxException("Unknown token encountered during postfix process: " + current->ToString());
+        throw Exception::SyntaxException("Unknown token encountered during postfix process: " + current->ToString());
       }
 
       previous = current;
@@ -141,7 +141,7 @@ namespace text::expression
     {
       if((misc = stack.top()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ')'))
       {
-        throw exception::SyntaxException("Missing matching closing bracket");
+        throw Exception::SyntaxException("Missing matching closing bracket");
       }
 
       queue.push(stack.top());
@@ -166,4 +166,4 @@ namespace text::expression
   {
     static_cast<void>(other);
   }
-} // namespace text::expression
+} // namespace Text::Expression

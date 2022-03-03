@@ -7,7 +7,7 @@
 #include <string>
 #include <functional>
 
-namespace text::expression
+namespace Text::Expression
 {
   class ExpressionPostfixParser;
   class ExpressionEvaluator;
@@ -54,6 +54,6 @@ namespace text::expression
     std::size_t m_ArgumentCount;
     int m_BracketBalance;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_FUNCTIONTOKEN_HPP__

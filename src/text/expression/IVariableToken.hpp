@@ -4,7 +4,7 @@
 #include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   class IVariableToken : public virtual IValueToken, public IIdentifiable<std::string>
   {
@@ -18,6 +18,6 @@ namespace text::expression
     IVariableToken(const IVariableToken&) = delete;
     IVariableToken& operator=(const IVariableToken&) = delete;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_IVARIABLETOKEN_HPP__

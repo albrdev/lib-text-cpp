@@ -7,7 +7,7 @@
 #include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   class IFunctionToken : public virtual IToken, public IIdentifiable<std::string>
   {
@@ -26,6 +26,6 @@ namespace text::expression
     IFunctionToken(const IFunctionToken&) = delete;
     IFunctionToken& operator=(const IFunctionToken&) = delete;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_IFUNCTIONTOKEN_HPP__

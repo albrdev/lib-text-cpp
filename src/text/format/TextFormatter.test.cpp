@@ -4,7 +4,7 @@
 #include <string>
 
 using namespace ::testing;
-using namespace text::format;
+using namespace Text::Formatting;
 
 TEST(testTextFormatter, testFormat)
 {

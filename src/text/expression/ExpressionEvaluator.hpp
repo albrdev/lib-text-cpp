@@ -6,7 +6,7 @@
 #include <memory>
 #include "IValueToken.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   class ExpressionEvaluator
   {
@@ -21,6 +21,6 @@ namespace text::expression
     private:
     std::vector<std::unique_ptr<IValueToken>> m_ResultCache;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_EXPRESSIONEVALUATOR_HPP__

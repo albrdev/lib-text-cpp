@@ -1,6 +1,6 @@
 #include "BinaryOperatorToken.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   IValueToken* BinaryOperatorToken::operator()(IValueToken* lhs, IValueToken* rhs) const { return this->GetObject()(lhs, rhs); }
   const std::string& BinaryOperatorToken::GetIdentifier() const { return m_Identifier; }
@@ -65,4 +65,4 @@ namespace text::expression
 
     return *this;
   }
-} // namespace text::expression
+} // namespace Text::Expression

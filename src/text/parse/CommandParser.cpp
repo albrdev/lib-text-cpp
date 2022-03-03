@@ -2,7 +2,7 @@
 #include <cctype>
 #include "text/exception/SyntaxException.hpp"
 
-namespace text::parse
+namespace Text::Parsing
 {
   int CommandParser::Execute(const std::string& text)
   {
@@ -12,13 +12,13 @@ namespace text::parse
     std::string identifier = ParseIdentifier();
     if(identifier.empty())
     {
-      throw exception::SyntaxException("Empty identifier", GetIndex());
+      throw Exception::SyntaxException("Empty identifier", GetIndex());
     }
 
     const auto iter = m_pCallbacks->find(identifier);
     if(iter == m_pCallbacks->end())
     {
-      throw exception::SyntaxException("Unknown identifier", GetIndex() - identifier.length());
+      throw Exception::SyntaxException("Unknown identifier", GetIndex() - identifier.length());
     }
 
     return iter->second(ParseArguments());
@@ -92,4 +92,4 @@ namespace text::parse
 
     return *this;
   }
-} // namespace text::parse
+} // namespace Text::Parsing

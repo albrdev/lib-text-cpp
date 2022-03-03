@@ -7,7 +7,7 @@
 #include <string>
 #include <functional>
 
-namespace text::expression
+namespace Text::Expression
 {
   class UnaryOperatorToken : public IUnaryOperatorToken, public TokenBase<std::function<IValueToken*(IValueToken*)>>
   {
@@ -37,6 +37,6 @@ namespace text::expression
     int m_Precedence;
     Associativity m_Associativity;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_UNARYOPERATORTOKEN_HPP__

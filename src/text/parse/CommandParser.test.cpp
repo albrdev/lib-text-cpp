@@ -6,7 +6,7 @@
 #include <functional>
 
 using namespace ::testing;
-using namespace text::parse;
+using namespace Text::Parsing;
 
 namespace UnitTest
 {

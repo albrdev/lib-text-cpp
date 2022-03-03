@@ -8,7 +8,7 @@
 #include "TokenBase.hpp"
 #include "IValueToken.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   template<class... Ts>
   using ValueType = std::variant<Ts...>;
@@ -142,6 +142,6 @@ namespace text::expression
 
     bool m_IsInitialized;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_VALUETOKEN_HPP__

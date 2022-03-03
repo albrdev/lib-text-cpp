@@ -4,7 +4,7 @@
 #include <string>
 #include "ParserBase.hpp"
 
-namespace text::parse
+namespace Text::Parsing
 {
   class Parser : public ParserBase
   {
@@ -39,6 +39,6 @@ namespace text::parse
 
     static char GetLocaleDecimalPointCharacter();
   };
-} // namespace text::parse
+} // namespace Text::Parsing
 
 #endif // __TEXT_PARSE_PARSER_HPP__

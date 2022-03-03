@@ -4,7 +4,7 @@
 #include <typeinfo>
 #include "IToken.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   class IValueToken : public virtual IToken
   {
@@ -20,6 +20,6 @@ namespace text::expression
     IValueToken(const IValueToken&) = delete;
     IValueToken& operator=(const IValueToken&) = delete;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_IVALUETOKEN_HPP__

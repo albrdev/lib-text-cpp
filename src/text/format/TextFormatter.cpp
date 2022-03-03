@@ -2,7 +2,7 @@
 #include <cctype>
 #include "text/exception/SyntaxException.hpp"
 
-namespace text::format
+namespace Text::Formatting
 {
   std::string TextFormatter::ParseValue()
   {
@@ -43,7 +43,7 @@ namespace text::format
     ParseIdentifier(identifier);
     if(identifier.empty())
     {
-      throw exception::SyntaxException("Empty identifier", GetIndex());
+      throw Exception::SyntaxException("Empty identifier", GetIndex());
     }
 
     std::vector<std::string> args;
@@ -58,7 +58,7 @@ namespace text::format
       Next(Parser::IsWhitespace);
       if(GetCurrent() != '}')
       {
-        throw exception::SyntaxException("Unterminated macro", GetIndex());
+        throw Exception::SyntaxException("Unterminated macro", GetIndex());
       }
 
       Next();
@@ -73,7 +73,7 @@ namespace text::format
       }
       else
       {
-        throw exception::SyntaxException("Unkown identifier", GetIndex() - identifier.length());
+        throw Exception::SyntaxException("Unkown identifier", GetIndex() - identifier.length());
       }
     }
 
@@ -127,7 +127,7 @@ namespace text::format
   }
 
   TextFormatter::TextFormatter(char qualifier, const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros)
-      : parse::Parser()
+      : Parsing::Parser()
       , m_Qualifier()
       , m_Macros(macros)
   {
@@ -135,13 +135,13 @@ namespace text::format
   }
 
   TextFormatter::TextFormatter(const std::unordered_map<std::string, std::function<std::string(const std::vector<std::string>&)>>& macros)
-      : parse::Parser()
+      : Parsing::Parser()
       , m_Qualifier(TextFormatter::DefaultQualifier)
       , m_Macros(macros)
   {}
 
   TextFormatter::TextFormatter(char qualifier)
-      : parse::Parser()
+      : Parsing::Parser()
       , m_Qualifier(qualifier)
       , m_Macros()
   {
@@ -149,20 +149,20 @@ namespace text::format
   }
 
   TextFormatter::TextFormatter()
-      : parse::Parser()
+      : Parsing::Parser()
       , m_Qualifier(TextFormatter::DefaultQualifier)
       , m_Macros()
   {}
 
   TextFormatter::TextFormatter(const TextFormatter& other)
-      : parse::Parser(other)
+      : Parsing::Parser(other)
       , m_Qualifier(other.m_Qualifier)
       , m_Macros(other.m_Macros)
   {}
 
   TextFormatter::TextFormatter(TextFormatter&& other)
-      : parse::Parser(std::move(other))
+      : Parsing::Parser(std::move(other))
       , m_Qualifier(std::move(other.m_Qualifier))
       , m_Macros(std::move(other.m_Macros))
   {}
-} // namespace text::format
+} // namespace Text::Formatting

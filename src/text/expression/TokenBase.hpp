@@ -3,7 +3,7 @@
 
 #include "IToken.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   template<class T>
   class TokenBase : public virtual IToken
@@ -58,6 +58,6 @@ namespace text::expression
     private:
     T m_Object;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_TOKENBASE_HPP__

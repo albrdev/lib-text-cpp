@@ -1,6 +1,6 @@
 #include "SyntaxException.hpp"
 
-namespace text::exception
+namespace Text::Exception
 {
   const std::size_t& SyntaxException::GetIndex() const { return m_Index; }
 
@@ -25,4 +25,4 @@ namespace text::exception
   {}
 
   std::string SyntaxException::CreateMessage(const std::string& message, std::size_t index) { return message + "(Index: " + std::to_string(index) + ")"; }
-} // namespace text::exception
+} // namespace Text::Exception

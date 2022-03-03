@@ -1,7 +1,7 @@
 #include "Parser.hpp"
 #include <clocale>
 
-namespace text::parse
+namespace Text::Parsing
 {
   Parser& Parser::ParseNumber(std::string& result)
   {
@@ -91,4 +91,4 @@ namespace text::parse
       : ParserBase(std::move(other))
       , m_DecimalPointCharacter(std::move(other.m_DecimalPointCharacter))
   {}
-} // namespace text::parse
+} // namespace Text::Parsing

@@ -7,7 +7,7 @@
 #include <regex>
 #include <limits>
 
-namespace text::parse
+namespace Text::Parsing
 {
   class ParserBase
   {
@@ -56,6 +56,6 @@ namespace text::parse
     std::string m_Text;
     std::size_t m_Index;
   };
-} // namespace text::parse
+} // namespace Text::Parsing
 
 #endif // __TEXT_PARSE_PARSERBASE_HPP__

@@ -4,7 +4,7 @@
 #include "common/IType.hpp"
 #include "common/IOutput.hpp"
 
-namespace text::expression
+namespace Text::Expression
 {
   class IToken : public IType, public IOutput
   {
@@ -18,6 +18,6 @@ namespace text::expression
     IToken(const IToken&) = delete;
     IToken& operator=(const IToken&) = delete;
   };
-} // namespace text::expression
+} // namespace Text::Expression
 
 #endif // __TEXT_EXPRESSION_ITOKEN_HPP__
