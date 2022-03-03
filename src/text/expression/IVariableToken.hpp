@@ -6,7 +6,7 @@
 
 namespace Text::Expression
 {
-  class IVariableToken : public virtual IValueToken, public IIdentifiable<std::string>
+  class IVariableToken : public virtual IValueToken, public Common::IIdentifiable<std::string>
   {
     public:
     virtual ~IVariableToken() override = default;

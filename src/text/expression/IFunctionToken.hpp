@@ -9,7 +9,7 @@
 
 namespace Text::Expression
 {
-  class IFunctionToken : public virtual IToken, public IIdentifiable<std::string>
+  class IFunctionToken : public virtual IToken, public Common::IIdentifiable<std::string>
   {
     public:
     virtual IValueToken* operator()(const std::vector<IValueToken*>&) const = 0;

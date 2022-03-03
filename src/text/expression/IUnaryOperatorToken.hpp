@@ -8,7 +8,7 @@
 
 namespace Text::Expression
 {
-  class IUnaryOperatorToken : public virtual IOperatorToken, public IIdentifiable<char>
+  class IUnaryOperatorToken : public virtual IOperatorToken, public Common::IIdentifiable<char>
   {
     public:
     virtual IValueToken* operator()(IValueToken*) const = 0;

@@ -6,7 +6,7 @@
 
 namespace Text::Expression
 {
-  class IToken : public IType, public IOutput
+  class IToken : public Common::IType, public Common::IOutput
   {
     public:
     virtual ~IToken() override = default;
