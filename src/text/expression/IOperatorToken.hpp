@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_IOPERATORTOKEN_HPP__
-#define __TEXT_EXPRESSION_IOPERATORTOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__IOPERATORTOKEN_HPP__
+#define __TEXT_EXPRESSION__IOPERATORTOKEN_HPP__
 
 #include "IToken.hpp"
 
@@ -32,4 +32,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_IOPERATORTOKEN_HPP__
+#endif // __TEXT_EXPRESSION__IOPERATORTOKEN_HPP__

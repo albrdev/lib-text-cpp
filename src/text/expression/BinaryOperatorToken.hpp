@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_BINARYOPERATORTOKEN_HPP__
-#define __TEXT_EXPRESSION_BINARYOPERATORTOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__BINARYOPERATORTOKEN_HPP__
+#define __TEXT_EXPRESSION__BINARYOPERATORTOKEN_HPP__
 
 #include "TokenBase.hpp"
 #include "IBinaryOperatorToken.hpp"
@@ -39,4 +39,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_BINARYOPERATORTOKEN_HPP__
+#endif // __TEXT_EXPRESSION__BINARYOPERATORTOKEN_HPP__

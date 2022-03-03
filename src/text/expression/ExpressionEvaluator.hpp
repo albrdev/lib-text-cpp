@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_EXPRESSIONEVALUATOR_HPP__
-#define __TEXT_EXPRESSION_EXPRESSIONEVALUATOR_HPP__
+#ifndef __TEXT_EXPRESSION__EXPRESSIONEVALUATOR_HPP__
+#define __TEXT_EXPRESSION__EXPRESSIONEVALUATOR_HPP__
 
 #include <vector>
 #include <queue>
@@ -23,4 +23,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_EXPRESSIONEVALUATOR_HPP__
+#endif // __TEXT_EXPRESSION__EXPRESSIONEVALUATOR_HPP__

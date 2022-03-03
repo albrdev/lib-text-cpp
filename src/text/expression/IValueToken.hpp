@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_IVALUETOKEN_HPP__
-#define __TEXT_EXPRESSION_IVALUETOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__IVALUETOKEN_HPP__
+#define __TEXT_EXPRESSION__IVALUETOKEN_HPP__
 
 #include <typeinfo>
 #include "IToken.hpp"
@@ -22,4 +22,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_IVALUETOKEN_HPP__
+#endif // __TEXT_EXPRESSION__IVALUETOKEN_HPP__

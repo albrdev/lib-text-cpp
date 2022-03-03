@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_TOKENBASE_HPP__
-#define __TEXT_EXPRESSION_TOKENBASE_HPP__
+#ifndef __TEXT_EXPRESSION__TOKENBASE_HPP__
+#define __TEXT_EXPRESSION__TOKENBASE_HPP__
 
 #include "IToken.hpp"
 
@@ -60,4 +60,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_TOKENBASE_HPP__
+#endif // __TEXT_EXPRESSION__TOKENBASE_HPP__

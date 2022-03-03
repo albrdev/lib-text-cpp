@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_IUNARYOPERATORTOKEN_HPP__
-#define __TEXT_EXPRESSION_IUNARYOPERATORTOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__IUNARYOPERATORTOKEN_HPP__
+#define __TEXT_EXPRESSION__IUNARYOPERATORTOKEN_HPP__
 
 #include <functional>
 #include "IOperatorToken.hpp"
@@ -24,4 +24,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_IUNARYOPERATORTOKEN_HPP__
+#endif // __TEXT_EXPRESSION__IUNARYOPERATORTOKEN_HPP__

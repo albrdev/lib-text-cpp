@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_ITOKEN_HPP__
-#define __TEXT_EXPRESSION_ITOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__ITOKEN_HPP__
+#define __TEXT_EXPRESSION__ITOKEN_HPP__
 
 #include "common/IType.hpp"
 #include "common/IOutput.hpp"
@@ -20,4 +20,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_ITOKEN_HPP__
+#endif // __TEXT_EXPRESSION__ITOKEN_HPP__

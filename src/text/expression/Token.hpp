@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_TOKEN_HPP__
-#define __TEXT_EXPRESSION_TOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__TOKEN_HPP__
+#define __TEXT_EXPRESSION__TOKEN_HPP__
 
 #include "GenericToken.hpp"
 #include "ValueToken.hpp"
@@ -8,4 +8,4 @@
 #include "BinaryOperatorToken.hpp"
 #include "FunctionToken.hpp"
 
-#endif // __TEXT_EXPRESSION_TOKEN_HPP__
+#endif // __TEXT_EXPRESSION__TOKEN_HPP__

@@ -1,5 +1,5 @@
-#ifndef __TEXT_COMMON_HPP__
-#define __TEXT_COMMON_HPP__
+#ifndef __TEXT__COMMON_HPP__
+#define __TEXT__COMMON_HPP__
 
 #include <string>
 #include <sstream>
@@ -49,4 +49,4 @@ namespace Text
   }
 } // namespace Text
 
-#endif // __TEXT_COMMON_HPP__
+#endif // __TEXT__COMMON_HPP__

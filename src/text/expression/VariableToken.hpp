@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_VARIABLETOKEN_HPP__
-#define __TEXT_EXPRESSION_VARIABLETOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__VARIABLETOKEN_HPP__
+#define __TEXT_EXPRESSION__VARIABLETOKEN_HPP__
 
 #include "IVariableToken.hpp"
 #include "ValueToken.hpp"
@@ -77,4 +77,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_VARIABLETOKEN_HPP__
+#endif // __TEXT_EXPRESSION__VARIABLETOKEN_HPP__

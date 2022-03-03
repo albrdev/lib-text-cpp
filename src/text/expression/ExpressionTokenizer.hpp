@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_EXPRESSIONTOKENIZER_HPP__
-#define __TEXT_EXPRESSION_EXPRESSIONTOKENIZER_HPP__
+#ifndef __TEXT_EXPRESSION__EXPRESSIONTOKENIZER_HPP__
+#define __TEXT_EXPRESSION__EXPRESSIONTOKENIZER_HPP__
 
 #include <string>
 #include <functional>
@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <memory>
-#include "text/parse/Parser.hpp"
+#include "text/parsing/Parser.hpp"
 #include "IValueToken.hpp"
 #include "IVariableToken.hpp"
 #include "IUnaryOperatorToken.hpp"
@@ -54,4 +54,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_EXPRESSIONTOKENIZER_HPP__
+#endif // __TEXT_EXPRESSION__EXPRESSIONTOKENIZER_HPP__

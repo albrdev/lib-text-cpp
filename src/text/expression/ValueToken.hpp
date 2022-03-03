@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_VALUETOKEN_HPP__
-#define __TEXT_EXPRESSION_VALUETOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__VALUETOKEN_HPP__
+#define __TEXT_EXPRESSION__VALUETOKEN_HPP__
 
 #include <string>
 #include <variant>
@@ -144,4 +144,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_VALUETOKEN_HPP__
+#endif // __TEXT_EXPRESSION__VALUETOKEN_HPP__

@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_FUNCTIONTOKEN_HPP__
-#define __TEXT_EXPRESSION_FUNCTIONTOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__FUNCTIONTOKEN_HPP__
+#define __TEXT_EXPRESSION__FUNCTIONTOKEN_HPP__
 
 #include "TokenBase.hpp"
 #include "IFunctionToken.hpp"
@@ -56,4 +56,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_FUNCTIONTOKEN_HPP__
+#endif // __TEXT_EXPRESSION__FUNCTIONTOKEN_HPP__

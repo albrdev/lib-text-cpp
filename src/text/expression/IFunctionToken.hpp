@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_IFUNCTIONTOKEN_HPP__
-#define __TEXT_EXPRESSION_IFUNCTIONTOKEN_HPP__
+#ifndef __TEXT_EXPRESSION__IFUNCTIONTOKEN_HPP__
+#define __TEXT_EXPRESSION__IFUNCTIONTOKEN_HPP__
 
 #include <vector>
 #include <functional>
@@ -28,4 +28,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_IFUNCTIONTOKEN_HPP__
+#endif // __TEXT_EXPRESSION__IFUNCTIONTOKEN_HPP__

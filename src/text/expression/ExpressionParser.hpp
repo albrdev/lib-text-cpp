@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_EXPRESSIONPARSER_HPP__
-#define __TEXT_EXPRESSION_EXPRESSIONPARSER_HPP__
+#ifndef __TEXT_EXPRESSION__EXPRESSIONPARSER_HPP__
+#define __TEXT_EXPRESSION__EXPRESSIONPARSER_HPP__
 
 #include <string>
 #include "IValueToken.hpp"
@@ -23,4 +23,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_EXPRESSIONPARSER_HPP__
+#endif // __TEXT_EXPRESSION__EXPRESSIONPARSER_HPP__

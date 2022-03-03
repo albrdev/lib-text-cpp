@@ -1,5 +1,5 @@
-#ifndef __TEXT_EXPRESSION_EXPRESSIONPARSERBASE_HPP__
-#define __TEXT_EXPRESSION_EXPRESSIONPARSERBASE_HPP__
+#ifndef __TEXT_EXPRESSION__EXPRESSIONPARSERBASE_HPP__
+#define __TEXT_EXPRESSION__EXPRESSIONPARSERBASE_HPP__
 
 #include <string>
 #include <queue>
@@ -45,4 +45,4 @@ namespace Text::Expression
   };
 } // namespace Text::Expression
 
-#endif // __TEXT_EXPRESSION_EXPRESSIONPARSERBASE_HPP__
+#endif // __TEXT_EXPRESSION__EXPRESSIONPARSERBASE_HPP__
