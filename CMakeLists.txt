@@ -20,6 +20,7 @@ elseif(MSVC)
 endif()
 
 add_library(${LIBRARY_TEXT} STATIC)
+set_target_properties(${LIBRARY_TEXT} PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(${LIBRARY_TEXT} PUBLIC src ext/lib-common-cpp/src)
 
 add_library(${UNITTEST_TEXT} STATIC)
