@@ -41,6 +41,58 @@ namespace UnitTest
     ASSERT_FALSE(Text::CompareIgnoreCase("Abc 123", "aBC"));
   }
 
+  TEST(Common, ToLowercase)
+  {
+    ASSERT_EQ(Text::ToLowercase(""), "");
+    ASSERT_EQ(Text::ToLowercase(" "), " ");
+    ASSERT_EQ(Text::ToLowercase("abc 123"), "abc 123");
+    ASSERT_EQ(Text::ToLowercase("ABC 123"), "abc 123");
+    ASSERT_EQ(Text::ToLowercase("Abc 123"), "abc 123");
+    ASSERT_EQ(Text::ToLowercase("aBC 123"), "abc 123");
+  }
+
+  TEST(Common, ToUppercase)
+  {
+    ASSERT_EQ(Text::ToUppercase(""), "");
+    ASSERT_EQ(Text::ToUppercase(" "), " ");
+    ASSERT_EQ(Text::ToUppercase("abc 123"), "ABC 123");
+    ASSERT_EQ(Text::ToUppercase("ABC 123"), "ABC 123");
+    ASSERT_EQ(Text::ToUppercase("Abc 123"), "ABC 123");
+    ASSERT_EQ(Text::ToUppercase("aBC 123"), "ABC 123");
+  }
+
+  TEST(Common, ToTitleCase)
+  {
+    ASSERT_EQ(Text::ToTitleCase(""), "");
+    ASSERT_EQ(Text::ToTitleCase("."), ".");
+    ASSERT_EQ(Text::ToTitleCase(" "), " ");
+    ASSERT_EQ(Text::ToTitleCase(". "), ". ");
+    ASSERT_EQ(Text::ToTitleCase("a "), "A ");
+    ASSERT_EQ(Text::ToTitleCase("a a"), "A A");
+    ASSERT_EQ(Text::ToTitleCase("a.a"), "A.A");
+    ASSERT_EQ(Text::ToTitleCase("a. a"), "A. A");
+    ASSERT_EQ(Text::ToTitleCase("abc def 123. ghi, jkl 123"), "Abc Def 123. Ghi, Jkl 123");
+    ASSERT_EQ(Text::ToTitleCase("ABC DEF 123. GHI, JKL 123"), "Abc Def 123. Ghi, Jkl 123");
+    ASSERT_EQ(Text::ToTitleCase("Abc Def 123. Ghi, Jkl 123"), "Abc Def 123. Ghi, Jkl 123");
+    ASSERT_EQ(Text::ToTitleCase("aBC dEF 123. gHI, jKL 123"), "Abc Def 123. Ghi, Jkl 123");
+  }
+
+  TEST(Common, ToSentenceCase)
+  {
+    ASSERT_EQ(Text::ToSentenceCase(""), "");
+    ASSERT_EQ(Text::ToSentenceCase("."), ".");
+    ASSERT_EQ(Text::ToSentenceCase(" "), " ");
+    ASSERT_EQ(Text::ToSentenceCase(". "), ". ");
+    ASSERT_EQ(Text::ToSentenceCase("a "), "A ");
+    ASSERT_EQ(Text::ToSentenceCase("a a"), "A a");
+    ASSERT_EQ(Text::ToSentenceCase("a.a"), "A.A");
+    ASSERT_EQ(Text::ToSentenceCase("a. a"), "A. A");
+    ASSERT_EQ(Text::ToSentenceCase("abc def 123. ghi, jkl 123"), "Abc def 123. Ghi, jkl 123");
+    ASSERT_EQ(Text::ToSentenceCase("ABC DEF 123. GHI, JKL 123"), "Abc def 123. Ghi, jkl 123");
+    ASSERT_EQ(Text::ToSentenceCase("Abc Def 123. Ghi, Jkl 123"), "Abc def 123. Ghi, jkl 123");
+    ASSERT_EQ(Text::ToSentenceCase("aBC dEF 123. gHI, jKL 123"), "Abc def 123. Ghi, jkl 123");
+  }
+
   TEST(Common, Trim)
   {
     ASSERT_EQ(Text::Trim(""), "");

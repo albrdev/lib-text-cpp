@@ -1,5 +1,6 @@
 #include "Common.hpp"
 #include <cctype>
+#include <functional>
 #include <algorithm>
 
 namespace Text
@@ -11,6 +12,60 @@ namespace Text
   bool CompareIgnoreCase(const std::string& a, const std::string& b)
   {
     return std::equal(a.begin(), a.end(), b.begin(), b.end(), [](char a, char b) { return std::tolower(a) == std::tolower(b); });
+  }
+
+  static std::string __ToCase(const std::string& value, const std::function<char(char)>& callback)
+  {
+    std::string result;
+    result.reserve(value.size());
+    for(const auto& chr : value)
+    {
+      result += callback(chr);
+    }
+
+    return result;
+  }
+
+  std::string ToLowercase(const std::string& value)
+  {
+    return __ToCase(value, [](char chr) { return static_cast<char>(std::tolower(chr)); });
+  }
+
+  std::string ToUppercase(const std::string& value)
+  {
+    return __ToCase(value, [](char chr) { return static_cast<char>(std::toupper(chr)); });
+  }
+
+  std::string ToTitleCase(const std::string& value)
+  {
+    bool isQualifier = true;
+    return __ToCase(value, [&isQualifier](char chr) {
+      const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
+      isQualifier          = (std::isspace(chr) != 0) || (std::ispunct(chr) != 0);
+      return tmpResult;
+    });
+  }
+
+  std::string ToSentenceCase(const std::string& value)
+  {
+    bool isQualifier = true;
+    return __ToCase(value, [&isQualifier](char chr) {
+      if(std::isalpha(chr) != 0)
+      {
+        const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
+        isQualifier          = false;
+        return tmpResult;
+      }
+      else
+      {
+        if(chr == '.')
+        {
+          isQualifier = true;
+        }
+
+        return chr;
+      }
+    });
   }
 
   std::string Trim(const std::string& value)

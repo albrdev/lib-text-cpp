@@ -9,6 +9,11 @@ namespace Text
   bool IsWhitespace(const std::string& value);
   bool CompareIgnoreCase(const std::string& a, const std::string& b);
 
+  std::string ToLowercase(const std::string& value);
+  std::string ToUppercase(const std::string& value);
+  std::string ToTitleCase(const std::string& value);
+  std::string ToSentenceCase(const std::string& value);
+
   std::string Trim(const std::string& value);
   std::string TrimLeft(const std::string& value);
   std::string TrimRight(const std::string& value);
