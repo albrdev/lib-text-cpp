@@ -30,7 +30,7 @@ namespace Text
   std::string ToString(const T& value)
   {
     std::string tmpResult;
-    tmpResult(value, tmpResult);
+    ToString(value, tmpResult);
     return tmpResult;
   }
 
