@@ -43,54 +43,214 @@ namespace UnitTest
 
   TEST(Common, ToLowercase)
   {
-    ASSERT_EQ(Text::ToLowercase(""), "");
-    ASSERT_EQ(Text::ToLowercase(" "), " ");
-    ASSERT_EQ(Text::ToLowercase("abc 123"), "abc 123");
-    ASSERT_EQ(Text::ToLowercase("ABC 123"), "abc 123");
-    ASSERT_EQ(Text::ToLowercase("Abc 123"), "abc 123");
-    ASSERT_EQ(Text::ToLowercase("aBC 123"), "abc 123");
+    {
+      std::string value = "";
+      ASSERT_EQ(Text::ToLowercase(value), "");
+    }
+    {
+      std::string value = " ";
+      ASSERT_EQ(Text::ToLowercase(value), " ");
+    }
+    {
+      std::string value = "abc 123";
+      ASSERT_EQ(Text::ToLowercase(value), "abc 123");
+    }
+    {
+      std::string value = "ABC 123";
+      ASSERT_EQ(Text::ToLowercase(value), "abc 123");
+    }
+    {
+      std::string value = "Abc 123";
+      ASSERT_EQ(Text::ToLowercase(value), "abc 123");
+    }
+    {
+      std::string value = "aBC 123";
+      ASSERT_EQ(Text::ToLowercase(value), "abc 123");
+    }
   }
 
   TEST(Common, ToUppercase)
   {
-    ASSERT_EQ(Text::ToUppercase(""), "");
-    ASSERT_EQ(Text::ToUppercase(" "), " ");
-    ASSERT_EQ(Text::ToUppercase("abc 123"), "ABC 123");
-    ASSERT_EQ(Text::ToUppercase("ABC 123"), "ABC 123");
-    ASSERT_EQ(Text::ToUppercase("Abc 123"), "ABC 123");
-    ASSERT_EQ(Text::ToUppercase("aBC 123"), "ABC 123");
+    {
+      std::string value = "";
+      ASSERT_EQ(Text::ToUppercase(value), "");
+    }
+    {
+      std::string value = " ";
+      ASSERT_EQ(Text::ToUppercase(value), " ");
+    }
+    {
+      std::string value = "abc 123";
+      ASSERT_EQ(Text::ToUppercase(value), "ABC 123");
+    }
+    {
+      std::string value = "ABC 123";
+      ASSERT_EQ(Text::ToUppercase(value), "ABC 123");
+    }
+    {
+      std::string value = "Abc 123";
+      ASSERT_EQ(Text::ToUppercase(value), "ABC 123");
+    }
+    {
+      std::string value = "aBC 123";
+      ASSERT_EQ(Text::ToUppercase(value), "ABC 123");
+    }
   }
 
   TEST(Common, ToTitleCase)
   {
-    ASSERT_EQ(Text::ToTitleCase(""), "");
-    ASSERT_EQ(Text::ToTitleCase("."), ".");
-    ASSERT_EQ(Text::ToTitleCase(" "), " ");
-    ASSERT_EQ(Text::ToTitleCase(". "), ". ");
-    ASSERT_EQ(Text::ToTitleCase("a "), "A ");
-    ASSERT_EQ(Text::ToTitleCase("a a"), "A A");
-    ASSERT_EQ(Text::ToTitleCase("a.a"), "A.A");
-    ASSERT_EQ(Text::ToTitleCase("a. a"), "A. A");
-    ASSERT_EQ(Text::ToTitleCase("abc def 123. ghi, jkl 123"), "Abc Def 123. Ghi, Jkl 123");
-    ASSERT_EQ(Text::ToTitleCase("ABC DEF 123. GHI, JKL 123"), "Abc Def 123. Ghi, Jkl 123");
-    ASSERT_EQ(Text::ToTitleCase("Abc Def 123. Ghi, Jkl 123"), "Abc Def 123. Ghi, Jkl 123");
-    ASSERT_EQ(Text::ToTitleCase("aBC dEF 123. gHI, jKL 123"), "Abc Def 123. Ghi, Jkl 123");
+    {
+      std::string value = "";
+      ASSERT_EQ(Text::ToTitleCase(value), "");
+    }
+    {
+      std::string value = ".";
+      ASSERT_EQ(Text::ToTitleCase(value), ".");
+    }
+    {
+      std::string value = " ";
+      ASSERT_EQ(Text::ToTitleCase(value), " ");
+    }
+    {
+      std::string value = ". ";
+      ASSERT_EQ(Text::ToTitleCase(value), ". ");
+    }
+    {
+      std::string value = "a ";
+      ASSERT_EQ(Text::ToTitleCase(value), "A ");
+    }
+    {
+      std::string value = "a a";
+      ASSERT_EQ(Text::ToTitleCase(value), "A A");
+    }
+    {
+      std::string value = "a.a";
+      ASSERT_EQ(Text::ToTitleCase(value), "A.A");
+    }
+    {
+      std::string value = "a. a";
+      ASSERT_EQ(Text::ToTitleCase(value), "A. A");
+    }
+    {
+      std::string value = "abc def 123. ghi, jkl 123";
+      ASSERT_EQ(Text::ToTitleCase(value), "Abc Def 123. Ghi, Jkl 123");
+    }
+    {
+      std::string value = "ABC DEF 123. GHI, JKL 123";
+      ASSERT_EQ(Text::ToTitleCase(value), "Abc Def 123. Ghi, Jkl 123");
+    }
+    {
+      std::string value = "Abc Def 123. Ghi, Jkl 123";
+      ASSERT_EQ(Text::ToTitleCase(value), "Abc Def 123. Ghi, Jkl 123");
+    }
+    {
+      std::string value = "aBC dEF 123. gHI, jKL 123";
+      ASSERT_EQ(Text::ToTitleCase(value), "Abc Def 123. Ghi, Jkl 123");
+    }
   }
 
   TEST(Common, ToSentenceCase)
   {
-    ASSERT_EQ(Text::ToSentenceCase(""), "");
-    ASSERT_EQ(Text::ToSentenceCase("."), ".");
-    ASSERT_EQ(Text::ToSentenceCase(" "), " ");
-    ASSERT_EQ(Text::ToSentenceCase(". "), ". ");
-    ASSERT_EQ(Text::ToSentenceCase("a "), "A ");
-    ASSERT_EQ(Text::ToSentenceCase("a a"), "A a");
-    ASSERT_EQ(Text::ToSentenceCase("a.a"), "A.A");
-    ASSERT_EQ(Text::ToSentenceCase("a. a"), "A. A");
-    ASSERT_EQ(Text::ToSentenceCase("abc def 123. ghi, jkl 123"), "Abc def 123. Ghi, jkl 123");
-    ASSERT_EQ(Text::ToSentenceCase("ABC DEF 123. GHI, JKL 123"), "Abc def 123. Ghi, jkl 123");
-    ASSERT_EQ(Text::ToSentenceCase("Abc Def 123. Ghi, Jkl 123"), "Abc def 123. Ghi, jkl 123");
-    ASSERT_EQ(Text::ToSentenceCase("aBC dEF 123. gHI, jKL 123"), "Abc def 123. Ghi, jkl 123");
+    {
+      std::string value = "";
+      ASSERT_EQ(Text::ToSentenceCase(value), "");
+    }
+    {
+      std::string value = ".";
+      ASSERT_EQ(Text::ToSentenceCase(value), ".");
+    }
+    {
+      std::string value = " ";
+      ASSERT_EQ(Text::ToSentenceCase(value), " ");
+    }
+    {
+      std::string value = ". ";
+      ASSERT_EQ(Text::ToSentenceCase(value), ". ");
+    }
+    {
+      std::string value = "a ";
+      ASSERT_EQ(Text::ToSentenceCase(value), "A ");
+    }
+    {
+      std::string value = "a a";
+      ASSERT_EQ(Text::ToSentenceCase(value), "A a");
+    }
+    {
+      std::string value = "a.a";
+      ASSERT_EQ(Text::ToSentenceCase(value), "A.A");
+    }
+    {
+      std::string value = "a. a";
+      ASSERT_EQ(Text::ToSentenceCase(value), "A. A");
+    }
+    {
+      std::string value = "abc def 123. ghi, jkl 123";
+      ASSERT_EQ(Text::ToSentenceCase(value), "Abc def 123. Ghi, jkl 123");
+    }
+    {
+      std::string value = "ABC DEF 123. GHI, JKL 123";
+      ASSERT_EQ(Text::ToSentenceCase(value), "Abc def 123. Ghi, jkl 123");
+    }
+    {
+      std::string value = "Abc Def 123. Ghi, Jkl 123";
+      ASSERT_EQ(Text::ToSentenceCase(value), "Abc def 123. Ghi, jkl 123");
+    }
+    {
+      std::string value = "aBC dEF 123. gHI, jKL 123";
+      ASSERT_EQ(Text::ToSentenceCase(value), "Abc def 123. Ghi, jkl 123");
+    }
+  }
+
+  TEST(Common, ToLowercaseCopy)
+  {
+    ASSERT_EQ(Text::ToLowercaseCopy(""), "");
+    ASSERT_EQ(Text::ToLowercaseCopy(" "), " ");
+    ASSERT_EQ(Text::ToLowercaseCopy("abc 123"), "abc 123");
+    ASSERT_EQ(Text::ToLowercaseCopy("ABC 123"), "abc 123");
+    ASSERT_EQ(Text::ToLowercaseCopy("Abc 123"), "abc 123");
+    ASSERT_EQ(Text::ToLowercaseCopy("aBC 123"), "abc 123");
+  }
+
+  TEST(Common, ToUppercaseCopy)
+  {
+    ASSERT_EQ(Text::ToUppercaseCopy(""), "");
+    ASSERT_EQ(Text::ToUppercaseCopy(" "), " ");
+    ASSERT_EQ(Text::ToUppercaseCopy("abc 123"), "ABC 123");
+    ASSERT_EQ(Text::ToUppercaseCopy("ABC 123"), "ABC 123");
+    ASSERT_EQ(Text::ToUppercaseCopy("Abc 123"), "ABC 123");
+    ASSERT_EQ(Text::ToUppercaseCopy("aBC 123"), "ABC 123");
+  }
+
+  TEST(Common, ToTitleCaseCopy)
+  {
+    ASSERT_EQ(Text::ToTitleCaseCopy(""), "");
+    ASSERT_EQ(Text::ToTitleCaseCopy("."), ".");
+    ASSERT_EQ(Text::ToTitleCaseCopy(" "), " ");
+    ASSERT_EQ(Text::ToTitleCaseCopy(". "), ". ");
+    ASSERT_EQ(Text::ToTitleCaseCopy("a "), "A ");
+    ASSERT_EQ(Text::ToTitleCaseCopy("a a"), "A A");
+    ASSERT_EQ(Text::ToTitleCaseCopy("a.a"), "A.A");
+    ASSERT_EQ(Text::ToTitleCaseCopy("a. a"), "A. A");
+    ASSERT_EQ(Text::ToTitleCaseCopy("abc def 123. ghi, jkl 123"), "Abc Def 123. Ghi, Jkl 123");
+    ASSERT_EQ(Text::ToTitleCaseCopy("ABC DEF 123. GHI, JKL 123"), "Abc Def 123. Ghi, Jkl 123");
+    ASSERT_EQ(Text::ToTitleCaseCopy("Abc Def 123. Ghi, Jkl 123"), "Abc Def 123. Ghi, Jkl 123");
+    ASSERT_EQ(Text::ToTitleCaseCopy("aBC dEF 123. gHI, jKL 123"), "Abc Def 123. Ghi, Jkl 123");
+  }
+
+  TEST(Common, ToSentenceCaseCopy)
+  {
+    ASSERT_EQ(Text::ToSentenceCaseCopy(""), "");
+    ASSERT_EQ(Text::ToSentenceCaseCopy("."), ".");
+    ASSERT_EQ(Text::ToSentenceCaseCopy(" "), " ");
+    ASSERT_EQ(Text::ToSentenceCaseCopy(". "), ". ");
+    ASSERT_EQ(Text::ToSentenceCaseCopy("a "), "A ");
+    ASSERT_EQ(Text::ToSentenceCaseCopy("a a"), "A a");
+    ASSERT_EQ(Text::ToSentenceCaseCopy("a.a"), "A.A");
+    ASSERT_EQ(Text::ToSentenceCaseCopy("a. a"), "A. A");
+    ASSERT_EQ(Text::ToSentenceCaseCopy("abc def 123. ghi, jkl 123"), "Abc def 123. Ghi, jkl 123");
+    ASSERT_EQ(Text::ToSentenceCaseCopy("ABC DEF 123. GHI, JKL 123"), "Abc def 123. Ghi, jkl 123");
+    ASSERT_EQ(Text::ToSentenceCaseCopy("Abc Def 123. Ghi, Jkl 123"), "Abc def 123. Ghi, jkl 123");
+    ASSERT_EQ(Text::ToSentenceCaseCopy("aBC dEF 123. gHI, jKL 123"), "Abc def 123. Ghi, jkl 123");
   }
 
   TEST(Common, Trim)

@@ -14,42 +14,57 @@ namespace Text
     return std::equal(a.begin(), a.end(), b.begin(), b.end(), [](char a, char b) { return std::tolower(a) == std::tolower(b); });
   }
 
-  static std::string __ToCase(const std::string& value, const std::function<char(char)>& callback)
+  static void __ToCase(const std::string::iterator& begin, const std::string::const_iterator& end, const std::function<char(char)>& callback)
   {
-    std::string result;
-    result.reserve(value.size());
-    for(const auto& chr : value)
+    std::string::iterator iter = begin;
+    while(iter != end)
     {
-      result += callback(chr);
+      *iter = callback(*iter);
+      iter++;
     }
-
-    return result;
   }
 
-  std::string ToLowercase(const std::string& value)
+  static void __ToCase(const std::string::const_iterator& begin,
+                       const std::string::const_iterator& end,
+                       std::back_insert_iterator<std::string> result,
+                       const std::function<char(char)>& callback)
   {
-    return __ToCase(value, [](char chr) { return static_cast<char>(std::tolower(chr)); });
+    std::string::const_iterator iter = begin;
+    while(iter != end)
+    {
+      *result = callback(*iter);
+      iter++;
+    }
   }
 
-  std::string ToUppercase(const std::string& value)
+  std::string& ToLowercase(std::string& value)
   {
-    return __ToCase(value, [](char chr) { return static_cast<char>(std::toupper(chr)); });
+    __ToCase(value.begin(), value.cend(), [](char chr) { return static_cast<char>(std::tolower(chr)); });
+    return value;
   }
 
-  std::string ToTitleCase(const std::string& value)
+  std::string& ToUppercase(std::string& value)
+  {
+    __ToCase(value.begin(), value.cend(), [](char chr) { return static_cast<char>(std::toupper(chr)); });
+    return value;
+  }
+
+  std::string& ToTitleCase(std::string& value)
   {
     bool isQualifier = true;
-    return __ToCase(value, [&isQualifier](char chr) {
+    __ToCase(value.begin(), value.cend(), [&isQualifier](char chr) {
       const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
       isQualifier          = (std::isspace(chr) != 0) || (std::ispunct(chr) != 0);
       return tmpResult;
     });
+
+    return value;
   }
 
-  std::string ToSentenceCase(const std::string& value)
+  std::string& ToSentenceCase(std::string& value)
   {
     bool isQualifier = true;
-    return __ToCase(value, [&isQualifier](char chr) {
+    __ToCase(value.begin(), value.cend(), [&isQualifier](char chr) {
       if(std::isalpha(chr) != 0)
       {
         const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
@@ -66,6 +81,66 @@ namespace Text
         return chr;
       }
     });
+
+    return value;
+  }
+
+  std::string ToLowercaseCopy(const std::string& value)
+  {
+    std::string result;
+    result.reserve(value.size());
+    __ToCase(value.cbegin(), value.cend(), std::back_inserter(result), [](char chr) { return static_cast<char>(std::tolower(chr)); });
+    return result;
+  }
+
+  std::string ToUppercaseCopy(const std::string& value)
+  {
+    std::string result;
+    result.reserve(value.size());
+    __ToCase(value.cbegin(), value.cend(), std::back_inserter(result), [](char chr) { return static_cast<char>(std::toupper(chr)); });
+    return result;
+  }
+
+  std::string ToTitleCaseCopy(const std::string& value)
+  {
+    std::string result;
+    result.reserve(value.size());
+
+    bool isQualifier = true;
+    __ToCase(value.cbegin(), value.cend(), std::back_inserter(result), [&isQualifier](char chr) {
+      const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
+      isQualifier          = (std::isspace(chr) != 0) || (std::ispunct(chr) != 0);
+      return tmpResult;
+    });
+
+    return result;
+  }
+
+  std::string ToSentenceCaseCopy(const std::string& value)
+  {
+    std::string result;
+    result.reserve(value.size());
+
+    bool isQualifier = true;
+    __ToCase(value.cbegin(), value.cend(), std::back_inserter(result), [&isQualifier](char chr) {
+      if(std::isalpha(chr) != 0)
+      {
+        const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
+        isQualifier          = false;
+        return tmpResult;
+      }
+      else
+      {
+        if(chr == '.')
+        {
+          isQualifier = true;
+        }
+
+        return chr;
+      }
+    });
+
+    return result;
   }
 
   std::string Trim(const std::string& value)
