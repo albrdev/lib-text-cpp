@@ -332,4 +332,20 @@ namespace UnitTest
       ASSERT_EQ(Text::ReverseCopy(value), "321cbA");
     }
   }
+
+  TEST(Common, ToString)
+  {
+    ASSERT_EQ(Text::ToString('x'), "x");
+    ASSERT_EQ(Text::ToString(12345), "12345");
+    ASSERT_EQ(Text::ToString(123.45), "123.45");
+    ASSERT_EQ(Text::ToString("abc 123"), "abc 123");
+  }
+
+  TEST(Common, FromString)
+  {
+    ASSERT_EQ(Text::FromString<char>("x"), 'x');
+    ASSERT_EQ(Text::FromString<int>("12345"), 12345);
+    ASSERT_EQ(Text::FromString<double>("123.45"), 123.45);
+    ASSERT_EQ(Text::FromString<std::string>("abc 123"), "abc");
+  }
 } // namespace UnitTest

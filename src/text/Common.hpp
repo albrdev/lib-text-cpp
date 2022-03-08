@@ -26,36 +26,37 @@ namespace Text
   std::string& Reverse(std::string& value);
   std::string ReverseCopy(const std::string& value);
 
-  template<class T, typename = typename std::enable_if<std::is_convertible<T, std::ostream&>::value>::type>
-  std::string ToString(const T& value)
-  {
-    std::string tmpResult;
-    ToString(value, tmpResult);
-    return tmpResult;
-  }
-
-  template<class T, typename = typename std::enable_if<std::is_convertible<T, std::ostream&>::value>::type>
-  bool ToString(const T& value, std::string& result)
+  template<class T>
+  bool TryToString(const T& value, std::string& result)
   {
     std::ostringstream oss;
     oss << value;
+    result = oss.str();
     return oss.good() || oss.eof();
   }
 
-  template<class T, typename = typename std::enable_if<std::is_convertible<std::istream&, T>::value>::type>
-  T FromString(const std::string& value)
+  template<class T>
+  std::string ToString(const T& value)
   {
-    T tmpResult;
-    FromString(value, tmpResult);
+    std::string tmpResult;
+    TryToString(value, tmpResult);
     return tmpResult;
   }
 
-  template<class T, typename = typename std::enable_if<std::is_convertible<std::istream&, T>::value>::type>
-  bool FromString(const std::string& value, T& result)
+  template<class T>
+  bool TryFromString(const std::string& value, T& result)
   {
     std::istringstream iss(value);
     iss >> result;
     return iss.good() || iss.eof();
+  }
+
+  template<class T>
+  T FromString(const std::string& value)
+  {
+    T tmpResult;
+    TryFromString(value, tmpResult);
+    return tmpResult;
   }
 } // namespace Text
 
