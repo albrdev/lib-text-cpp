@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+#include <stdexcept>
 
 namespace Text
 {
@@ -39,7 +40,11 @@ namespace Text
   std::string ToString(const T& value)
   {
     std::string tmpResult;
-    TryToString(value, tmpResult);
+    if(!TryToString(value, tmpResult))
+    {
+      throw std::invalid_argument("Error converting to string");
+    }
+
     return tmpResult;
   }
 
@@ -55,7 +60,11 @@ namespace Text
   T FromString(const std::string& value)
   {
     T tmpResult;
-    TryFromString(value, tmpResult);
+    if(!TryFromString(value, tmpResult))
+    {
+      throw std::invalid_argument("Error converting from string");
+    }
+
     return tmpResult;
   }
 } // namespace Text
