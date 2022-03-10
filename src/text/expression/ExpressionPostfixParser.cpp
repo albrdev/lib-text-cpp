@@ -27,10 +27,10 @@ namespace Text::Expression
       {
         queue.push(current);
       }
-      else if((anyOperator = current->AsPointer<IOperatorToken>()) != nullptr)
+      else if((anyOperator = current->As<IOperatorToken*>()) != nullptr)
       {
         IOperatorToken* tmpOperator;
-        while(!stack.empty() && (tmpOperator = stack.top()->AsPointer<IOperatorToken>()) != nullptr)
+        while(!stack.empty() && (tmpOperator = stack.top()->As<IOperatorToken*>()) != nullptr)
         {
           if(((anyOperator->GetAssociativity() & Associativity::Left) != 0 && anyOperator->GetPrecedence() <= tmpOperator->GetPrecedence()) ||
              anyOperator->GetPrecedence() < tmpOperator->GetPrecedence())
@@ -46,14 +46,14 @@ namespace Text::Expression
 
         stack.push(current);
       }
-      else if((function = current->AsPointer<FunctionToken>()) != nullptr)
+      else if((function = current->As<FunctionToken*>()) != nullptr)
       {
         auto functionClone = std::make_unique<FunctionToken>(*function);
         m_FunctionCache.push_back(std::move(functionClone));
         stack.push(m_FunctionCache.back().get());
         functions.push(m_FunctionCache.back().get());
       }
-      else if((misc = current->AsPointer<MiscType>()) != nullptr)
+      else if((misc = current->As<MiscType*>()) != nullptr)
       {
         switch(*misc)
         {
@@ -75,7 +75,7 @@ namespace Text::Expression
 
               if(functions.top()->m_BracketBalance == 0)
               {
-                if(previous != nullptr && ((misc = previous->AsPointer<MiscType>()) == nullptr || *misc != '('))
+                if(previous != nullptr && ((misc = previous->As<const MiscType*>()) == nullptr || *misc != '('))
                 {
                   functions.top()->m_ArgumentCount++;
                 }
@@ -85,7 +85,7 @@ namespace Text::Expression
             }
 
             misc = nullptr;
-            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || *misc != '('))
+            while(!stack.empty() && ((misc = stack.top()->As<MiscType*>()) == nullptr || *misc != '('))
             {
               queue.push(stack.top());
               stack.pop();
@@ -113,7 +113,7 @@ namespace Text::Expression
               functions.top()->m_ArgumentCount++;
             }
 
-            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || *misc != '('))
+            while(!stack.empty() && ((misc = stack.top()->As<MiscType*>()) == nullptr || *misc != '('))
             {
               queue.push(stack.top());
               stack.pop();
@@ -139,7 +139,7 @@ namespace Text::Expression
 
     while(!stack.empty())
     {
-      if((misc = stack.top()->AsPointer<MiscType>()) != nullptr && (*misc == '(' || *misc == ')'))
+      if((misc = stack.top()->As<MiscType*>()) != nullptr && (*misc == '(' || *misc == ')'))
       {
         throw Exception::SyntaxException("Missing matching closing bracket");
       }

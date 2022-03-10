@@ -22,11 +22,11 @@ namespace Text::Expression
     {
       const auto current = postfix.front();
 
-      if((value = current->AsPointer<IValueToken>()) != nullptr)
+      if((value = current->As<IValueToken*>()) != nullptr)
       {
         stack.push_back(value);
       }
-      else if((unaryOperator = current->AsPointer<IUnaryOperatorToken>()) != nullptr)
+      else if((unaryOperator = current->As<IUnaryOperatorToken*>()) != nullptr)
       {
         if(stack.size() < 1u)
         {
@@ -40,7 +40,7 @@ namespace Text::Expression
         m_ResultCache.push_back(std::unique_ptr<IValueToken>(value));
         stack.push_back(value);
       }
-      else if((binaryOperator = current->AsPointer<IBinaryOperatorToken>()) != nullptr)
+      else if((binaryOperator = current->As<IBinaryOperatorToken*>()) != nullptr)
       {
         if(stack.size() < 2u)
         {
@@ -60,7 +60,7 @@ namespace Text::Expression
 
         stack.push_back(value);
       }
-      else if((function = current->AsPointer<FunctionToken>()) != nullptr)
+      else if((function = current->As<FunctionToken*>()) != nullptr)
       {
         if(function->m_ArgumentCount < function->GetMinArgumentCount() ||
            function->m_ArgumentCount > std::min(function->GetMaxArgumentCount(), FunctionToken::GetArgumentCountMaxLimit()))
