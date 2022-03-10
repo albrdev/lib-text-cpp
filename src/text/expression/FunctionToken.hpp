@@ -1,7 +1,6 @@
 #ifndef __TEXT_EXPRESSION__FUNCTIONTOKEN_HPP__
 #define __TEXT_EXPRESSION__FUNCTIONTOKEN_HPP__
 
-#include "TokenBase.hpp"
 #include "IFunctionToken.hpp"
 #include "IValueToken.hpp"
 #include <string>
@@ -12,13 +11,13 @@ namespace Text::Expression
   class ExpressionPostfixParser;
   class ExpressionEvaluator;
 
-  class FunctionToken : public IFunctionToken, public TokenBase<std::function<IValueToken*(const std::vector<IValueToken*>&)>>
+  class FunctionToken : public IFunctionToken
   {
     friend class ExpressionPostfixParser;
     friend class ExpressionEvaluator;
 
     public:
-    using CallbackType = TokenBase<std::function<IValueToken*(const std::vector<IValueToken*>&)>>::ObjectType;
+    using CallbackType = std::function<IValueToken*(const std::vector<IValueToken*>&)>;
 
     static const std::size_t& GetArgumentCountMaxLimit();
     static void SetArgumentsMaxLimit(std::size_t value);
@@ -42,11 +41,9 @@ namespace Text::Expression
     FunctionToken& operator=(FunctionToken&& other);
 
     private:
-    using TokenBase<FunctionToken::CallbackType>::GetObject;
-    using TokenBase<FunctionToken::CallbackType>::SetObject;
-
     static std::size_t s_ArgumentsMaxLimit;
 
+    CallbackType m_Callback;
     std::string m_Identifier;
     std::size_t m_MinArgumentCount;
     std::size_t m_MaxArgumentCount;

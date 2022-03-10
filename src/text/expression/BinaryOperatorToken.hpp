@@ -1,7 +1,6 @@
 #ifndef __TEXT_EXPRESSION__BINARYOPERATORTOKEN_HPP__
 #define __TEXT_EXPRESSION__BINARYOPERATORTOKEN_HPP__
 
-#include "TokenBase.hpp"
 #include "IBinaryOperatorToken.hpp"
 #include "IValueToken.hpp"
 #include <string>
@@ -9,10 +8,10 @@
 
 namespace Text::Expression
 {
-  class BinaryOperatorToken : public IBinaryOperatorToken, public TokenBase<std::function<IValueToken*(IValueToken*, IValueToken*)>>
+  class BinaryOperatorToken : public IBinaryOperatorToken
   {
     public:
-    using CallbackType = TokenBase<std::function<IValueToken*(IValueToken*, IValueToken*)>>::ObjectType;
+    using CallbackType = std::function<IValueToken*(IValueToken*, IValueToken*)>;
 
     virtual IValueToken* operator()(IValueToken* lhs, IValueToken* rhs) const override;
     virtual const std::string& GetIdentifier() const override;
@@ -30,9 +29,7 @@ namespace Text::Expression
     BinaryOperatorToken& operator=(BinaryOperatorToken&& other);
 
     private:
-    using TokenBase<BinaryOperatorToken::CallbackType>::GetObject;
-    using TokenBase<BinaryOperatorToken::CallbackType>::SetObject;
-
+    CallbackType m_Callback;
     std::string m_Identifier;
     int m_Precedence;
     Associativity m_Associativity;

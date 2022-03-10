@@ -1,58 +1,63 @@
 #ifndef __TEXT_EXPRESSION__GENERICTOKEN_HPP__
 #define __TEXT_EXPRESSION__GENERICTOKEN_HPP__
 
-#include "TokenBase.hpp"
 #include <string>
 #include <sstream>
 
 namespace Text::Expression
 {
   template<class T>
-  class GenericToken : public TokenBase<T>
+  class GenericToken : public virtual IToken
   {
     public:
     virtual std::string ToString() const override
     {
       std::ostringstream oss;
-      oss << this->GetObject();
+      oss << m_Object;
       return oss.str();
     }
 
+    operator const T&() const { return m_Object; }
+    operator T&() { return m_Object; }
+
     GenericToken<T>& operator=(const T& value)
     {
-      TokenBase<T>::operator=(value);
+      m_Object = value;
       return *this;
     }
 
     GenericToken(const T& value)
-        : TokenBase<T>(value)
+        : m_Object(value)
     {}
 
     virtual ~GenericToken() override = default;
 
     GenericToken()
-        : TokenBase<T>()
+        : m_Object()
     {}
 
     GenericToken(const GenericToken<T>& other)
-        : TokenBase<T>(other)
+        : m_Object(other.m_Object)
     {}
 
     GenericToken(GenericToken<T>&& other)
-        : TokenBase<T>(std::move(other))
+        : m_Object(std::move(other.m_Object))
     {}
 
     GenericToken<T>& operator=(const GenericToken<T>& other)
     {
-      TokenBase<T>::operator=(other);
+      m_Object = other.m_Object;
       return *this;
     }
 
     GenericToken<T>& operator=(GenericToken<T>&& other)
     {
-      TokenBase<T>::operator=(std::move(other));
+      m_Object = std::move(other.m_Object);
       return *this;
     }
+
+    private:
+    T m_Object;
   };
 } // namespace Text::Expression
 

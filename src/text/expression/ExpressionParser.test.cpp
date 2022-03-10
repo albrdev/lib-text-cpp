@@ -23,8 +23,8 @@ using ArithmeticValue    = ValueToken<std::nullptr_t, std::string, std::uint64_t
 using ArithmeticVariable = VariableToken<std::nullptr_t, std::string, std::uint64_t, ArithmeticType>;
 
 using BitwiseType     = std::uint64_t;
-using BitwiseValue    = ValueToken<std::nullptr_t, std::string, BitwiseType>;
-using BitwiseVariable = VariableToken<std::nullptr_t, std::string, BitwiseType>;
+using BitwiseValue    = ValueToken<BitwiseType>;
+using BitwiseVariable = VariableToken<BitwiseType>;
 
 static ArithmeticValue* arithmeticNumberConverter(const std::string& value)
 {

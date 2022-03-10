@@ -2,7 +2,7 @@
 
 namespace Text::Expression
 {
-  IValueToken* UnaryOperatorToken::operator()(IValueToken* rhs) const { return this->GetObject()(rhs); }
+  IValueToken* UnaryOperatorToken::operator()(IValueToken* rhs) const { return m_Callback(rhs); }
   const char& UnaryOperatorToken::GetIdentifier() const { return m_Identifier; }
   const int& UnaryOperatorToken::GetPrecedence() const { return m_Precedence; }
   const Associativity& UnaryOperatorToken::GetAssociativity() const { return m_Associativity; }
@@ -11,7 +11,7 @@ namespace Text::Expression
 
   UnaryOperatorToken::UnaryOperatorToken(const UnaryOperatorToken::CallbackType& callback, const char identifier, int precedence, Associativity associativity)
       : IUnaryOperatorToken()
-      , TokenBase<UnaryOperatorToken::CallbackType>(callback)
+      , m_Callback(callback)
       , m_Identifier(identifier)
       , m_Precedence(precedence)
       , m_Associativity(associativity)
@@ -19,7 +19,7 @@ namespace Text::Expression
 
   UnaryOperatorToken::UnaryOperatorToken()
       : IUnaryOperatorToken()
-      , TokenBase<UnaryOperatorToken::CallbackType>()
+      , m_Callback()
       , m_Identifier()
       , m_Precedence(0)
       , m_Associativity(Associativity::Any)
@@ -29,7 +29,7 @@ namespace Text::Expression
       : IToken()
       , IOperatorToken()
       , IUnaryOperatorToken()
-      , TokenBase<UnaryOperatorToken::CallbackType>(other)
+      , m_Callback(other.m_Callback)
       , m_Identifier(other.m_Identifier)
       , m_Precedence(other.m_Precedence)
       , m_Associativity(other.m_Associativity)
@@ -37,7 +37,7 @@ namespace Text::Expression
 
   UnaryOperatorToken::UnaryOperatorToken(UnaryOperatorToken&& other)
       : IUnaryOperatorToken()
-      , TokenBase<UnaryOperatorToken::CallbackType>(std::move(other))
+      , m_Callback(std::move(other.m_Callback))
       , m_Identifier(std::move(other.m_Identifier))
       , m_Precedence(std::move(other.m_Precedence))
       , m_Associativity(std::move(other.m_Associativity))
@@ -45,20 +45,20 @@ namespace Text::Expression
 
   UnaryOperatorToken& UnaryOperatorToken::operator=(const UnaryOperatorToken& other)
   {
-    TokenBase<UnaryOperatorToken::CallbackType>::operator=(other);
-    m_Identifier                                         = other.m_Identifier;
-    m_Precedence                                         = other.m_Precedence;
-    m_Associativity                                      = other.m_Associativity;
+    m_Callback      = other.m_Callback;
+    m_Identifier    = other.m_Identifier;
+    m_Precedence    = other.m_Precedence;
+    m_Associativity = other.m_Associativity;
 
     return *this;
   }
 
   UnaryOperatorToken& UnaryOperatorToken::operator=(UnaryOperatorToken&& other)
   {
-    TokenBase<UnaryOperatorToken::CallbackType>::operator=(std::move(other));
-    m_Identifier                                         = std::move(other.m_Identifier);
-    m_Precedence                                         = std::move(other.m_Precedence);
-    m_Associativity                                      = std::move(other.m_Associativity);
+    m_Callback      = std::move(other.m_Callback);
+    m_Identifier    = std::move(other.m_Identifier);
+    m_Precedence    = std::move(other.m_Precedence);
+    m_Associativity = std::move(other.m_Associativity);
 
     return *this;
   }

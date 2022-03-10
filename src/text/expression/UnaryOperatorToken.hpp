@@ -1,7 +1,6 @@
 #ifndef __TEXT_EXPRESSION__UNARYOPERATORTOKEN_HPP__
 #define __TEXT_EXPRESSION__UNARYOPERATORTOKEN_HPP__
 
-#include "TokenBase.hpp"
 #include "IUnaryOperatorToken.hpp"
 #include "IValueToken.hpp"
 #include <string>
@@ -9,10 +8,10 @@
 
 namespace Text::Expression
 {
-  class UnaryOperatorToken : public IUnaryOperatorToken, public TokenBase<std::function<IValueToken*(IValueToken*)>>
+  class UnaryOperatorToken : public IUnaryOperatorToken
   {
     public:
-    using CallbackType = TokenBase<std::function<IValueToken*(IValueToken*)>>::ObjectType;
+    using CallbackType = std::function<IValueToken*(IValueToken*)>;
 
     virtual IValueToken* operator()(IValueToken* rhs) const override;
     virtual const char& GetIdentifier() const override;
@@ -30,9 +29,7 @@ namespace Text::Expression
     UnaryOperatorToken& operator=(UnaryOperatorToken&& other);
 
     private:
-    using TokenBase<UnaryOperatorToken::CallbackType>::GetObject;
-    using TokenBase<UnaryOperatorToken::CallbackType>::SetObject;
-
+    CallbackType m_Callback;
     char m_Identifier;
     int m_Precedence;
     Associativity m_Associativity;

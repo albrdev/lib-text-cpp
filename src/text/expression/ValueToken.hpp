@@ -5,18 +5,16 @@
 #include <variant>
 #include <sstream>
 #include <typeinfo>
-#include "TokenBase.hpp"
 #include "IValueToken.hpp"
 
 namespace Text::Expression
 {
   template<class... Ts>
-  using ValueType = std::variant<Ts...>;
-
-  template<class... Ts>
-  class ValueToken : public virtual IValueToken, public TokenBase<ValueType<Ts...>>
+  class ValueToken : public virtual IValueToken
   {
     public:
+    using ValueType = std::variant<Ts...>;
+
     template<class T>
     const auto& GetValue() const
     {
@@ -25,7 +23,7 @@ namespace Text::Expression
         ThrowOnUninitializedAccess();
       }
 
-      return std::get<T>(this->GetObject());
+      return std::get<T>(m_Value);
     }
 
     template<class T>
@@ -36,17 +34,17 @@ namespace Text::Expression
         ThrowOnUninitializedAccess();
       }
 
-      return std::get<T>(this->GetObject());
+      return std::get<T>(m_Value);
     }
 
     template<class T>
     void SetValue(const T& value)
     {
-      this->SetObject(ValueType<Ts...>(value));
+      m_Value         = value;
       m_IsInitialized = true;
     }
 
-    const std::type_info& GetType() const override { return std::visit(TypeIdVisitor(), this->GetObject()); }
+    const std::type_info& GetType() const override { return std::visit(TypeIdVisitor(), m_Value); }
 
     const bool& IsInitialized() const { return m_IsInitialized; }
 
@@ -57,21 +55,21 @@ namespace Text::Expression
         ThrowOnUninitializedAccess();
       }
 
-      return std::visit(ToStringVisitor(), this->GetObject());
+      return std::visit(ToStringVisitor(), m_Value);
     }
 
     template<class T>
     ValueToken<Ts...>& operator=(const T& value)
     {
-      TokenBase<ValueType<Ts...>>::operator=(value);
-      m_IsInitialized                      = true;
+      m_Value         = value;
+      m_IsInitialized = true;
       return *this;
     }
 
     template<class T>
     explicit ValueToken(const T& value)
         : IValueToken()
-        , TokenBase<ValueType<Ts...>>(ValueType<Ts...>(value))
+        , m_Value(value)
         , m_IsInitialized(true)
     {}
 
@@ -79,34 +77,34 @@ namespace Text::Expression
 
     ValueToken()
         : IValueToken()
-        , TokenBase<ValueType<Ts...>>(ValueType<Ts...>(nullptr))
+        , m_Value()
         , m_IsInitialized(false)
     {}
 
     ValueToken(const ValueToken<Ts...>& other)
         : IToken()
         , IValueToken()
-        , TokenBase<ValueType<Ts...>>(other)
+        , m_Value(other.m_Value)
         , m_IsInitialized(other.m_IsInitialized)
     {}
 
     ValueToken(ValueToken<Ts...>&& other)
         : IValueToken()
-        , TokenBase<ValueType<Ts...>>(std::move(other))
+        , m_Value(std::move(other.m_Value))
         , m_IsInitialized(std::move(other.m_IsInitialized))
     {}
 
     ValueToken<Ts...>& operator=(const ValueToken<Ts...>& other)
     {
-      TokenBase<ValueType<Ts...>>::operator=(other);
-      m_IsInitialized                      = other.m_IsInitialized;
+      m_Value         = (other.m_Value);
+      m_IsInitialized = other.m_IsInitialized;
       return *this;
     }
 
     ValueToken<Ts...>& operator=(ValueToken<Ts...>&& other)
     {
-      TokenBase<ValueType<Ts...>>::operator=(std::move(other));
-      m_IsInitialized                      = std::move(other.m_IsInitialized);
+      m_Value         = std::move(other.m_Value);
+      m_IsInitialized = std::move(other.m_IsInitialized);
       return *this;
     }
 
@@ -114,9 +112,6 @@ namespace Text::Expression
     virtual void ThrowOnUninitializedAccess() const { throw std::runtime_error("Accessing uninitialized value"); }
 
     private:
-    using TokenBase<ValueType<Ts...>>::GetObject;
-    using TokenBase<ValueType<Ts...>>::SetObject;
-
     struct TypeIdVisitor
     {
       const std::type_info& operator()(const auto& value) const { return typeid(value); }
@@ -140,6 +135,7 @@ namespace Text::Expression
       }
     };
 
+    ValueType m_Value;
     bool m_IsInitialized;
   };
 } // namespace Text::Expression

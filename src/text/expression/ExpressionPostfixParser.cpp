@@ -55,7 +55,7 @@ namespace Text::Expression
       }
       else if((misc = current->AsPointer<MiscType>()) != nullptr)
       {
-        switch(misc->GetObject())
+        switch(*misc)
         {
           case '(':
           {
@@ -75,7 +75,7 @@ namespace Text::Expression
 
               if(functions.top()->m_BracketBalance == 0)
               {
-                if(previous != nullptr && ((misc = previous->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
+                if(previous != nullptr && ((misc = previous->AsPointer<MiscType>()) == nullptr || *misc != '('))
                 {
                   functions.top()->m_ArgumentCount++;
                 }
@@ -85,13 +85,13 @@ namespace Text::Expression
             }
 
             misc = nullptr;
-            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
+            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || *misc != '('))
             {
               queue.push(stack.top());
               stack.pop();
             }
 
-            if(misc == nullptr || misc->GetObject() != '(')
+            if(misc == nullptr || *misc != '(')
             {
               throw Exception::SyntaxException("Missing matching closing bracket");
             }
@@ -113,13 +113,13 @@ namespace Text::Expression
               functions.top()->m_ArgumentCount++;
             }
 
-            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || misc->GetObject() != '('))
+            while(!stack.empty() && ((misc = stack.top()->AsPointer<MiscType>()) == nullptr || *misc != '('))
             {
               queue.push(stack.top());
               stack.pop();
             }
 
-            if(misc == nullptr || misc->GetObject() != '(')
+            if(misc == nullptr || *misc != '(')
             {
               throw Exception::SyntaxException("Missing matching opening bracket");
             }
@@ -139,7 +139,7 @@ namespace Text::Expression
 
     while(!stack.empty())
     {
-      if((misc = stack.top()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ')'))
+      if((misc = stack.top()->AsPointer<MiscType>()) != nullptr && (*misc == '(' || *misc == ')'))
       {
         throw Exception::SyntaxException("Missing matching closing bracket");
       }

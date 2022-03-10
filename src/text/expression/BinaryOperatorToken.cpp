@@ -2,7 +2,7 @@
 
 namespace Text::Expression
 {
-  IValueToken* BinaryOperatorToken::operator()(IValueToken* lhs, IValueToken* rhs) const { return this->GetObject()(lhs, rhs); }
+  IValueToken* BinaryOperatorToken::operator()(IValueToken* lhs, IValueToken* rhs) const { return m_Callback(lhs, rhs); }
   const std::string& BinaryOperatorToken::GetIdentifier() const { return m_Identifier; }
   const int& BinaryOperatorToken::GetPrecedence() const { return m_Precedence; }
   const Associativity& BinaryOperatorToken::GetAssociativity() const { return m_Associativity; }
@@ -14,7 +14,7 @@ namespace Text::Expression
                                            int precedence,
                                            Associativity associativity)
       : IBinaryOperatorToken()
-      , TokenBase<BinaryOperatorToken::CallbackType>(callback)
+      , m_Callback(callback)
       , m_Identifier(identifier)
       , m_Precedence(precedence)
       , m_Associativity(associativity)
@@ -22,7 +22,7 @@ namespace Text::Expression
 
   BinaryOperatorToken::BinaryOperatorToken()
       : IBinaryOperatorToken()
-      , TokenBase<BinaryOperatorToken::CallbackType>()
+      , m_Callback()
       , m_Identifier()
       , m_Precedence(0)
       , m_Associativity(Associativity::Any)
@@ -32,7 +32,7 @@ namespace Text::Expression
       : IToken()
       , IOperatorToken()
       , IBinaryOperatorToken()
-      , TokenBase<BinaryOperatorToken::CallbackType>(other)
+      , m_Callback(other.m_Callback)
       , m_Identifier(other.m_Identifier)
       , m_Precedence(other.m_Precedence)
       , m_Associativity(other.m_Associativity)
@@ -40,7 +40,7 @@ namespace Text::Expression
 
   BinaryOperatorToken::BinaryOperatorToken(BinaryOperatorToken&& other)
       : IBinaryOperatorToken()
-      , TokenBase<BinaryOperatorToken::CallbackType>(std::move(other))
+      , m_Callback(std::move(other.m_Callback))
       , m_Identifier(std::move(other.m_Identifier))
       , m_Precedence(std::move(other.m_Precedence))
       , m_Associativity(std::move(other.m_Associativity))
@@ -48,20 +48,20 @@ namespace Text::Expression
 
   BinaryOperatorToken& BinaryOperatorToken::operator=(const BinaryOperatorToken& other)
   {
-    TokenBase<BinaryOperatorToken::CallbackType>::operator=(other);
-    m_Identifier                                          = other.m_Identifier;
-    m_Precedence                                          = other.m_Precedence;
-    m_Associativity                                       = other.m_Associativity;
+    m_Callback      = other.m_Callback;
+    m_Identifier    = other.m_Identifier;
+    m_Precedence    = other.m_Precedence;
+    m_Associativity = other.m_Associativity;
 
     return *this;
   }
 
   BinaryOperatorToken& BinaryOperatorToken::operator=(BinaryOperatorToken&& other)
   {
-    TokenBase<BinaryOperatorToken::CallbackType>::operator=(std::move(other));
-    m_Identifier                                          = std::move(other.m_Identifier);
-    m_Precedence                                          = std::move(other.m_Precedence);
-    m_Associativity                                       = std::move(other.m_Associativity);
+    m_Callback      = std::move(other.m_Callback);
+    m_Identifier    = std::move(other.m_Identifier);
+    m_Precedence    = std::move(other.m_Precedence);
+    m_Associativity = std::move(other.m_Associativity);
 
     return *this;
   }

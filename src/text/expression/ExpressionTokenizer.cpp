@@ -71,7 +71,7 @@ namespace Text::Expression
       {
         MiscType* misc;
         if(hasUnOps && (result.empty() || result.back()->IsType<IOperatorToken>() ||
-                        ((misc = result.back()->AsPointer<MiscType>()) != nullptr && (misc->GetObject() == '(' || misc->GetObject() == ','))))
+                        ((misc = result.back()->AsPointer<MiscType>()) != nullptr && (*misc == '(' || *misc == ','))))
         {
           const auto iter = unaryOperators->find(GetCurrent());
           if(iter == unaryOperators->cend())
@@ -154,8 +154,8 @@ namespace Text::Expression
         MiscType* misc;
 
         bool previousIsValue            = previous->IsType<IValueToken>();
-        bool previousIsRightParenthesis = (misc = previous->AsPointer<MiscType>()) != nullptr && misc->GetObject() == ')';
-        bool currentIsLeftParenthesis   = (misc = current->AsPointer<MiscType>()) && misc->GetObject() == '(';
+        bool previousIsRightParenthesis = (misc = previous->AsPointer<MiscType>()) != nullptr && *misc == ')';
+        bool currentIsLeftParenthesis   = (misc = current->AsPointer<MiscType>()) && *misc == '(';
 
         if((current->IsType<IValueToken>() && (previousIsRightParenthesis || (current->IsType<IVariableToken>() && previousIsValue))) ||
            (current->IsType<IFunctionToken>() && (previousIsRightParenthesis || previousIsValue)) || (currentIsLeftParenthesis && previousIsValue))

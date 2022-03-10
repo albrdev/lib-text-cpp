@@ -10,7 +10,6 @@ target_sources(${LIBRARY_TEXT}
   IBinaryOperatorToken.hpp
   IFunctionToken.hpp
 
-  TokenBase.hpp
   GenericToken.hpp
   ValueToken.hpp
   VariableToken.hpp
