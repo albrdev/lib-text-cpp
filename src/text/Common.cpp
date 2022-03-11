@@ -14,7 +14,7 @@ namespace Text
     return std::equal(a.begin(), a.end(), b.begin(), b.end(), [](char a, char b) { return std::tolower(a) == std::tolower(b); });
   }
 
-  static void __ToCase(const std::string::iterator& begin, const std::string::const_iterator& end, const std::function<char(char)>& callback)
+  static void __toCase(const std::string::iterator& begin, const std::string::const_iterator& end, const std::function<char(char)>& callback)
   {
     std::string::iterator iter = begin;
     while(iter != end)
@@ -24,7 +24,7 @@ namespace Text
     }
   }
 
-  static void __ToCase(const std::string::const_iterator& begin,
+  static void __toCase(const std::string::const_iterator& begin,
                        const std::string::const_iterator& end,
                        std::back_insert_iterator<std::string> result,
                        const std::function<char(char)>& callback)
@@ -39,20 +39,20 @@ namespace Text
 
   std::string& ToLowercase(std::string& value)
   {
-    __ToCase(value.begin(), value.cend(), [](char chr) { return static_cast<char>(std::tolower(chr)); });
+    __toCase(value.begin(), value.cend(), [](char chr) { return static_cast<char>(std::tolower(chr)); });
     return value;
   }
 
   std::string& ToUppercase(std::string& value)
   {
-    __ToCase(value.begin(), value.cend(), [](char chr) { return static_cast<char>(std::toupper(chr)); });
+    __toCase(value.begin(), value.cend(), [](char chr) { return static_cast<char>(std::toupper(chr)); });
     return value;
   }
 
   std::string& ToTitleCase(std::string& value)
   {
     bool isQualifier = true;
-    __ToCase(value.begin(), value.cend(), [&isQualifier](char chr) {
+    __toCase(value.begin(), value.cend(), [&isQualifier](char chr) {
       const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
       isQualifier          = (std::isspace(chr) != 0) || (std::ispunct(chr) != 0);
       return tmpResult;
@@ -64,7 +64,7 @@ namespace Text
   std::string& ToSentenceCase(std::string& value)
   {
     bool isQualifier = true;
-    __ToCase(value.begin(), value.cend(), [&isQualifier](char chr) {
+    __toCase(value.begin(), value.cend(), [&isQualifier](char chr) {
       if(std::isalpha(chr) != 0)
       {
         const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
@@ -89,7 +89,7 @@ namespace Text
   {
     std::string result;
     result.reserve(value.size());
-    __ToCase(value.cbegin(), value.cend(), std::back_inserter(result), [](char chr) { return static_cast<char>(std::tolower(chr)); });
+    __toCase(value.cbegin(), value.cend(), std::back_inserter(result), [](char chr) { return static_cast<char>(std::tolower(chr)); });
     return result;
   }
 
@@ -97,7 +97,7 @@ namespace Text
   {
     std::string result;
     result.reserve(value.size());
-    __ToCase(value.cbegin(), value.cend(), std::back_inserter(result), [](char chr) { return static_cast<char>(std::toupper(chr)); });
+    __toCase(value.cbegin(), value.cend(), std::back_inserter(result), [](char chr) { return static_cast<char>(std::toupper(chr)); });
     return result;
   }
 
@@ -107,7 +107,7 @@ namespace Text
     result.reserve(value.size());
 
     bool isQualifier = true;
-    __ToCase(value.cbegin(), value.cend(), std::back_inserter(result), [&isQualifier](char chr) {
+    __toCase(value.cbegin(), value.cend(), std::back_inserter(result), [&isQualifier](char chr) {
       const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
       isQualifier          = (std::isspace(chr) != 0) || (std::ispunct(chr) != 0);
       return tmpResult;
@@ -122,7 +122,7 @@ namespace Text
     result.reserve(value.size());
 
     bool isQualifier = true;
-    __ToCase(value.cbegin(), value.cend(), std::back_inserter(result), [&isQualifier](char chr) {
+    __toCase(value.cbegin(), value.cend(), std::back_inserter(result), [&isQualifier](char chr) {
       if(std::isalpha(chr) != 0)
       {
         const char tmpResult = static_cast<char>(isQualifier ? std::toupper(chr) : std::tolower(chr));
