@@ -7,13 +7,20 @@ namespace Text::Formatting
   std::string TextFormatter::ParseValue()
   {
     std::string result;
-    if(Parser::IsNumber(GetCurrent()) || (GetCurrent() == '+' || GetCurrent() == '-'))
+    const char current = GetCurrent();
+    if(Parser::IsNumber(current) || (current == '+' || current == '-'))
     {
       ParseNumber(result);
     }
-    else if(Parser::IsString(GetCurrent()))
+    else if(Parser::IsString(current))
     {
-      ParseIntermediate(result);
+      ParseString(result);
+      if(GetCurrent() != current)
+      {
+        throw Exception::SyntaxException("Unterminated string: " + result, GetIndex() - result.length());
+      }
+
+      Next();
     }
     else
     {}

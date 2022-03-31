@@ -27,11 +27,11 @@ namespace Text::Parsing
     static bool IsIdentifier(char character);
 
     Parser& ParseNumber(std::string& result);
-    Parser& ParseIntermediate(std::string& result);
+    Parser& ParseString(std::string& result);
     Parser& ParseIdentifier(std::string& result);
 
     std::string ParseNumber();
-    std::string ParseIntermediate();
+    std::string ParseString();
     std::string ParseIdentifier();
 
     private:

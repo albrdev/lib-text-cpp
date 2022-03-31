@@ -59,9 +59,16 @@ namespace Text::Parsing
       }
 
       std::string tmpResult;
-      if(GetCurrent() == '\'' || GetCurrent() == '\"')
+      const char current = GetCurrent();
+      if(Parser::IsString(current))
       {
-        tmpResult = ParseIntermediate();
+        tmpResult = ParseString();
+        if(GetCurrent() != current)
+        {
+          throw Exception::SyntaxException("Unterminated string: " + tmpResult, GetIndex() - tmpResult.length());
+        }
+
+        Next();
       }
       else
       {

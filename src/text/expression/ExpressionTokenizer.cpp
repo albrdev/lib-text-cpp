@@ -43,7 +43,7 @@ namespace Text::Expression
       {
         break;
       }
-      else if(IsNumber(GetCurrent()))
+      else if(Parser::IsNumber(GetCurrent()))
       {
         std::string stringValue = ParseNumber();
         if(m_OnParseNumberCallback == nullptr)
@@ -55,9 +55,15 @@ namespace Text::Expression
         m_TokenCache.push_back(std::unique_ptr<IToken>(value));
         current = m_TokenCache.back().get();
       }
-      else if(IsString(GetCurrent()))
+      else if(Parser::IsString(GetCurrent()))
       {
-        std::string stringValue = ParseIntermediate();
+        const char quote        = GetCurrent();
+        std::string stringValue = ParseString();
+        if(GetCurrent() != quote)
+        {
+          throw Exception::SyntaxException("Unterminated string: " + stringValue, GetIndex() - stringValue.length());
+        }
+
         if(m_OnParseStringCallback == nullptr)
         {
           throw Exception::SyntaxException("Unhandled string token: " + stringValue, GetIndex() - stringValue.length());
@@ -66,6 +72,7 @@ namespace Text::Expression
         auto value = m_OnParseStringCallback(stringValue);
         m_TokenCache.push_back(std::unique_ptr<IToken>(value));
         current = m_TokenCache.back().get();
+        Next();
       }
       else if(unOps.find(GetCurrent()) != unOps.end() || binOps.find(GetCurrent()) != binOps.end())
       {
