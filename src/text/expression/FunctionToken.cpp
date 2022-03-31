@@ -14,7 +14,7 @@ namespace Text::Expression
 
   std::string FunctionToken::ToString() const { return this->GetIdentifier(); }
 
-  FunctionToken::FunctionToken(const FunctionToken::CallbackType& callback, const std::string& identifier, std::size_t minArguments, std::size_t maxArguments)
+  FunctionToken::FunctionToken(const std::string& identifier, const FunctionToken::CallbackType& callback, std::size_t minArguments, std::size_t maxArguments)
       : IFunctionToken()
       , m_Callback(callback)
       , m_Identifier(identifier)

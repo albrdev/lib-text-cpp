@@ -9,8 +9,8 @@ namespace Text::Expression
 
   std::string BinaryOperatorToken::ToString() const { return this->GetIdentifier(); }
 
-  BinaryOperatorToken::BinaryOperatorToken(const BinaryOperatorToken::CallbackType& callback,
-                                           const std::string& identifier,
+  BinaryOperatorToken::BinaryOperatorToken(const std::string& identifier,
+                                           const BinaryOperatorToken::CallbackType& callback,
                                            int precedence,
                                            Associativity associativity)
       : IBinaryOperatorToken()

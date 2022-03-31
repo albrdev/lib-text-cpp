@@ -29,8 +29,8 @@ namespace Text::Expression
 
     virtual std::string ToString() const override;
 
-    FunctionToken(const FunctionToken::CallbackType& callback,
-                  const std::string& identifier,
+    FunctionToken(const std::string& identifier,
+                  const FunctionToken::CallbackType& callback,
                   std::size_t minArguments = 0u,
                   std::size_t maxArguments = FunctionToken::s_ArgumentsMaxLimit);
     virtual ~FunctionToken() override = default;

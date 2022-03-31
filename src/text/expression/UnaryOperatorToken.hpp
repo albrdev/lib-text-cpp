@@ -20,7 +20,7 @@ namespace Text::Expression
 
     virtual std::string ToString() const override;
 
-    UnaryOperatorToken(const UnaryOperatorToken::CallbackType& callback, const char identifier, int precedence, Associativity associativity);
+    UnaryOperatorToken(const char identifier, const UnaryOperatorToken::CallbackType& callback, int precedence, Associativity associativity);
     virtual ~UnaryOperatorToken() override = default;
     UnaryOperatorToken();
     UnaryOperatorToken(const UnaryOperatorToken& other);

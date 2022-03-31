@@ -9,7 +9,7 @@ namespace Text::Expression
 
   std::string UnaryOperatorToken::ToString() const { return std::string(1u, this->GetIdentifier()); }
 
-  UnaryOperatorToken::UnaryOperatorToken(const UnaryOperatorToken::CallbackType& callback, const char identifier, int precedence, Associativity associativity)
+  UnaryOperatorToken::UnaryOperatorToken(const char identifier, const UnaryOperatorToken::CallbackType& callback, int precedence, Associativity associativity)
       : IUnaryOperatorToken()
       , m_Callback(callback)
       , m_Identifier(identifier)

@@ -86,23 +86,34 @@ static Value* __ans(const std::vector<IValueToken*>& args)
   return new Value(__results.at(static_cast<std::size_t>(index)));
 }
 
-static UnaryOperator
-    __unaryOperator_Plus([](IValueToken* rhs) { return new Value(std::abs(rhs->As<Value*>()->GetValue<ValueType>())); }, '+', 4, Associativity::Right);
+static UnaryOperator __unaryOperator_Plus(
+    '+',
+    [](IValueToken* rhs) { return new Value(std::abs(rhs->As<Value*>()->GetValue<ValueType>())); },
+    4,
+    Associativity::Right);
 
-static UnaryOperator __unaryOperator_Minus([](IValueToken* rhs) { return new Value(-rhs->As<Value*>()->GetValue<ValueType>()); }, '-', 4, Associativity::Right);
+static UnaryOperator __unaryOperator_Minus(
+    '-',
+    [](IValueToken* rhs) { return new Value(-rhs->As<Value*>()->GetValue<ValueType>()); },
+    4,
+    Associativity::Right);
 
-static UnaryOperator __unaryOperator_Not([](IValueToken* rhs) { return new Value(static_cast<ValueType>(!rhs->As<Value*>()->GetValue<ValueType>())); },
-                                         '!',
-                                         4,
-                                         Associativity::Right);
+static UnaryOperator __unaryOperator_Not(
+    '!',
+    [](IValueToken* rhs) { return new Value(static_cast<ValueType>(!rhs->As<Value*>()->GetValue<ValueType>())); },
+
+    4,
+    Associativity::Right);
 
 static UnaryOperator __unaryOperator_TwosComplement(
-    [](IValueToken* rhs) { return new Value(static_cast<ValueType>(~static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>()))); },
     '~',
+    [](IValueToken* rhs) { return new Value(static_cast<ValueType>(~static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>()))); },
+
     4,
     Associativity::Right);
 
 static BinaryOperator __binaryOperator_Addition(
+    "+",
     [](IValueToken* lhs, IValueToken* rhs) {
       if(lhs->As<Value*>()->GetType() == typeid(ValueType) && rhs->As<Value*>()->GetType() == typeid(ValueType))
       {
@@ -113,97 +124,109 @@ static BinaryOperator __binaryOperator_Addition(
         return new Value(lhs->ToString() + rhs->ToString());
       }
     },
-    "+",
+
     1,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Subtraction(
-    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() - rhs->As<Value*>()->GetValue<ValueType>()); },
     "-",
+    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() - rhs->As<Value*>()->GetValue<ValueType>()); },
+
     1,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Multiplication(
-    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() * rhs->As<Value*>()->GetValue<ValueType>()); },
     "*",
+    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() * rhs->As<Value*>()->GetValue<ValueType>()); },
+
     2,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Division(
-    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() / rhs->As<Value*>()->GetValue<ValueType>()); },
     "/",
+    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() / rhs->As<Value*>()->GetValue<ValueType>()); },
+
     2,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Remainder(
+    "%",
     [](IValueToken* lhs, IValueToken* rhs) {
       return new Value(
           static_cast<ValueType>(static_cast<long>(lhs->As<Value*>()->GetValue<ValueType>()) % static_cast<long>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-    "%",
+
     2,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Exponentiation(
-    [](IValueToken* lhs, IValueToken* rhs) { return new Value(std::pow(lhs->As<Value*>()->GetValue<ValueType>(), rhs->As<Value*>()->GetValue<ValueType>())); },
     "**",
+    [](IValueToken* lhs, IValueToken* rhs) { return new Value(std::pow(lhs->As<Value*>()->GetValue<ValueType>(), rhs->As<Value*>()->GetValue<ValueType>())); },
+
     3,
     Associativity::Right);
 
 static BinaryOperator __binaryOperator_TruncatedDivision(
+    "//",
     [](IValueToken* lhs, IValueToken* rhs) {
       return new Value(std::trunc(lhs->As<Value*>()->GetValue<ValueType>() / rhs->As<Value*>()->GetValue<ValueType>()));
     },
-    "//",
+
     2,
     Associativity::Right);
 
 static BinaryOperator __binaryOperator_Or(
+    "|",
     [](IValueToken* lhs, IValueToken* rhs) {
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>()) |
                                               static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-    "|",
+
     1,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_And(
+    "&",
     [](IValueToken* lhs, IValueToken* rhs) {
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>()) &
                                               static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-    "&",
+
     1,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Xor(
+    "^",
     [](IValueToken* lhs, IValueToken* rhs) {
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>()) ^
                                               static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-    "^",
+
     2,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_LeftShift(
+    "<<",
     [](IValueToken* lhs, IValueToken* rhs) {
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>())
                                               << static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-    "<<",
+
     1,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_RightShift(
+    ">>",
     [](IValueToken* lhs, IValueToken* rhs) {
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>()) >>
                                               static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-    ">>",
+
     1,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Assignment = BinaryOperator(
+    "=",
     [](IValueToken* lhs, IValueToken* rhs) {
       Variable* variable = lhs->As<Variable*>();
       if(variable == nullptr)
@@ -236,82 +259,95 @@ static BinaryOperator __binaryOperator_Assignment = BinaryOperator(
         auto variableIterator = __temporaryVariableCache.extract(variable->GetIdentifier());
         __variableCache.insert(std::move(variableIterator));
       }
-
       return variable;
     },
-    "=",
+
     4,
     Associativity::Right);
 
-static Function __function_Ans(__ans, "ans", 0u, 1u);
+static Function __function_Ans("ans", __ans, 0u, 1u);
 
 static Function __function_Random(
+    "random",
     [](const std::vector<IValueToken*>& args) {
       static_cast<void>(args);
       return new Value(static_cast<ValueType>(std::rand()));
     },
-    "random",
     0u,
     0u);
 
-static Function
-    __function_Abs([](const std::vector<IValueToken*>& args) { return new Value(std::abs(args[0]->As<Value*>()->GetValue<ValueType>())); }, "abs", 1u, 1u);
+static Function __function_Abs(
+    "abs",
+    [](const std::vector<IValueToken*>& args) { return new Value(std::abs(args[0]->As<Value*>()->GetValue<ValueType>())); },
+    1u,
+    1u);
 
-static Function
-    __function_Neg([](const std::vector<IValueToken*>& args) { return new Value(-std::abs(args[0]->As<Value*>()->GetValue<ValueType>())); }, "neg", 1u, 1u);
+static Function __function_Neg(
+    "neg",
+    [](const std::vector<IValueToken*>& args) { return new Value(-std::abs(args[0]->As<Value*>()->GetValue<ValueType>())); },
+    1u,
+    1u);
 
 static Function __function_MathPow(
+    "math.pow",
     [](const std::vector<IValueToken*>& args) {
       return new Value(std::pow(args[0]->As<Value*>()->GetValue<ValueType>(), args[1]->As<Value*>()->GetValue<ValueType>()));
     },
-    "math.pow",
     2u,
     2u);
 
 static Function __function_MathRoot(
+    "math.root",
     [](const std::vector<IValueToken*>& args) {
       return new Value(std::pow(args[0]->As<Value*>()->GetValue<ValueType>(), 1.0 / args[1]->As<Value*>()->GetValue<ValueType>()));
     },
-    "math.root",
     2u,
     2u);
 
-static Function __function_MathSqrt([](const std::vector<IValueToken*>& args) { return new Value(std::sqrt(args[0]->As<Value*>()->GetValue<ValueType>())); },
-                                    "math.sqrt",
-                                    1u,
-                                    1u);
+static Function __function_MathSqrt(
+    "math.sqrt",
+    [](const std::vector<IValueToken*>& args) { return new Value(std::sqrt(args[0]->As<Value*>()->GetValue<ValueType>())); },
+    1u,
+    1u);
 
-static Function __function_MathLog([](const std::vector<IValueToken*>& args) { return new Value(std::log(args[0]->As<Value*>()->GetValue<ValueType>())); },
-                                   "math.log",
-                                   1u,
-                                   1u);
+static Function __function_MathLog(
+    "math.log",
+    [](const std::vector<IValueToken*>& args) { return new Value(std::log(args[0]->As<Value*>()->GetValue<ValueType>())); },
+    1u,
+    1u);
 
-static Function __function_MathLog2([](const std::vector<IValueToken*>& args) { return new Value(std::log2(args[0]->As<Value*>()->GetValue<ValueType>())); },
-                                    "math.log2",
-                                    1u,
-                                    1u);
+static Function __function_MathLog2(
+    "math.log2",
+    [](const std::vector<IValueToken*>& args) { return new Value(std::log2(args[0]->As<Value*>()->GetValue<ValueType>())); },
+    1u,
+    1u);
 
-static Function __function_MathLog10([](const std::vector<IValueToken*>& args) { return new Value(std::log10(args[0]->As<Value*>()->GetValue<ValueType>())); },
-                                     "math.log10",
-                                     1u,
-                                     1u);
+static Function __function_MathLog10(
+    "math.log10",
+    [](const std::vector<IValueToken*>& args) { return new Value(std::log10(args[0]->As<Value*>()->GetValue<ValueType>())); },
+    1u,
+    1u);
 
-static Function __function_MathSin([](const std::vector<IValueToken*>& args) { return new Value(std::sin(args[0]->As<Value*>()->GetValue<ValueType>())); },
-                                   "math.sin",
-                                   1u,
-                                   1u);
+static Function __function_MathSin(
+    "math.sin",
+    [](const std::vector<IValueToken*>& args) { return new Value(std::sin(args[0]->As<Value*>()->GetValue<ValueType>())); },
+    1u,
+    1u);
 
-static Function __function_MathCos([](const std::vector<IValueToken*>& args) { return new Value(std::cos(args[0]->As<Value*>()->GetValue<ValueType>())); },
-                                   "math.cos",
-                                   1u,
-                                   1u);
+static Function __function_MathCos(
+    "math.cos",
+    [](const std::vector<IValueToken*>& args) { return new Value(std::cos(args[0]->As<Value*>()->GetValue<ValueType>())); },
+    1u,
+    1u);
 
-static Function __function_MathTan([](const std::vector<IValueToken*>& args) { return new Value(std::tan(args[0]->As<Value*>()->GetValue<ValueType>())); },
-                                   "math.tan",
-                                   1u,
-                                   1u);
+static Function __function_MathTan(
+    "math.tan",
+    [](const std::vector<IValueToken*>& args) { return new Value(std::tan(args[0]->As<Value*>()->GetValue<ValueType>())); },
+    1u,
+    1u);
 
 static Function __function_Min(
+    "min",
     [](const std::vector<IValueToken*>& args) {
       ValueType result = std::numeric_limits<ValueType>::max();
       for(const auto& i : args)
@@ -324,10 +360,10 @@ static Function __function_Min(
 
       return new Value(result);
     },
-    "min",
     1u);
 
 static Function __function_Max(
+    "max",
     [](const std::vector<IValueToken*>& args) {
       ValueType result = std::numeric_limits<ValueType>::min();
       for(const auto& i : args)
@@ -340,10 +376,10 @@ static Function __function_Max(
 
       return new Value(result);
     },
-    "max",
     1u);
 
 static Function __function_MathMean(
+    "math.mean",
     [](const std::vector<IValueToken*>& args) {
       ValueType result = 0.0;
       for(const auto& i : args)
@@ -353,40 +389,39 @@ static Function __function_MathMean(
 
       return new Value(result / static_cast<ValueType>(args.size()));
     },
-    "math.mean",
     1u);
 
 static Function __function_StrLen(
-    [](const std::vector<IValueToken*>& args) { return new Value(static_cast<ValueType>(args[0]->As<Value*>()->GetValue<std::string>().length())); },
     "strlen",
+    [](const std::vector<IValueToken*>& args) { return new Value(static_cast<ValueType>(args[0]->As<Value*>()->GetValue<std::string>().length())); },
     1u,
     1u);
 
-static Variable variable_Null(nullptr, "null");
-static Variable variable_Giga(__ratio<std::giga>(), "G");
-static Variable variable_Mega(__ratio<std::mega>(), "M");
-static Variable variable_Kilo(__ratio<std::kilo>(), "k");
-static Variable variable_Hecto(__ratio<std::hecto>(), "h");
-static Variable variable_Deca(__ratio<std::deca>(), "da");
-static Variable variable_Deci(__ratio<std::deci>(), "d");
-static Variable variable_Centi(__ratio<std::centi>(), "c");
-static Variable variable_Milli(__ratio<std::milli>(), "m");
-static Variable variable_Micro(__ratio<std::micro>(), "u");
-static Variable variable_Nano(__ratio<std::nano>(), "n");
-static Variable variable_Pi(M_PI, "math.pi");
-static Variable variable_E(M_E, "math.e");
-static Variable variable_C(299792458.0, "phys.c");
-static Variable variable_AU(149597870700.0, "phys.au");
+static Variable variable_Null("null", nullptr);
+static Variable variable_Giga("G", __ratio<std::giga>());
+static Variable variable_Mega("M", __ratio<std::mega>());
+static Variable variable_Kilo("k", __ratio<std::kilo>());
+static Variable variable_Hecto("h", __ratio<std::hecto>());
+static Variable variable_Deca("da", __ratio<std::deca>());
+static Variable variable_Deci("d", __ratio<std::deci>());
+static Variable variable_Centi("c", __ratio<std::centi>());
+static Variable variable_Milli("m", __ratio<std::milli>());
+static Variable variable_Micro("u", __ratio<std::micro>());
+static Variable variable_Nano("n", __ratio<std::nano>());
+static Variable variable_Pi("math.pi", M_PI);
+static Variable variable_E("math.e", M_E);
+static Variable variable_C("phys.c", 299792458.0);
+static Variable variable_AU("phys.au", 149597870700.0);
 
 static BinaryOperatorToken __binaryOperator_JuxtapositionOperator1(
-    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() * rhs->As<Value*>()->GetValue<ValueType>()); },
     "",
+    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() * rhs->As<Value*>()->GetValue<ValueType>()); },
     1,
     Associativity::Left);
 
 static BinaryOperatorToken __binaryOperator_JuxtapositionOperator2(
-    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() * rhs->As<Value*>()->GetValue<ValueType>()); },
     "",
+    [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() * rhs->As<Value*>()->GetValue<ValueType>()); },
     3,
     Associativity::Left);
 
@@ -1093,8 +1128,8 @@ namespace UnitTest
       auto expressionParser = createInstance();
       auto x                = 10.0;
       auto y                = 5.0;
-      Variable var_x(x, "x");
-      Variable var_y(y, "y");
+      Variable var_x("x", x);
+      Variable var_y("y", y);
       __variables[var_x.GetIdentifier()] = &var_x;
       __variables[var_y.GetIdentifier()] = &var_y;
       auto actual                        = expressionParser.Evaluate("x * x - y * y");
