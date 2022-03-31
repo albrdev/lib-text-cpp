@@ -63,8 +63,7 @@ namespace Text::Expression
         {
           throw Exception::SyntaxException("Unterminated string: " + stringValue, GetIndex() - stringValue.length());
         }
-
-        if(m_OnParseStringCallback == nullptr)
+        else if(m_OnParseStringCallback == nullptr)
         {
           throw Exception::SyntaxException("Unhandled string token: " + stringValue, GetIndex() - stringValue.length());
         }
