@@ -61,7 +61,7 @@ namespace Text::Parsing
       std::string tmpResult;
       if(GetCurrent() == '\'' || GetCurrent() == '\"')
       {
-        tmpResult = ParseString();
+        tmpResult = ParseIntermediate();
       }
       else
       {

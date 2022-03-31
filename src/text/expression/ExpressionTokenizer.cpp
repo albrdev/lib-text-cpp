@@ -57,7 +57,7 @@ namespace Text::Expression
       }
       else if(IsString(GetCurrent()))
       {
-        std::string stringValue = ParseString();
+        std::string stringValue = ParseIntermediate();
         if(m_OnParseStringCallback == nullptr)
         {
           throw Exception::SyntaxException("Unhandled string token: " + stringValue, GetIndex() - stringValue.length());

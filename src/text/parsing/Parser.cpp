@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include <clocale>
+#include "text/exception/SyntaxException.hpp"
 
 namespace Text::Parsing
 {
@@ -9,17 +10,22 @@ namespace Text::Parsing
     return *this;
   }
 
-  Parser& Parser::ParseString(std::string& result)
+  Parser& Parser::ParseIntermediate(std::string& result)
   {
     char delimiter = GetCurrent();
     (void)Next();
 
     char previous = '\0';
     (void)Get(result, [this, delimiter, &previous](char chr) {
-      const bool result = chr != delimiter || previous == '\\';
-      previous          = chr;
-      return result;
+      const bool state = chr != delimiter || previous == '\\';
+      previous         = chr;
+      return state;
     });
+
+    if(GetCurrent() != delimiter)
+    {
+      throw Exception::SyntaxException("Unterminated sequence: " + result, GetIndex() - result.length());
+    }
 
     (void)Next();
     return *this;
@@ -38,10 +44,10 @@ namespace Text::Parsing
     return result;
   }
 
-  std::string Parser::ParseString()
+  std::string Parser::ParseIntermediate()
   {
     std::string result;
-    ParseString(result);
+    ParseIntermediate(result);
     return result;
   }
 

@@ -11,9 +11,9 @@ namespace Text::Formatting
     {
       ParseNumber(result);
     }
-    if(Parser::IsString(GetCurrent()))
+    else if(Parser::IsString(GetCurrent()))
     {
-      ParseString(result);
+      ParseIntermediate(result);
     }
     else
     {}
