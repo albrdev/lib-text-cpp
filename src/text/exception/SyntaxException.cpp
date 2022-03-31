@@ -24,5 +24,5 @@ namespace Text::Exception
       , m_Index(-1)
   {}
 
-  std::string SyntaxException::CreateMessage(const std::string& message, std::size_t index) { return message + "(Index: " + std::to_string(index) + ")"; }
+  std::string SyntaxException::CreateMessage(const std::string& message, std::size_t index) { return message + " (Index: " + std::to_string(index) + ")"; }
 } // namespace Text::Exception

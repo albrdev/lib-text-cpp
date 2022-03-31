@@ -35,7 +35,7 @@ namespace Text::Expression
     {}
 
     template<class T>
-    explicit VariableToken(const std::string& identifier, const T& value)
+    explicit VariableToken(const T& value, const std::string& identifier)
         : IVariableToken()
         , ValueToken<Ts...>(value)
         , m_Identifier(identifier)
