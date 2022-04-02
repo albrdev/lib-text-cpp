@@ -20,6 +20,9 @@ namespace Text::Expression
 
     virtual std::string ToString() const override;
 
+    bool operator==(const UnaryOperatorToken& rhs) const;
+    bool operator!=(const UnaryOperatorToken& rhs) const;
+
     UnaryOperatorToken(const char identifier, const UnaryOperatorToken::CallbackType& callback, int precedence, Associativity associativity);
     virtual ~UnaryOperatorToken() override = default;
     UnaryOperatorToken();

@@ -38,5 +38,6 @@ target_sources(${LIBRARY_TEXT}
 
 target_sources(${UNITTEST_TEXT}
   PRIVATE
+  ExpressionTokenizer.test.cpp
   ExpressionParser.test.cpp
 )

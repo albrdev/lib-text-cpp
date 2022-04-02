@@ -3,6 +3,7 @@
 
 #include "IVariableToken.hpp"
 #include "ValueToken.hpp"
+#include "common/IEquals.hpp"
 #include <string>
 
 namespace Text::Expression
@@ -14,6 +15,9 @@ namespace Text::Expression
     virtual const std::string& GetIdentifier() const override { return m_Identifier; }
 
     virtual std::string ToString() const override { return this->GetIdentifier(); }
+
+    bool operator==(const VariableToken<Ts...>& rhs) const { return Equals(rhs); }
+    bool operator!=(const VariableToken<Ts...>& rhs) const { return !Equals(rhs); }
 
     template<class T>
     VariableToken<Ts...>& operator=(const T& value)
@@ -70,6 +74,12 @@ namespace Text::Expression
     }
 
     protected:
+    virtual bool Equals(const Common::IEquals& other) const override
+    {
+      const auto* tmpObject = dynamic_cast<decltype(this)>(&other);
+      return ValueToken<Ts...>::Equals(other) && (m_Identifier == tmpObject->m_Identifier);
+    }
+
     virtual void ThrowOnUninitializedAccess() const override { throw std::runtime_error("Accessing uninitialized variable: " + GetIdentifier()); }
 
     private:

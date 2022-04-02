@@ -29,6 +29,9 @@ namespace Text::Expression
 
     virtual std::string ToString() const override;
 
+    bool operator==(const FunctionToken& rhs) const;
+    bool operator!=(const FunctionToken& rhs) const;
+
     FunctionToken(const std::string& identifier,
                   const FunctionToken::CallbackType& callback,
                   std::size_t minArguments = 0u,

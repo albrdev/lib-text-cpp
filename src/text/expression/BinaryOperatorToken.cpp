@@ -1,4 +1,5 @@
 #include "BinaryOperatorToken.hpp"
+#include "common/Common.hpp"
 
 namespace Text::Expression
 {
@@ -8,6 +9,13 @@ namespace Text::Expression
   const Associativity& BinaryOperatorToken::GetAssociativity() const { return m_Associativity; }
 
   std::string BinaryOperatorToken::ToString() const { return this->GetIdentifier(); }
+
+  bool BinaryOperatorToken::operator==(const BinaryOperatorToken& rhs) const
+  {
+    return Common::CompareFunctions(m_Callback, rhs.m_Callback) && (m_Identifier == rhs.m_Identifier) && (m_Precedence == rhs.m_Precedence) &&
+           (m_Associativity == rhs.m_Associativity);
+  }
+  bool BinaryOperatorToken::operator!=(const BinaryOperatorToken& rhs) const { return !((*this) == rhs); }
 
   BinaryOperatorToken::BinaryOperatorToken(const std::string& identifier,
                                            const BinaryOperatorToken::CallbackType& callback,

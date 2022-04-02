@@ -1,6 +1,7 @@
 #include "FunctionToken.hpp"
 #include <cstddef>
 #include <limits>
+#include "common/Common.hpp"
 
 namespace Text::Expression
 {
@@ -13,6 +14,13 @@ namespace Text::Expression
   const std::size_t& FunctionToken::GetMaxArgumentCount() const { return m_MaxArgumentCount; }
 
   std::string FunctionToken::ToString() const { return this->GetIdentifier(); }
+
+  bool FunctionToken::operator==(const FunctionToken& rhs) const
+  {
+    return Common::CompareFunctions(m_Callback, rhs.m_Callback) && (m_Identifier == rhs.m_Identifier) && (m_MinArgumentCount == rhs.m_MinArgumentCount) &&
+           (m_MaxArgumentCount == rhs.m_MaxArgumentCount);
+  }
+  bool FunctionToken::operator!=(const FunctionToken& rhs) const { return !((*this) == rhs); }
 
   FunctionToken::FunctionToken(const std::string& identifier, const FunctionToken::CallbackType& callback, std::size_t minArguments, std::size_t maxArguments)
       : IFunctionToken()
