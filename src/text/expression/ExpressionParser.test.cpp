@@ -55,7 +55,7 @@ static Value* __onNewVariable(const std::string& identifier)
   return result;
 }
 
-std::vector<Value> __results;
+static std::vector<Value> __results;
 static Value* __ans(const std::vector<IValueToken*>& args)
 {
   if(__results.empty())
@@ -425,7 +425,7 @@ static BinaryOperatorToken __binaryOperator_JuxtapositionOperator2(
     3,
     Associativity::Left);
 
-ExpressionParser createInstance()
+static ExpressionParser createInstance()
 {
   __unaryOperators.clear();
   __binaryOperators.clear();
