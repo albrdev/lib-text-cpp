@@ -514,38 +514,38 @@ namespace UnitTest
   {
     // Not
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("!1");
-      auto expected         = static_cast<double>(!1.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("!1");
+      auto expected = static_cast<double>(!1.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("!0");
-      auto expected         = static_cast<double>(!0.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("!0");
+      auto expected = static_cast<double>(!0.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("!-1");
-      auto expected         = static_cast<double>(!-1.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("!-1");
+      auto expected = static_cast<double>(!-1.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     // Two's complement
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("~1");
-      auto expected         = static_cast<ValueType>(~1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("~1");
+      auto expected = static_cast<ValueType>(~1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("~0");
-      auto expected         = static_cast<ValueType>(~0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("~0");
+      auto expected = static_cast<ValueType>(~0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
   }
@@ -554,351 +554,351 @@ namespace UnitTest
   {
     // Addition
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 + 3");
-      auto expected         = 10.0 + 3.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 + 3");
+      auto expected = 10.0 + 3.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 + 3");
-      auto expected         = (-10.0) + 3.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 + 3");
+      auto expected = (-10.0) + 3.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 + -3");
-      auto expected         = 10.0 + (-3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 + -3");
+      auto expected = 10.0 + (-3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 + -3");
-      auto expected         = (-10.0) + (-3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 + -3");
+      auto expected = (-10.0) + (-3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     // Subtraction
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 - 3");
-      auto expected         = 10.0 - 3.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 - 3");
+      auto expected = 10.0 - 3.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 - 3");
-      auto expected         = (-10.0) - 3.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 - 3");
+      auto expected = (-10.0) - 3.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 - -3");
-      auto expected         = 10.0 - (-3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 - -3");
+      auto expected = 10.0 - (-3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 - -3");
-      auto expected         = (-10.0) - (-3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 - -3");
+      auto expected = (-10.0) - (-3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     // Multiplication
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 * 3");
-      auto expected         = 10.0 * 3.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 * 3");
+      auto expected = 10.0 * 3.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 * 3");
-      auto expected         = (-10.0) * 3.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 * 3");
+      auto expected = (-10.0) * 3.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 * -3");
-      auto expected         = 10.0 * (-3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 * -3");
+      auto expected = 10.0 * (-3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 * -3");
-      auto expected         = (-10.0) * (-3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 * -3");
+      auto expected = (-10.0) * (-3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     // Division
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 / 3");
-      auto expected         = 10.0 / 3.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 / 3");
+      auto expected = 10.0 / 3.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 / 3");
-      auto expected         = (-10.0) / 3.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 / 3");
+      auto expected = (-10.0) / 3.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 / -3");
-      auto expected         = 10.0 / (-3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 / -3");
+      auto expected = 10.0 / (-3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 / -3");
-      auto expected         = (-10.0) / (-3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 / -3");
+      auto expected = (-10.0) / (-3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     // Truncated division
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 // 3");
-      auto expected         = std::trunc(10.0 / 3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 // 3");
+      auto expected = std::trunc(10.0 / 3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 // 3");
-      auto expected         = std::trunc((-10.0) / 3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 // 3");
+      auto expected = std::trunc((-10.0) / 3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 // -3");
-      auto expected         = std::trunc(10.0 / (-3.0));
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 // -3");
+      auto expected = std::trunc(10.0 / (-3.0));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 // -3");
-      auto expected         = std::trunc((-10.0) / (-3.0));
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 // -3");
+      auto expected = std::trunc((-10.0) / (-3.0));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     // Exponentiation
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 ** 3");
-      auto expected         = std::pow(10.0, 3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 ** 3");
+      auto expected = std::pow(10.0, 3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 ** 3");
-      auto expected         = std::pow(-10.0, 3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 ** 3");
+      auto expected = std::pow(-10.0, 3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("10 ** -3");
-      auto expected         = std::pow(10.0, -3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("10 ** -3");
+      auto expected = std::pow(10.0, -3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-10 ** -3");
-      auto expected         = std::pow(-10.0, -3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-10 ** -3");
+      auto expected = std::pow(-10.0, -3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("9 ** 3");
-      auto expected         = std::pow(9.0, 3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("9 ** 3");
+      auto expected = std::pow(9.0, 3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-9 ** 3");
-      auto expected         = std::pow(-9.0, 3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-9 ** 3");
+      auto expected = std::pow(-9.0, 3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("9 ** -3");
-      auto expected         = std::pow(9.0, -3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("9 ** -3");
+      auto expected = std::pow(9.0, -3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-9 ** -3");
-      auto expected         = std::pow(-9.0, -3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-9 ** -3");
+      auto expected = std::pow(-9.0, -3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     // Bitwise
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("0 | 0");
-      auto expected         = static_cast<ValueType>(0ul | 0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("0 | 0");
+      auto expected = static_cast<ValueType>(0ul | 0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 | 0");
-      auto expected         = static_cast<ValueType>(1ul | 0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 | 0");
+      auto expected = static_cast<ValueType>(1ul | 0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 | 1");
-      auto expected         = static_cast<ValueType>(1ul | 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 | 1");
+      auto expected = static_cast<ValueType>(1ul | 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("0 & 0");
-      auto expected         = static_cast<ValueType>(0ul & 0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("0 & 0");
+      auto expected = static_cast<ValueType>(0ul & 0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 & 0");
-      auto expected         = static_cast<ValueType>(1ul & 0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 & 0");
+      auto expected = static_cast<ValueType>(1ul & 0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 & 1");
-      auto expected         = static_cast<ValueType>(1ul & 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 & 1");
+      auto expected = static_cast<ValueType>(1ul & 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("0 ^ 0");
-      auto expected         = static_cast<ValueType>(0ul ^ 0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("0 ^ 0");
+      auto expected = static_cast<ValueType>(0ul ^ 0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 ^ 0");
-      auto expected         = static_cast<ValueType>(1ul ^ 0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 ^ 0");
+      auto expected = static_cast<ValueType>(1ul ^ 0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 ^ 1");
-      auto expected         = static_cast<ValueType>(1ul ^ 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 ^ 1");
+      auto expected = static_cast<ValueType>(1ul ^ 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 << 0");
-      auto expected         = static_cast<ValueType>(1ul << 0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 << 0");
+      auto expected = static_cast<ValueType>(1ul << 0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 << 1");
-      auto expected         = static_cast<ValueType>(1ul << 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 << 1");
+      auto expected = static_cast<ValueType>(1ul << 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 << 2");
-      auto expected         = static_cast<ValueType>(1ul << 2ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 << 2");
+      auto expected = static_cast<ValueType>(1ul << 2ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 >> 0");
-      auto expected         = static_cast<ValueType>(1ul >> 0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 >> 0");
+      auto expected = static_cast<ValueType>(1ul >> 0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("2 >> 1");
-      auto expected         = static_cast<ValueType>(2ul >> 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("2 >> 1");
+      auto expected = static_cast<ValueType>(2ul >> 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("4 >> 2");
-      auto expected         = static_cast<ValueType>(4ul >> 2ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("4 >> 2");
+      auto expected = static_cast<ValueType>(4ul >> 2ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("(1 | 0) & 1");
-      auto expected         = static_cast<ValueType>((1ul | 0ul) & 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("(1 | 0) & 1");
+      auto expected = static_cast<ValueType>((1ul | 0ul) & 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("(1 | 0) & 0");
-      auto expected         = static_cast<ValueType>((1ul | 0ul) & 0ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("(1 | 0) & 0");
+      auto expected = static_cast<ValueType>((1ul | 0ul) & 0ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("(1 & 1) | 0");
-      auto expected         = static_cast<ValueType>((1ul & 1ul) | 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("(1 & 1) | 0");
+      auto expected = static_cast<ValueType>((1ul & 1ul) | 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("(1 & 0) | 1");
-      auto expected         = static_cast<ValueType>((1ul & 0ul) | 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("(1 & 0) | 1");
+      auto expected = static_cast<ValueType>((1ul & 0ul) | 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("(1 ^ 0) & 1");
-      auto expected         = static_cast<ValueType>((1ul ^ 0ul) & 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("(1 ^ 0) & 1");
+      auto expected = static_cast<ValueType>((1ul ^ 0ul) & 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("(1 ^ 1) | 1");
-      auto expected         = static_cast<ValueType>((1ul ^ 1ul) | 1ul);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("(1 ^ 1) | 1");
+      auto expected = static_cast<ValueType>((1ul ^ 1ul) | 1ul);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
   }
@@ -906,233 +906,233 @@ namespace UnitTest
   TEST(ExpressionParser, Functions)
   {
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("random()");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("random()");
       ASSERT_GE(actual->As<Value*>()->GetValue<ValueType>(), 0.0);
       ASSERT_LE(actual->As<Value*>()->GetValue<ValueType>(), static_cast<double>(RAND_MAX));
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("math.mean(1, 2, 3)");
-      auto expected         = (1.0 + 2.0 + 3.0) / 3.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("math.mean(1, 2, 3)");
+      auto expected = (1.0 + 2.0 + 3.0) / 3.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("math.log10(math.mean(1000, 1000, 1000, 1000, 1000))");
-      auto expected         = std::log10((1000.0 + 1000.0 + 1000.0 + 1000.0 + 1000.0) / 5.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("math.log10(math.mean(1000, 1000, 1000, 1000, 1000))");
+      auto expected = std::log10((1000.0 + 1000.0 + 1000.0 + 1000.0 + 1000.0) / 5.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("math.mean(min(50, 0, -50), max(-100, 0, 100))");
-      auto expected         = (std::min(std::min(50.0, 0.0), -50.0) + std::max(std::max(-100.0, 0.0), 100.0)) / 2.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("math.mean(min(50, 0, -50), max(-100, 0, 100))");
+      auto expected = (std::min(std::min(50.0, 0.0), -50.0) + std::max(std::max(-100.0, 0.0), 100.0)) / 2.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      using expected        = Text::Exception::SyntaxException;
-      ASSERT_THROW(expressionParser.Evaluate("random"), expected);
+      auto instance  = createInstance();
+      using expected = Text::Exception::SyntaxException;
+      ASSERT_THROW(instance.Evaluate("random"), expected);
     }
   }
 
   TEST(ExpressionParser, Strings)
   {
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("\"abc123\"");
-      auto expected         = std::string("abc123");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\"abc123\"");
+      auto expected = std::string("abc123");
       ASSERT_EQ(actual->As<Value*>()->GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("\"abc\" + \"123\"");
-      auto expected         = std::string("abc") + std::string("123");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\"abc\" + \"123\"");
+      auto expected = std::string("abc") + std::string("123");
       ASSERT_EQ(actual->As<Value*>()->GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("\"abc\" + 123");
-      auto expected         = std::string("abc") + std::string("123");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\"abc\" + 123");
+      auto expected = std::string("abc") + std::string("123");
       ASSERT_EQ(actual->As<Value*>()->GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("123 + \"abc\"");
-      auto expected         = std::string("123") + std::string("abc");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("123 + \"abc\"");
+      auto expected = std::string("123") + std::string("abc");
       ASSERT_EQ(actual->As<Value*>()->GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("strlen(\"abc123\")");
-      auto expected         = static_cast<double>(std::string("abc123").length());
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("strlen(\"abc123\")");
+      auto expected = static_cast<double>(std::string("abc123").length());
       ASSERT_EQ(actual->As<Value*>()->GetValue<double>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      using expected        = Text::Exception::SyntaxException;
-      ASSERT_THROW(expressionParser.Evaluate("\"abc123"), expected);
+      auto instance  = createInstance();
+      using expected = Text::Exception::SyntaxException;
+      ASSERT_THROW(instance.Evaluate("\"abc123"), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      using expected        = Text::Exception::SyntaxException;
-      ASSERT_THROW(expressionParser.Evaluate("\"abc123\'"), expected);
+      auto instance  = createInstance();
+      using expected = Text::Exception::SyntaxException;
+      ASSERT_THROW(instance.Evaluate("\"abc123\'"), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("\'abc123\'");
-      auto expected         = std::string("abc123");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\'abc123\'");
+      auto expected = std::string("abc123");
       ASSERT_EQ(actual->As<Value*>()->GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("\'abc\' + \'123\'");
-      auto expected         = std::string("abc") + std::string("123");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\'abc\' + \'123\'");
+      auto expected = std::string("abc") + std::string("123");
       ASSERT_EQ(actual->As<Value*>()->GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("\'abc\' + 123");
-      auto expected         = std::string("abc") + std::string("123");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\'abc\' + 123");
+      auto expected = std::string("abc") + std::string("123");
       ASSERT_EQ(actual->As<Value*>()->GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("123 + \'abc\'");
-      auto expected         = std::string("123") + std::string("abc");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("123 + \'abc\'");
+      auto expected = std::string("123") + std::string("abc");
       ASSERT_EQ(actual->As<Value*>()->GetValue<std::string>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("strlen(\'abc123\')");
-      auto expected         = static_cast<double>(std::string("abc123").length());
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("strlen(\'abc123\')");
+      auto expected = static_cast<double>(std::string("abc123").length());
       ASSERT_EQ(actual->As<Value*>()->GetValue<double>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      using expected        = Text::Exception::SyntaxException;
-      ASSERT_THROW(expressionParser.Evaluate("\'abc123"), expected);
+      auto instance  = createInstance();
+      using expected = Text::Exception::SyntaxException;
+      ASSERT_THROW(instance.Evaluate("\'abc123"), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      using expected        = Text::Exception::SyntaxException;
-      ASSERT_THROW(expressionParser.Evaluate("\'abc123\""), expected);
+      auto instance  = createInstance();
+      using expected = Text::Exception::SyntaxException;
+      ASSERT_THROW(instance.Evaluate("\'abc123\""), expected);
     }
   }
 
   TEST(ExpressionParser, Variables)
   {
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = 1");
-      auto var              = 1.0;
-      auto expected         = var;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = 1");
+      auto var      = 1.0;
+      auto expected = var;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = -1");
-      auto var              = -1.0;
-      auto expected         = var;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = -1");
+      auto var      = -1.0;
+      auto expected = var;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = 1 + 1");
-      auto var              = 1.0;
-      auto expected         = var + 1.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = 1 + 1");
+      auto var      = 1.0;
+      auto expected = var + 1.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = -1 + 1");
-      auto var              = -1.0;
-      auto expected         = var + 1.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = -1 + 1");
+      auto var      = -1.0;
+      auto expected = var + 1.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = (1 + 1)");
-      auto var              = 1.0 + 1.0;
-      auto expected         = var;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = (1 + 1)");
+      auto var      = 1.0 + 1.0;
+      auto expected = var;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = -(1 + 1)");
-      auto var              = -(1.0 + 1.0);
-      auto expected         = var;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = -(1 + 1)");
+      auto var      = -(1.0 + 1.0);
+      auto expected = var;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = (1 + 1) * 2");
-      auto var              = (1.0 + 1.0);
-      auto expected         = var * 2.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = (1 + 1) * 2");
+      auto var      = (1.0 + 1.0);
+      auto expected = var * 2.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
 
-      auto actual2   = expressionParser.Evaluate("var * 5");
+      auto actual2   = instance.Evaluate("var * 5");
       auto expected2 = var * 5.0;
       ASSERT_EQ(actual2->As<Value*>()->GetValue<ValueType>(), expected2);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = (10**2**3) + var");
-      auto var              = std::pow(10.0, std::pow(2.0, 3.0));
-      auto expected         = var + var;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = (10**2**3) + var");
+      auto var      = std::pow(10.0, std::pow(2.0, 3.0));
+      auto expected = var + var;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = -(1 + 1) * 4 + -var");
-      auto var              = -(1.0 + 1.0);
-      auto expected         = (var * 4.0) + (-var);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = -(1 + 1) * 4 + -var");
+      auto var      = -(1.0 + 1.0);
+      auto expected = (var * 4.0) + (-var);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto x                = 10.0;
-      auto y                = 5.0;
+      auto instance = createInstance();
+      auto x        = 10.0;
+      auto y        = 5.0;
       Variable var_x("x", x);
       Variable var_y("y", y);
       __variables[var_x.GetIdentifier()] = &var_x;
       __variables[var_y.GetIdentifier()] = &var_y;
-      auto actual                        = expressionParser.Evaluate("x * x - y * y");
+      auto actual                        = instance.Evaluate("x * x - y * y");
       auto expected                      = (x * x) - (y * y);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["x"]->As<Variable*>()->GetValue<ValueType>(), x);
@@ -1140,12 +1140,12 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance();
-      auto x                = 10.0;
-      auto y                = 5.0;
-      expressionParser.Evaluate("x = 10");
-      expressionParser.Evaluate("y = 5");
-      auto actual   = expressionParser.Evaluate("x * x - y * y");
+      auto instance = createInstance();
+      auto x        = 10.0;
+      auto y        = 5.0;
+      instance.Evaluate("x = 10");
+      instance.Evaluate("y = 5");
+      auto actual   = instance.Evaluate("x * x - y * y");
       auto expected = (x * x) - (y * y);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["x"]->As<Variable*>()->GetValue<ValueType>(), x);
@@ -1153,64 +1153,64 @@ namespace UnitTest
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var = var = 1");
-      auto var              = 1.0;
-      auto expected         = var;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var = var = 1");
+      auto var      = 1.0;
+      auto expected = var;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var"]->As<Variable*>()->GetValue<ValueType>(), var);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var2 = var1 = 1");
-      auto var1             = 1.0;
-      auto var2             = var1;
-      auto expected         = var2;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var2 = var1 = 1");
+      auto var1     = 1.0;
+      auto var2     = var1;
+      auto expected = var2;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var1"]->As<Variable*>()->GetValue<ValueType>(), var1);
       ASSERT_EQ(__variables["var2"]->As<Variable*>()->GetValue<ValueType>(), var2);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var2 = var1 = 1 + 1");
-      auto var1             = 1.0;
-      auto var2             = var1;
-      auto expected         = var2 + 1.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var2 = var1 = 1 + 1");
+      auto var1     = 1.0;
+      auto var2     = var1;
+      auto expected = var2 + 1.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var1"]->As<Variable*>()->GetValue<ValueType>(), var1);
       ASSERT_EQ(__variables["var2"]->As<Variable*>()->GetValue<ValueType>(), var2);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var2 = (var1 = 1) + 1");
-      auto var1             = 1.0;
-      auto var2             = var1;
-      auto expected         = var2 + 1.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var2 = (var1 = 1) + 1");
+      auto var1     = 1.0;
+      auto var2     = var1;
+      auto expected = var2 + 1.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var1"]->As<Variable*>()->GetValue<ValueType>(), var1);
       ASSERT_EQ(__variables["var2"]->As<Variable*>()->GetValue<ValueType>(), var2);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var2 = (var1 = 1 + 1)");
-      auto var1             = 1.0;
-      auto var2             = var1 + 1.0;
-      auto expected         = var2;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var2 = (var1 = 1 + 1)");
+      auto var1     = 1.0;
+      auto var2     = var1 + 1.0;
+      auto expected = var2;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var1"]->As<Variable*>()->GetValue<ValueType>(), var1);
       ASSERT_EQ(__variables["var2"]->As<Variable*>()->GetValue<ValueType>(), var2);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("var2 = ((var1 = 1) + 1)");
-      auto var1             = 1.0;
-      auto var2             = var1 + 1.0;
-      auto expected         = var2;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("var2 = ((var1 = 1) + 1)");
+      auto var1     = 1.0;
+      auto var2     = var1 + 1.0;
+      auto expected = var2;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
       ASSERT_EQ(__variables["var1"]->As<Variable*>()->GetValue<ValueType>(), var1);
       ASSERT_EQ(__variables["var2"]->As<Variable*>()->GetValue<ValueType>(), var2);
@@ -1220,118 +1220,118 @@ namespace UnitTest
   TEST(ExpressionParser, Comments)
   {
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 + 1 #");
-      auto expected         = 1.0 + 1.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 + 1 #");
+      auto expected = 1.0 + 1.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 + 1 # comment");
-      auto expected         = 1.0 + 1.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 + 1 # comment");
+      auto expected = 1.0 + 1.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 # + 1");
-      auto expected         = 1.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 # + 1");
+      auto expected = 1.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
   }
 
   TEST(ExpressionParser, Ans)
   {
-    auto expressionParser = createInstance();
+    auto instance = createInstance();
 
-    auto actual1   = expressionParser.Evaluate("1 + 1");
+    auto actual1   = instance.Evaluate("1 + 1");
     auto expected1 = 1.0 + 1.0;
     ASSERT_EQ(actual1->As<Value*>()->GetValue<ValueType>(), expected1);
     __results.push_back(*actual1->As<Value*>());
 
-    auto actual2   = expressionParser.Evaluate("ans() + 1");
+    auto actual2   = instance.Evaluate("ans() + 1");
     auto expected2 = expected1 + 1.0;
     ASSERT_EQ(actual2->As<Value*>()->GetValue<ValueType>(), expected2);
     __results.push_back(*actual2->As<Value*>());
 
-    auto actual3   = expressionParser.Evaluate("ans() + ans()");
+    auto actual3   = instance.Evaluate("ans() + ans()");
     auto expected3 = expected2 + expected2;
     ASSERT_EQ(actual3->As<Value*>()->GetValue<ValueType>(), expected3);
     __results.push_back(*actual3->As<Value*>());
 
-    auto actual4   = expressionParser.Evaluate("ans(0) + ans(0)");
+    auto actual4   = instance.Evaluate("ans(0) + ans(0)");
     auto expected4 = expected1 + expected1;
     ASSERT_EQ(actual4->As<Value*>()->GetValue<ValueType>(), expected4);
     __results.push_back(*actual4->As<Value*>());
 
-    auto actual5   = expressionParser.Evaluate("5 + 5");
+    auto actual5   = instance.Evaluate("5 + 5");
     auto expected5 = 5.0 + 5.0;
     ASSERT_EQ(actual5->As<Value*>()->GetValue<ValueType>(), expected5);
     __results.push_back(*actual5->As<Value*>());
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(0)");
+      auto actual   = instance.Evaluate("10 + ans(0)");
       auto expected = 10.0 + expected1;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(1)");
+      auto actual   = instance.Evaluate("10 + ans(1)");
       auto expected = 10.0 + expected2;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(2)");
+      auto actual   = instance.Evaluate("10 + ans(2)");
       auto expected = 10.0 + expected3;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(3)");
+      auto actual   = instance.Evaluate("10 + ans(3)");
       auto expected = 10.0 + expected4;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(4)");
+      auto actual   = instance.Evaluate("10 + ans(4)");
       auto expected = 10.0 + expected5;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans()");
+      auto actual   = instance.Evaluate("10 + ans()");
       auto expected = 10.0 + expected5;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(-1)");
+      auto actual   = instance.Evaluate("10 + ans(-1)");
       auto expected = 10.0 + expected5;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(-2)");
+      auto actual   = instance.Evaluate("10 + ans(-2)");
       auto expected = 10.0 + expected4;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(-3)");
+      auto actual   = instance.Evaluate("10 + ans(-3)");
       auto expected = 10.0 + expected3;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(-4)");
+      auto actual   = instance.Evaluate("10 + ans(-4)");
       auto expected = 10.0 + expected2;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto actual   = expressionParser.Evaluate("10 + ans(-5)");
+      auto actual   = instance.Evaluate("10 + ans(-5)");
       auto expected = 10.0 + expected1;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
@@ -1340,135 +1340,135 @@ namespace UnitTest
   TEST(ExpressionParser, Misc)
   {
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("void");
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("void");
       ASSERT_FALSE(actual->As<Value*>()->IsInitialized());
     }
 
     {
-      auto expressionParser = createInstance();
-      using expected        = std::runtime_error;
-      ASSERT_THROW(expressionParser.Evaluate("void = void + 1"), expected);
+      auto instance  = createInstance();
+      using expected = std::runtime_error;
+      ASSERT_THROW(instance.Evaluate("void = void + 1"), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("null");
-      auto expected         = nullptr;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("null");
+      auto expected = nullptr;
       ASSERT_EQ(actual->As<Value*>()->GetValue<std::nullptr_t>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("12345");
-      auto expected         = 12345.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("12345");
+      auto expected = 12345.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-(-5)");
-      auto expected         = -(-5.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-(-5)");
+      auto expected = -(-5.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("3 + --4");
-      auto expected         = 3.0 + (-(-4.0));
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("3 + --4");
+      auto expected = 3.0 + (-(-4.0));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("4 + 5 * (5 + 2)");
-      auto expected         = 4.0 + (5.0 * (5.0 + 2.0));
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("4 + 5 * (5 + 2)");
+      auto expected = 4.0 + (5.0 * (5.0 + 2.0));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("-(10**3)");
-      auto expected         = -std::pow(10.0, 3.0);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("-(10**3)");
+      auto expected = -std::pow(10.0, 3.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 + -(10**3)");
-      auto expected         = 1.0 + (-std::pow(10.0, 3.0));
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 + -(10**3)");
+      auto expected = 1.0 + (-std::pow(10.0, 3.0));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1 + 10**2**3");
-      auto expected         = 1.0 + std::pow(10.0, std::pow(2.0, 3.0));
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1 + 10**2**3");
+      auto expected = 1.0 + std::pow(10.0, std::pow(2.0, 3.0));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      expressionParser.SetJuxtapositionOperator(&__binaryOperator_JuxtapositionOperator1);
-      auto actual   = expressionParser.Evaluate("6 / 2(1 + 2)");
+      auto instance = createInstance();
+      instance.SetJuxtapositionOperator(&__binaryOperator_JuxtapositionOperator1);
+      auto actual   = instance.Evaluate("6 / 2(1 + 2)");
       auto expected = (6.0 / 2.0) * (1.0 + 2.0);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      expressionParser.SetJuxtapositionOperator(&__binaryOperator_JuxtapositionOperator2);
-      auto actual   = expressionParser.Evaluate("6 / 2(1 + 2)");
+      auto instance = createInstance();
+      instance.SetJuxtapositionOperator(&__binaryOperator_JuxtapositionOperator2);
+      auto actual   = instance.Evaluate("6 / 2(1 + 2)");
       auto expected = 6.0 / (2.0 * (1.0 + 2.0));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      expressionParser.SetJuxtapositionOperator(nullptr);
+      auto instance = createInstance();
+      instance.SetJuxtapositionOperator(nullptr);
       using expected = Text::Exception::SyntaxException;
-      ASSERT_THROW(expressionParser.Evaluate("6 / 2(1 + 2)"), expected);
+      ASSERT_THROW(instance.Evaluate("6 / 2(1 + 2)"), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("3 + 4 * 2 / (1 - 5) ** 2 ** 3");
-      auto expected         = 3.0 + (4.0 * (2.0 / std::pow(1.0 - 5.0, std::pow(2.0, 3.0))));
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("3 + 4 * 2 / (1 - 5) ** 2 ** 3");
+      auto expected = 3.0 + (4.0 * (2.0 / std::pow(1.0 - 5.0, std::pow(2.0, 3.0))));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("2**(1da)**-5");
-      auto expected         = std::pow(2.0, std::pow(__ratio<std::deca>(), -5.0));
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("2**(1da)**-5");
+      auto expected = std::pow(2.0, std::pow(__ratio<std::deca>(), -5.0));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("1da**3 * (10 - 2 * 2)");
-      auto expected         = std::pow(__ratio<std::deca>(), 3.0) * (10.0 - (2.0 * 2.0));
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("1da**3 * (10 - 2 * 2)");
+      auto expected = std::pow(__ratio<std::deca>(), 3.0) * (10.0 - (2.0 * 2.0));
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("math.sin(max(2, 3) / 3 * math.pi)");
-      auto expected         = std::sin((std::max(2.0, 3.0) / 3.0) * M_PI);
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("math.sin(max(2, 3) / 3 * math.pi)");
+      auto expected = std::sin((std::max(2.0, 3.0) / 3.0) * M_PI);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("(phys.au / phys.c) / 60 # How long light travels from the Sun to Earth");
-      auto expected         = (149597870700.0 / 299792458.0) / 60.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("(phys.au / phys.c) / 60 # How long light travels from the Sun to Earth");
+      auto expected = (149597870700.0 / 299792458.0) / 60.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
-      auto expressionParser = createInstance();
-      auto actual           = expressionParser.Evaluate("384402000 / phys.c # How long light travels from the Moon to Earth");
-      auto expected         = 384402000.0 / 299792458.0;
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("384402000 / phys.c # How long light travels from the Moon to Earth");
+      auto expected = 384402000.0 / 299792458.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
   }
