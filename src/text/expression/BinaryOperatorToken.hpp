@@ -20,9 +20,6 @@ namespace Text::Expression
 
     virtual std::string ToString() const override;
 
-    bool operator==(const BinaryOperatorToken& rhs) const;
-    bool operator!=(const BinaryOperatorToken& rhs) const;
-
     BinaryOperatorToken(const std::string& identifier, const BinaryOperatorToken::CallbackType& callback, int precedence, Associativity associativity);
     virtual ~BinaryOperatorToken() override = default;
     BinaryOperatorToken();
@@ -30,6 +27,9 @@ namespace Text::Expression
     BinaryOperatorToken(BinaryOperatorToken&& other);
     BinaryOperatorToken& operator=(const BinaryOperatorToken& other);
     BinaryOperatorToken& operator=(BinaryOperatorToken&& other);
+
+    protected:
+    virtual bool Equals(const Common::IEquals& other) const override;
 
     private:
     CallbackType m_Callback;

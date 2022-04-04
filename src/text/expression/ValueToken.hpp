@@ -6,12 +6,11 @@
 #include <sstream>
 #include <typeinfo>
 #include "IValueToken.hpp"
-#include "common/IEquals.hpp"
 
 namespace Text::Expression
 {
   template<class... Ts>
-  class ValueToken : public virtual IValueToken, protected Common::IEquals
+  class ValueToken : public virtual IValueToken
   {
     public:
     using ValueType = std::variant<Ts...>;
@@ -59,9 +58,6 @@ namespace Text::Expression
       return std::visit(ToStringVisitor(), m_Value);
     }
 
-    bool operator==(const ValueToken<Ts...>& rhs) const { return Equals(rhs); }
-    bool operator!=(const ValueToken<Ts...>& rhs) const { return !Equals(rhs); }
-
     template<class T>
     ValueToken<Ts...>& operator=(const T& value)
     {
@@ -73,7 +69,6 @@ namespace Text::Expression
     template<class T>
     explicit ValueToken(const T& value)
         : IValueToken()
-        , Common::IEquals()
         , m_Value(value)
         , m_IsInitialized(true)
     {}
@@ -82,7 +77,6 @@ namespace Text::Expression
 
     ValueToken()
         : IValueToken()
-        , Common::IEquals()
         , m_Value()
         , m_IsInitialized(false)
     {}
@@ -90,14 +84,12 @@ namespace Text::Expression
     ValueToken(const ValueToken<Ts...>& other)
         : IToken()
         , IValueToken()
-        , Common::IEquals()
         , m_Value(other.m_Value)
         , m_IsInitialized(other.m_IsInitialized)
     {}
 
     ValueToken(ValueToken<Ts...>&& other)
         : IValueToken()
-        , Common::IEquals()
         , m_Value(std::move(other.m_Value))
         , m_IsInitialized(std::move(other.m_IsInitialized))
     {}
@@ -119,7 +111,7 @@ namespace Text::Expression
     protected:
     virtual bool Equals(const Common::IEquals& other) const override
     {
-      const auto* tmpObject = dynamic_cast<decltype(this)>(&other);
+      auto tmpObject = dynamic_cast<decltype(this)>(&other);
       return (tmpObject != nullptr) && ((m_Value == tmpObject->m_Value) && (m_IsInitialized == tmpObject->m_IsInitialized));
     }
 

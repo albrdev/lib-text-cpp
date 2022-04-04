@@ -1,14 +1,18 @@
 #ifndef __TEXT_EXPRESSION__ITOKEN_HPP__
 #define __TEXT_EXPRESSION__ITOKEN_HPP__
 
+#include "common/IEquals.hpp"
 #include "common/IType.hpp"
 #include "common/IOutput.hpp"
 
 namespace Text::Expression
 {
-  class IToken : public Common::IType, public Common::IOutput
+  class IToken : public Common::IType, public Common::IOutput, public Common::IEquals
   {
     public:
+    bool operator==(const IToken& rhs) const { return Equals(rhs); }
+    bool operator!=(const IToken& rhs) const { return !Equals(rhs); }
+
     virtual ~IToken() override = default;
 
     protected:

@@ -29,9 +29,6 @@ namespace Text::Expression
 
     virtual std::string ToString() const override;
 
-    bool operator==(const FunctionToken& rhs) const;
-    bool operator!=(const FunctionToken& rhs) const;
-
     FunctionToken(const std::string& identifier,
                   const FunctionToken::CallbackType& callback,
                   std::size_t minArguments = 0u,
@@ -42,6 +39,9 @@ namespace Text::Expression
     FunctionToken(FunctionToken&& other);
     FunctionToken& operator=(const FunctionToken& other);
     FunctionToken& operator=(FunctionToken&& other);
+
+    protected:
+    virtual bool Equals(const Common::IEquals& other) const override;
 
     private:
     static std::size_t s_ArgumentsMaxLimit;

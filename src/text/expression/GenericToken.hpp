@@ -56,6 +56,13 @@ namespace Text::Expression
       return *this;
     }
 
+    protected:
+    virtual bool Equals(const Common::IEquals& other) const override
+    {
+      auto tmpObject = dynamic_cast<decltype(this)>(&other);
+      return (tmpObject != nullptr) && (m_Object == tmpObject->m_Object);
+    }
+
     private:
     T m_Object;
   };

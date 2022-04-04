@@ -1,7 +1,6 @@
 #include "FunctionToken.hpp"
 #include <cstddef>
 #include <limits>
-#include "common/Common.hpp"
 
 namespace Text::Expression
 {
@@ -15,12 +14,12 @@ namespace Text::Expression
 
   std::string FunctionToken::ToString() const { return this->GetIdentifier(); }
 
-  bool FunctionToken::operator==(const FunctionToken& rhs) const
+  bool FunctionToken::Equals(const Common::IEquals& other) const
   {
-    return Common::CompareFunctions(m_Callback, rhs.m_Callback) && (m_Identifier == rhs.m_Identifier) && (m_MinArgumentCount == rhs.m_MinArgumentCount) &&
-           (m_MaxArgumentCount == rhs.m_MaxArgumentCount);
+    auto tmpObject = dynamic_cast<decltype(this)>(&other);
+    return (tmpObject != nullptr) && ((m_Identifier == tmpObject->m_Identifier) && (m_MinArgumentCount == tmpObject->m_MinArgumentCount) &&
+                                      (m_MaxArgumentCount == tmpObject->m_MaxArgumentCount));
   }
-  bool FunctionToken::operator!=(const FunctionToken& rhs) const { return !((*this) == rhs); }
 
   FunctionToken::FunctionToken(const std::string& identifier, const FunctionToken::CallbackType& callback, std::size_t minArguments, std::size_t maxArguments)
       : IFunctionToken()

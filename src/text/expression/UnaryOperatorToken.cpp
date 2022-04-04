@@ -1,5 +1,4 @@
 #include "UnaryOperatorToken.hpp"
-#include "common/Common.hpp"
 
 namespace Text::Expression
 {
@@ -10,12 +9,12 @@ namespace Text::Expression
 
   std::string UnaryOperatorToken::ToString() const { return std::string(1u, this->GetIdentifier()); }
 
-  bool UnaryOperatorToken::operator==(const UnaryOperatorToken& rhs) const
+  bool UnaryOperatorToken::Equals(const Common::IEquals& other) const
   {
-    return Common::CompareFunctions(m_Callback, rhs.m_Callback) && (m_Identifier == rhs.m_Identifier) && (m_Precedence == rhs.m_Precedence) &&
-           (m_Associativity == rhs.m_Associativity);
+    auto tmpObject = dynamic_cast<decltype(this)>(&other);
+    return (tmpObject != nullptr) &&
+           ((m_Identifier == tmpObject->m_Identifier) && (m_Precedence == tmpObject->m_Precedence) && (m_Associativity == tmpObject->m_Associativity));
   }
-  bool UnaryOperatorToken::operator!=(const UnaryOperatorToken& rhs) const { return !((*this) == rhs); }
 
   UnaryOperatorToken::UnaryOperatorToken(const char identifier, const UnaryOperatorToken::CallbackType& callback, int precedence, Associativity associativity)
       : IUnaryOperatorToken()
