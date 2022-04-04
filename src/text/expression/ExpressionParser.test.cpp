@@ -3,7 +3,6 @@
 #include <cmath>
 #include <string>
 #include <unordered_map>
-#include <iostream>
 #include <sstream>
 #include <ratio>
 #include <limits>
@@ -288,7 +287,7 @@ static Function __function_Neg(
     1u,
     1u);
 
-static Function __function_MathPow(
+static Function __function_Math_Pow(
     "math.pow",
     [](const std::vector<IValueToken*>& args) {
       return new Value(std::pow(args[0]->As<Value*>()->GetValue<ValueType>(), args[1]->As<Value*>()->GetValue<ValueType>()));
@@ -296,7 +295,7 @@ static Function __function_MathPow(
     2u,
     2u);
 
-static Function __function_MathRoot(
+static Function __function_Math_Root(
     "math.root",
     [](const std::vector<IValueToken*>& args) {
       return new Value(std::pow(args[0]->As<Value*>()->GetValue<ValueType>(), 1.0 / args[1]->As<Value*>()->GetValue<ValueType>()));
@@ -304,43 +303,43 @@ static Function __function_MathRoot(
     2u,
     2u);
 
-static Function __function_MathSqrt(
+static Function __function_Math_Sqrt(
     "math.sqrt",
     [](const std::vector<IValueToken*>& args) { return new Value(std::sqrt(args[0]->As<Value*>()->GetValue<ValueType>())); },
     1u,
     1u);
 
-static Function __function_MathLog(
+static Function __function_Math_Log(
     "math.log",
     [](const std::vector<IValueToken*>& args) { return new Value(std::log(args[0]->As<Value*>()->GetValue<ValueType>())); },
     1u,
     1u);
 
-static Function __function_MathLog2(
+static Function __function_Math_Log2(
     "math.log2",
     [](const std::vector<IValueToken*>& args) { return new Value(std::log2(args[0]->As<Value*>()->GetValue<ValueType>())); },
     1u,
     1u);
 
-static Function __function_MathLog10(
+static Function __function_Math_Log10(
     "math.log10",
     [](const std::vector<IValueToken*>& args) { return new Value(std::log10(args[0]->As<Value*>()->GetValue<ValueType>())); },
     1u,
     1u);
 
-static Function __function_MathSin(
+static Function __function_Math_Sin(
     "math.sin",
     [](const std::vector<IValueToken*>& args) { return new Value(std::sin(args[0]->As<Value*>()->GetValue<ValueType>())); },
     1u,
     1u);
 
-static Function __function_MathCos(
+static Function __function_Math_Cos(
     "math.cos",
     [](const std::vector<IValueToken*>& args) { return new Value(std::cos(args[0]->As<Value*>()->GetValue<ValueType>())); },
     1u,
     1u);
 
-static Function __function_MathTan(
+static Function __function_Math_Tan(
     "math.tan",
     [](const std::vector<IValueToken*>& args) { return new Value(std::tan(args[0]->As<Value*>()->GetValue<ValueType>())); },
     1u,
@@ -378,7 +377,7 @@ static Function __function_Max(
     },
     1u);
 
-static Function __function_MathMean(
+static Function __function_Math_Mean(
     "math.mean",
     [](const std::vector<IValueToken*>& args) {
       ValueType result = 0.0;
@@ -397,21 +396,21 @@ static Function __function_StrLen(
     1u,
     1u);
 
-static Variable variable_Null("null", nullptr);
-static Variable variable_Giga("G", __ratio<std::giga>());
-static Variable variable_Mega("M", __ratio<std::mega>());
-static Variable variable_Kilo("k", __ratio<std::kilo>());
-static Variable variable_Hecto("h", __ratio<std::hecto>());
-static Variable variable_Deca("da", __ratio<std::deca>());
-static Variable variable_Deci("d", __ratio<std::deci>());
-static Variable variable_Centi("c", __ratio<std::centi>());
-static Variable variable_Milli("m", __ratio<std::milli>());
-static Variable variable_Micro("u", __ratio<std::micro>());
-static Variable variable_Nano("n", __ratio<std::nano>());
-static Variable variable_Pi("math.pi", M_PI);
-static Variable variable_E("math.e", M_E);
-static Variable variable_C("phys.c", 299792458.0);
-static Variable variable_AU("phys.au", 149597870700.0);
+static Variable __variable_Null("null", nullptr);
+static Variable __variable_Giga("G", __ratio<std::giga>());
+static Variable __variable_Mega("M", __ratio<std::mega>());
+static Variable __variable_Kilo("k", __ratio<std::kilo>());
+static Variable __variable_Hecto("h", __ratio<std::hecto>());
+static Variable __variable_Deca("da", __ratio<std::deca>());
+static Variable __variable_Deci("d", __ratio<std::deci>());
+static Variable __variable_Centi("c", __ratio<std::centi>());
+static Variable __variable_Milli("m", __ratio<std::milli>());
+static Variable __variable_Micro("u", __ratio<std::micro>());
+static Variable __variable_Nano("n", __ratio<std::nano>());
+static Variable __variable_Math_Pi("math.pi", M_PI);
+static Variable __variable_Math_E("math.e", M_E);
+static Variable __variable_Phys_C("phys.c", 299792458.0);
+static Variable __variable_Phys_Au("phys.au", 149597870700.0);
 
 static BinaryOperatorToken __binaryOperator_JuxtapositionOperator1(
     "",
@@ -464,38 +463,38 @@ static ExpressionParser createInstance()
   __binaryOperators[__binaryOperator_RightShift.GetIdentifier()]        = &__binaryOperator_RightShift;
   __binaryOperators[__binaryOperator_Assignment.GetIdentifier()]        = &__binaryOperator_Assignment;
 
-  __functions[__function_Ans.GetIdentifier()]       = &__function_Ans;
-  __functions[__function_Random.GetIdentifier()]    = &__function_Random;
-  __functions[__function_Abs.GetIdentifier()]       = &__function_Abs;
-  __functions[__function_MathPow.GetIdentifier()]   = &__function_MathPow;
-  __functions[__function_MathRoot.GetIdentifier()]  = &__function_MathRoot;
-  __functions[__function_MathSqrt.GetIdentifier()]  = &__function_MathSqrt;
-  __functions[__function_MathLog.GetIdentifier()]   = &__function_MathLog;
-  __functions[__function_MathLog2.GetIdentifier()]  = &__function_MathLog2;
-  __functions[__function_MathLog10.GetIdentifier()] = &__function_MathLog10;
-  __functions[__function_MathSin.GetIdentifier()]   = &__function_MathSin;
-  __functions[__function_MathCos.GetIdentifier()]   = &__function_MathCos;
-  __functions[__function_MathTan.GetIdentifier()]   = &__function_MathTan;
-  __functions[__function_Min.GetIdentifier()]       = &__function_Min;
-  __functions[__function_Max.GetIdentifier()]       = &__function_Max;
-  __functions[__function_MathMean.GetIdentifier()]  = &__function_MathMean;
-  __functions[__function_StrLen.GetIdentifier()]    = &__function_StrLen;
+  __functions[__function_Ans.GetIdentifier()]        = &__function_Ans;
+  __functions[__function_Random.GetIdentifier()]     = &__function_Random;
+  __functions[__function_Abs.GetIdentifier()]        = &__function_Abs;
+  __functions[__function_Math_Pow.GetIdentifier()]   = &__function_Math_Pow;
+  __functions[__function_Math_Root.GetIdentifier()]  = &__function_Math_Root;
+  __functions[__function_Math_Sqrt.GetIdentifier()]  = &__function_Math_Sqrt;
+  __functions[__function_Math_Log.GetIdentifier()]   = &__function_Math_Log;
+  __functions[__function_Math_Log2.GetIdentifier()]  = &__function_Math_Log2;
+  __functions[__function_Math_Log10.GetIdentifier()] = &__function_Math_Log10;
+  __functions[__function_Math_Sin.GetIdentifier()]   = &__function_Math_Sin;
+  __functions[__function_Math_Cos.GetIdentifier()]   = &__function_Math_Cos;
+  __functions[__function_Math_Tan.GetIdentifier()]   = &__function_Math_Tan;
+  __functions[__function_Min.GetIdentifier()]        = &__function_Min;
+  __functions[__function_Max.GetIdentifier()]        = &__function_Max;
+  __functions[__function_Math_Mean.GetIdentifier()]  = &__function_Math_Mean;
+  __functions[__function_StrLen.GetIdentifier()]     = &__function_StrLen;
 
-  __variables[variable_Null.GetIdentifier()]  = &variable_Null;
-  __variables[variable_Giga.GetIdentifier()]  = &variable_Giga;
-  __variables[variable_Mega.GetIdentifier()]  = &variable_Mega;
-  __variables[variable_Kilo.GetIdentifier()]  = &variable_Kilo;
-  __variables[variable_Hecto.GetIdentifier()] = &variable_Hecto;
-  __variables[variable_Deca.GetIdentifier()]  = &variable_Deca;
-  __variables[variable_Deci.GetIdentifier()]  = &variable_Deci;
-  __variables[variable_Centi.GetIdentifier()] = &variable_Centi;
-  __variables[variable_Milli.GetIdentifier()] = &variable_Milli;
-  __variables[variable_Micro.GetIdentifier()] = &variable_Micro;
-  __variables[variable_Nano.GetIdentifier()]  = &variable_Nano;
-  __variables[variable_Pi.GetIdentifier()]    = &variable_Pi;
-  __variables[variable_E.GetIdentifier()]     = &variable_E;
-  __variables[variable_C.GetIdentifier()]     = &variable_C;
-  __variables[variable_AU.GetIdentifier()]    = &variable_AU;
+  __variables[__variable_Null.GetIdentifier()]    = &__variable_Null;
+  __variables[__variable_Giga.GetIdentifier()]    = &__variable_Giga;
+  __variables[__variable_Mega.GetIdentifier()]    = &__variable_Mega;
+  __variables[__variable_Kilo.GetIdentifier()]    = &__variable_Kilo;
+  __variables[__variable_Hecto.GetIdentifier()]   = &__variable_Hecto;
+  __variables[__variable_Deca.GetIdentifier()]    = &__variable_Deca;
+  __variables[__variable_Deci.GetIdentifier()]    = &__variable_Deci;
+  __variables[__variable_Centi.GetIdentifier()]   = &__variable_Centi;
+  __variables[__variable_Milli.GetIdentifier()]   = &__variable_Milli;
+  __variables[__variable_Micro.GetIdentifier()]   = &__variable_Micro;
+  __variables[__variable_Nano.GetIdentifier()]    = &__variable_Nano;
+  __variables[__variable_Math_Pi.GetIdentifier()] = &__variable_Math_Pi;
+  __variables[__variable_Math_E.GetIdentifier()]  = &__variable_Math_E;
+  __variables[__variable_Phys_C.GetIdentifier()]  = &__variable_Phys_C;
+  __variables[__variable_Phys_Au.GetIdentifier()] = &__variable_Phys_Au;
 
   return instance;
 }
@@ -1342,7 +1341,7 @@ namespace UnitTest
     {
       auto instance = createInstance();
       auto actual   = instance.Evaluate("void");
-      ASSERT_FALSE(actual->As<Value*>()->IsInitialized());
+      ASSERT_FALSE(actual->As<Variable*>()->IsInitialized());
     }
 
     {
@@ -1355,7 +1354,8 @@ namespace UnitTest
       auto instance = createInstance();
       auto actual   = instance.Evaluate("null");
       auto expected = nullptr;
-      ASSERT_EQ(actual->As<Value*>()->GetValue<std::nullptr_t>(), expected);
+      ASSERT_TRUE(actual->As<Variable*>()->IsInitialized());
+      ASSERT_EQ(actual->As<Variable*>()->GetValue<std::nullptr_t>(), expected);
     }
 
     {
