@@ -1,8 +1,8 @@
 #include "ExpressionEvaluator.hpp"
-#include "IVariableToken.hpp"
-#include "IUnaryOperatorToken.hpp"
-#include "IBinaryOperatorToken.hpp"
 #include "FunctionToken.hpp"
+#include "IBinaryOperatorToken.hpp"
+#include "IUnaryOperatorToken.hpp"
+#include "IVariableToken.hpp"
 #include "text/exception/SyntaxException.hpp"
 
 namespace Text::Expression

@@ -1,10 +1,11 @@
 #ifndef __TEXT_EXPRESSION__EXPRESSIONEVALUATOR_HPP__
 #define __TEXT_EXPRESSION__EXPRESSIONEVALUATOR_HPP__
 
-#include <vector>
-#include <queue>
-#include <memory>
 #include "IValueToken.hpp"
+
+#include <memory>
+#include <queue>
+#include <vector>
 
 namespace Text::Expression
 {

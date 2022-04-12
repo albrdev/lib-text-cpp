@@ -1,7 +1,9 @@
-#include <gtest/gtest.h>
 #include "TextFormatter.hpp"
+
 #include <cstdlib>
 #include <string>
+
+#include <gtest/gtest.h>
 
 using namespace ::testing;
 using namespace Text::Formatting;

@@ -1,11 +1,12 @@
 #ifndef __TEXT_FORMATTING__TEXTFORMATTER_HPP__
 #define __TEXT_FORMATTING__TEXTFORMATTER_HPP__
 
+#include "text/parsing/Parser.hpp"
+
+#include <functional>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <functional>
-#include "text/parsing/Parser.hpp"
 
 namespace Text::Formatting
 {

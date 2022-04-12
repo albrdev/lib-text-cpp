@@ -1,9 +1,9 @@
 #ifndef __TEXT__COMMON_HPP__
 #define __TEXT__COMMON_HPP__
 
-#include <string>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 
 namespace Text
 {

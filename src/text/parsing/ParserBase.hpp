@@ -2,10 +2,10 @@
 #define __TEXT_PARSING__PARSERBASE_HPP__
 
 #include <cstdio>
-#include <string>
 #include <functional>
-#include <regex>
 #include <limits>
+#include <regex>
+#include <string>
 
 namespace Text::Parsing
 {

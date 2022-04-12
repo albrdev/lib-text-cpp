@@ -1,14 +1,16 @@
-#include <gtest/gtest.h>
-#include <cstdlib>
-#include <cmath>
-#include <string>
-#include <unordered_map>
-#include <sstream>
-#include <ratio>
-#include <limits>
-#include <exception>
 #include "ExpressionParser.hpp"
 #include "text/exception/SyntaxException.hpp"
+
+#include <cmath>
+#include <cstdlib>
+#include <exception>
+#include <limits>
+#include <ratio>
+#include <sstream>
+#include <string>
+#include <unordered_map>
+
+#include <gtest/gtest.h>
 
 using namespace ::testing;
 using namespace Text::Expression;

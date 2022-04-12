@@ -1,11 +1,12 @@
 #ifndef __TEXT_EXPRESSION__IFUNCTIONTOKEN_HPP__
 #define __TEXT_EXPRESSION__IFUNCTIONTOKEN_HPP__
 
-#include <vector>
-#include <functional>
 #include "IToken.hpp"
 #include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"
+
+#include <functional>
+#include <vector>
 
 namespace Text::Expression
 {

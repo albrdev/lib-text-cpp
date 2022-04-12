@@ -1,8 +1,8 @@
 #ifndef __TEXT_EXCEPTION_SYNTAXEXCEPTION_HPP__
 #define __TEXT_EXCEPTION_SYNTAXEXCEPTION_HPP__
 
-#include <string>
 #include <stdexcept>
+#include <string>
 
 namespace Text::Exception
 {

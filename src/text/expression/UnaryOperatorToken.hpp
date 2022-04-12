@@ -3,8 +3,9 @@
 
 #include "IUnaryOperatorToken.hpp"
 #include "IValueToken.hpp"
-#include <string>
+
 #include <functional>
+#include <string>
 
 namespace Text::Expression
 {

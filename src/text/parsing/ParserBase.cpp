@@ -1,4 +1,5 @@
 #include "ParserBase.hpp"
+
 #include <algorithm>
 
 namespace Text::Parsing

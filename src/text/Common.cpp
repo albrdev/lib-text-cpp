@@ -1,7 +1,8 @@
 #include "Common.hpp"
+
+#include <algorithm>
 #include <cctype>
 #include <functional>
-#include <algorithm>
 
 namespace Text
 {

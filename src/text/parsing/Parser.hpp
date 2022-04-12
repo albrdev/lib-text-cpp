@@ -1,8 +1,9 @@
 #ifndef __TEXT_PARSING__PARSER_HPP__
 #define __TEXT_PARSING__PARSER_HPP__
 
-#include <string>
 #include "ParserBase.hpp"
+
+#include <string>
 
 namespace Text::Parsing
 {

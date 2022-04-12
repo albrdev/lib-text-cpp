@@ -1,10 +1,11 @@
 #ifndef __TEXT_EXPRESSION__IBINARYOPERATORTOKEN_HPP__
 #define __TEXT_EXPRESSION__IBINARYOPERATORTOKEN_HPP__
 
-#include <functional>
 #include "IOperatorToken.hpp"
 #include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"
+
+#include <functional>
 
 namespace Text::Expression
 {

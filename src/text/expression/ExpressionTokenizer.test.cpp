@@ -1,17 +1,19 @@
-#include <gtest/gtest.h>
-#include <cstdlib>
-#include <cmath>
-#include <string>
-#include <queue>
-#include <unordered_map>
-#include <initializer_list>
-#include <sstream>
-#include <ratio>
-#include <limits>
-#include <exception>
 #include "ExpressionTokenizer.hpp"
 #include "Token.hpp"
 #include "text/exception/SyntaxException.hpp"
+
+#include <cmath>
+#include <cstdlib>
+#include <exception>
+#include <initializer_list>
+#include <limits>
+#include <queue>
+#include <ratio>
+#include <sstream>
+#include <string>
+#include <unordered_map>
+
+#include <gtest/gtest.h>
 
 using namespace ::testing;
 using namespace Text::Expression;

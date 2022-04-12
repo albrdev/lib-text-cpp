@@ -1,11 +1,12 @@
 #ifndef __TEXT_PARSING__COMMANDPARSER_HPP__
 #define __TEXT_PARSING__COMMANDPARSER_HPP__
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <functional>
 #include "Parser.hpp"
+
+#include <functional>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace Text::Parsing
 {

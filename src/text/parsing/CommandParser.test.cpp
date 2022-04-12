@@ -1,9 +1,11 @@
-#include <gtest/gtest.h>
 #include "CommandParser.hpp"
-#include <string>
-#include <vector>
-#include <unordered_map>
+
 #include <functional>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include <gtest/gtest.h>
 
 using namespace ::testing;
 using namespace Text::Parsing;

@@ -1,9 +1,10 @@
 #ifndef __TEXT_EXPRESSION__EXPRESSIONPARSER_HPP__
 #define __TEXT_EXPRESSION__EXPRESSIONPARSER_HPP__
 
-#include <string>
-#include "IValueToken.hpp"
 #include "ExpressionParserBase.hpp"
+#include "IValueToken.hpp"
+
+#include <string>
 
 namespace Text::Expression
 {

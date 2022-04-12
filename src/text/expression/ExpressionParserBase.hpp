@@ -1,19 +1,20 @@
 #ifndef __TEXT_EXPRESSION__EXPRESSIONPARSERBASE_HPP__
 #define __TEXT_EXPRESSION__EXPRESSIONPARSERBASE_HPP__
 
-#include <string>
-#include <queue>
-#include <unordered_map>
-#include "IToken.hpp"
-#include "IValueToken.hpp"
-#include "IVariableToken.hpp"
-#include "IUnaryOperatorToken.hpp"
+#include "ExpressionEvaluator.hpp"
+#include "ExpressionPostfixParser.hpp"
+#include "ExpressionTokenizer.hpp"
 #include "IBinaryOperatorToken.hpp"
 #include "IFunctionToken.hpp"
-#include "ExpressionTokenizer.hpp"
-#include "ExpressionPostfixParser.hpp"
-#include "ExpressionEvaluator.hpp"
+#include "IToken.hpp"
+#include "IUnaryOperatorToken.hpp"
+#include "IValueToken.hpp"
+#include "IVariableToken.hpp"
 #include "Token.hpp"
+
+#include <queue>
+#include <string>
+#include <unordered_map>
 
 namespace Text::Expression
 {

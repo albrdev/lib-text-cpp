@@ -1,8 +1,9 @@
 #ifndef __TEXT_EXPRESSION__IVALUETOKEN_HPP__
 #define __TEXT_EXPRESSION__IVALUETOKEN_HPP__
 
-#include <typeinfo>
 #include "IToken.hpp"
+
+#include <typeinfo>
 
 namespace Text::Expression
 {

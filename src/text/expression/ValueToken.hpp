@@ -1,11 +1,12 @@
 #ifndef __TEXT_EXPRESSION__VALUETOKEN_HPP__
 #define __TEXT_EXPRESSION__VALUETOKEN_HPP__
 
-#include <string>
-#include <variant>
-#include <sstream>
-#include <typeinfo>
 #include "IValueToken.hpp"
+
+#include <sstream>
+#include <string>
+#include <typeinfo>
+#include <variant>
 
 namespace Text::Expression
 {

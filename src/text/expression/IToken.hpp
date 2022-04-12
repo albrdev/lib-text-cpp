@@ -2,8 +2,8 @@
 #define __TEXT_EXPRESSION__ITOKEN_HPP__
 
 #include "common/IEquals.hpp"
-#include "common/IType.hpp"
 #include "common/IOutput.hpp"
+#include "common/IType.hpp"
 
 namespace Text::Expression
 {

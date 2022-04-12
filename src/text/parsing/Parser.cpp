@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+
 #include <clocale>
 
 namespace Text::Parsing

@@ -1,4 +1,5 @@
 #include "FunctionToken.hpp"
+
 #include <cstddef>
 #include <limits>
 

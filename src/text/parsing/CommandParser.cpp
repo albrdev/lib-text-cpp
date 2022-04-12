@@ -1,6 +1,7 @@
 #include "CommandParser.hpp"
-#include <cctype>
 #include "text/exception/SyntaxException.hpp"
+
+#include <cctype>
 
 namespace Text::Parsing
 {
