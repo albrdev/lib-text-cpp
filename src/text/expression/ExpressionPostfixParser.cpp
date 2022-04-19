@@ -93,7 +93,7 @@ namespace Text::Expression
 
             if(misc == nullptr || *misc != '(')
             {
-              throw Exception::SyntaxException("Missing matching closing bracket");
+              throw Exception::SyntaxException("Missing matching opening bracket");
             }
 
             stack.pop();
