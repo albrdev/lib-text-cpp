@@ -12,9 +12,12 @@ namespace Text::Exception
     const std::size_t& GetIndex() const;
 
     SyntaxException(const std::string& message);
+    SyntaxException(const char* message);
     SyntaxException(std::size_t index);
     SyntaxException(const std::string& message, std::size_t index);
+    SyntaxException(const char* message, std::size_t index);
     SyntaxException();
+    SyntaxException(const SyntaxException& other) noexcept;
 
     private:
     static std::string CreateMessage(const std::string& message, std::size_t index);

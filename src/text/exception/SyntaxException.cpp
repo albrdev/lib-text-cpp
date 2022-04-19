@@ -9,6 +9,11 @@ namespace Text::Exception
       , m_Index(-1)
   {}
 
+  SyntaxException::SyntaxException(const char* message)
+      : std::runtime_error(message)
+      , m_Index(-1)
+  {}
+
   SyntaxException::SyntaxException(std::size_t index)
       : std::runtime_error(CreateMessage(k_DefaultMessage, index))
       , m_Index(index)
@@ -19,9 +24,19 @@ namespace Text::Exception
       , m_Index(index)
   {}
 
+  SyntaxException::SyntaxException(const char* message, std::size_t index)
+      : std::runtime_error(CreateMessage(message, index))
+      , m_Index(index)
+  {}
+
   SyntaxException::SyntaxException()
       : std::runtime_error(k_DefaultMessage)
       , m_Index(-1)
+  {}
+
+  SyntaxException::SyntaxException(const SyntaxException& other) noexcept
+      : std::runtime_error(other)
+      , m_Index(other.m_Index)
   {}
 
   std::string SyntaxException::CreateMessage(const std::string& message, std::size_t index) { return message + " (Index: " + std::to_string(index) + ")"; }
