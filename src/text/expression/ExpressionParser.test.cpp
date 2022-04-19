@@ -1,5 +1,5 @@
 #include "ExpressionParser.hpp"
-#include "text/exception/SyntaxException.hpp"
+#include "text/exception/SyntaxError.hpp"
 
 #include <cmath>
 #include <cstdlib>
@@ -232,7 +232,7 @@ static BinaryOperator __binaryOperator_Assignment = BinaryOperator(
       Variable* variable = lhs->As<Variable*>();
       if(variable == nullptr)
       {
-        throw Text::Exception::SyntaxException("Assignment of non-variable type: " + lhs->ToString() + " (" + lhs->GetTypeInfo().name() + ")");
+        throw Text::Exception::SyntaxError("Assignment of non-variable type: " + lhs->ToString() + " (" + lhs->GetTypeInfo().name() + ")");
       }
 
       bool isNewVariable = !variable->IsInitialized();
@@ -252,7 +252,7 @@ static BinaryOperator __binaryOperator_Assignment = BinaryOperator(
       }
       else
       {
-        throw Text::Exception::SyntaxException("Assignment from unsupported type: " + rhs->ToString() + " (" + rhs->GetType().name() + ")");
+        throw Text::Exception::SyntaxError("Assignment from unsupported type: " + rhs->ToString() + " (" + rhs->GetType().name() + ")");
       }
 
       if(isNewVariable)
@@ -936,7 +936,7 @@ namespace UnitTest
 
     {
       auto instance  = createInstance();
-      using expected = Text::Exception::SyntaxException;
+      using expected = Text::Exception::SyntaxError;
       ASSERT_THROW(instance.Evaluate("random"), expected);
     }
   }
@@ -980,13 +980,13 @@ namespace UnitTest
 
     {
       auto instance  = createInstance();
-      using expected = Text::Exception::SyntaxException;
+      using expected = Text::Exception::SyntaxError;
       ASSERT_THROW(instance.Evaluate("\"abc123"), expected);
     }
 
     {
       auto instance  = createInstance();
-      using expected = Text::Exception::SyntaxException;
+      using expected = Text::Exception::SyntaxError;
       ASSERT_THROW(instance.Evaluate("\"abc123\'"), expected);
     }
 
@@ -1027,13 +1027,13 @@ namespace UnitTest
 
     {
       auto instance  = createInstance();
-      using expected = Text::Exception::SyntaxException;
+      using expected = Text::Exception::SyntaxError;
       ASSERT_THROW(instance.Evaluate("\'abc123"), expected);
     }
 
     {
       auto instance  = createInstance();
-      using expected = Text::Exception::SyntaxException;
+      using expected = Text::Exception::SyntaxError;
       ASSERT_THROW(instance.Evaluate("\'abc123\""), expected);
     }
   }
@@ -1428,7 +1428,7 @@ namespace UnitTest
     {
       auto instance = createInstance();
       instance.SetJuxtapositionOperator(nullptr);
-      using expected = Text::Exception::SyntaxException;
+      using expected = Text::Exception::SyntaxError;
       ASSERT_THROW(instance.Evaluate("6 / 2(1 + 2)"), expected);
     }
 

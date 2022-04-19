@@ -1,5 +1,5 @@
 #include "TextFormatter.hpp"
-#include "text/exception/SyntaxException.hpp"
+#include "text/exception/SyntaxError.hpp"
 
 #include <cctype>
 
@@ -18,7 +18,7 @@ namespace Text::Formatting
       ParseString(result);
       if(GetCurrent() != current)
       {
-        throw Exception::SyntaxException("Unterminated string: " + result, GetIndex() - result.length());
+        throw Exception::SyntaxError("Unterminated string: " + result, GetIndex() - result.length());
       }
 
       Next();
@@ -51,7 +51,7 @@ namespace Text::Formatting
     ParseIdentifier(identifier);
     if(identifier.empty())
     {
-      throw Exception::SyntaxException("Empty identifier", GetIndex());
+      throw Exception::SyntaxError("Empty identifier", GetIndex());
     }
 
     std::vector<std::string> args;
@@ -66,7 +66,7 @@ namespace Text::Formatting
       Next(Parser::IsWhitespace);
       if(GetCurrent() != '}')
       {
-        throw Exception::SyntaxException("Unterminated macro", GetIndex());
+        throw Exception::SyntaxError("Unterminated macro", GetIndex());
       }
 
       Next();
@@ -81,7 +81,7 @@ namespace Text::Formatting
       }
       else
       {
-        throw Exception::SyntaxException("Unkown identifier", GetIndex() - identifier.length());
+        throw Exception::SyntaxError("Unkown identifier", GetIndex() - identifier.length());
       }
     }
 

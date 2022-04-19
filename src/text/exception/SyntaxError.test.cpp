@@ -1,4 +1,4 @@
-#include "SyntaxException.hpp"
+#include "SyntaxError.hpp"
 
 #include <gtest/gtest.h>
 
@@ -7,5 +7,5 @@ using namespace Text::Exception;
 
 namespace UnitTest
 {
-  TEST(SyntaxException, Construct) {}
+  TEST(SyntaxError, Construct) {}
 } // namespace UnitTest

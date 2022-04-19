@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 3.14)
 
 target_sources(${LIBRARY_TEXT}
   PUBLIC
-  SyntaxException.hpp
+  SyntaxError.hpp
 
   PRIVATE
-  SyntaxException.cpp
+  SyntaxError.cpp
 )
 
 target_sources(${UNITTEST_TEXT}
   PRIVATE
-  SyntaxException.test.cpp
+  SyntaxError.test.cpp
 )

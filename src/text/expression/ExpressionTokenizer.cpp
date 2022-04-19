@@ -1,6 +1,6 @@
 #include "ExpressionTokenizer.hpp"
 #include "GenericToken.hpp"
-#include "text/exception/SyntaxException.hpp"
+#include "text/exception/SyntaxError.hpp"
 
 namespace Text::Expression
 {
@@ -48,7 +48,7 @@ namespace Text::Expression
         std::string stringValue = ParseNumber();
         if(m_OnParseNumberCallback == nullptr)
         {
-          throw Exception::SyntaxException("Unhandled numeric token: " + stringValue, GetIndex() - stringValue.length());
+          throw Exception::SyntaxError("Unhandled numeric token: " + stringValue, GetIndex() - stringValue.length());
         }
 
         auto value = m_OnParseNumberCallback(stringValue);
@@ -61,11 +61,11 @@ namespace Text::Expression
         std::string stringValue = ParseString();
         if(GetCurrent() != quote)
         {
-          throw Exception::SyntaxException("Unterminated string: " + stringValue, GetIndex() - stringValue.length());
+          throw Exception::SyntaxError("Unterminated string: " + stringValue, GetIndex() - stringValue.length());
         }
         else if(m_OnParseStringCallback == nullptr)
         {
-          throw Exception::SyntaxException("Unhandled string token: " + stringValue, GetIndex() - stringValue.length());
+          throw Exception::SyntaxError("Unhandled string token: " + stringValue, GetIndex() - stringValue.length());
         }
 
         auto value = m_OnParseStringCallback(stringValue);
@@ -82,7 +82,7 @@ namespace Text::Expression
           const auto iter = unaryOperators->find(GetCurrent());
           if(iter == unaryOperators->cend())
           {
-            throw Exception::SyntaxException("Unknown unary operator: " + GetCurrent(), GetIndex());
+            throw Exception::SyntaxError("Unknown unary operator: " + GetCurrent(), GetIndex());
           }
 
           current = iter->second;
@@ -96,14 +96,14 @@ namespace Text::Expression
           const auto iter = binaryOperators->find(identifier);
           if(iter == binaryOperators->cend())
           {
-            throw Exception::SyntaxException("Unknown binary operator: " + identifier, GetIndex() - identifier.length());
+            throw Exception::SyntaxError("Unknown binary operator: " + identifier, GetIndex() - identifier.length());
           }
 
           current = iter->second;
         }
         else
         {
-          throw Exception::SyntaxException("Unknown operator: " + GetCurrent(), GetIndex());
+          throw Exception::SyntaxError("Unknown operator: " + GetCurrent(), GetIndex());
         }
       }
       else if(IsIdentifier(GetCurrent()))
@@ -119,8 +119,7 @@ namespace Text::Expression
           Next(Parser::IsWhitespace);
           if(GetCurrent() != '(')
           {
-            throw Exception::SyntaxException("Expected function opening parenthesis: " + functionIter->second->GetIdentifier(),
-                                             GetIndex() - identifier.length());
+            throw Exception::SyntaxError("Expected function opening parenthesis: " + functionIter->second->GetIdentifier(), GetIndex() - identifier.length());
           }
         }
         else if(variables != nullptr && (variableIter = variables->find(identifier)) != variables->cend())
@@ -131,13 +130,13 @@ namespace Text::Expression
         {
           if(m_OnParseUnknownIdentifier == nullptr)
           {
-            throw Exception::SyntaxException("Unkown identifier: " + identifier, GetIndex() - identifier.length());
+            throw Exception::SyntaxError("Unkown identifier: " + identifier, GetIndex() - identifier.length());
           }
 
           auto value = m_OnParseUnknownIdentifier(identifier);
           if(value == nullptr)
           {
-            throw Exception::SyntaxException("Invalid identifier: " + identifier, GetIndex() - identifier.length());
+            throw Exception::SyntaxError("Invalid identifier: " + identifier, GetIndex() - identifier.length());
           }
 
           current = value;
@@ -151,7 +150,7 @@ namespace Text::Expression
       }
       else
       {
-        throw Exception::SyntaxException("Unknown token: " + GetCurrent(), GetIndex());
+        throw Exception::SyntaxError("Unknown token: " + GetCurrent(), GetIndex());
       }
 
       if(m_pJuxtapositionOperator != nullptr && !result.empty())

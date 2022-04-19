@@ -1,5 +1,5 @@
 #include "CommandParser.hpp"
-#include "text/exception/SyntaxException.hpp"
+#include "text/exception/SyntaxError.hpp"
 
 #include <cctype>
 
@@ -13,13 +13,13 @@ namespace Text::Parsing
     std::string identifier = ParseIdentifier();
     if(identifier.empty())
     {
-      throw Exception::SyntaxException("Empty identifier", GetIndex());
+      throw Exception::SyntaxError("Empty identifier", GetIndex());
     }
 
     const auto iter = m_pCallbacks->find(identifier);
     if(iter == m_pCallbacks->end())
     {
-      throw Exception::SyntaxException("Unknown identifier", GetIndex() - identifier.length());
+      throw Exception::SyntaxError("Unknown identifier", GetIndex() - identifier.length());
     }
 
     return iter->second(ParseArguments());
@@ -66,7 +66,7 @@ namespace Text::Parsing
         tmpResult = ParseString();
         if(GetCurrent() != current)
         {
-          throw Exception::SyntaxException("Unterminated string: " + tmpResult, GetIndex() - tmpResult.length());
+          throw Exception::SyntaxError("Unterminated string: " + tmpResult, GetIndex() - tmpResult.length());
         }
 
         Next();
