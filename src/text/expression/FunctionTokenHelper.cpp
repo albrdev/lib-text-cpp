@@ -19,7 +19,8 @@ namespace Text::Expression
   {}
 
   FunctionTokenHelper::FunctionTokenHelper(const FunctionTokenHelper& other)
-      : IFunctionToken()
+      : IToken()
+      , IFunctionToken()
       , m_rFunctionTokenInstance(other.m_rFunctionTokenInstance)
       , m_ArgumentCount(other.m_ArgumentCount)
       , m_BracketBalance(other.m_BracketBalance)
