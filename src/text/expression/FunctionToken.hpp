@@ -9,13 +9,11 @@
 
 namespace Text::Expression
 {
-  class ExpressionPostfixParser;
-  class ExpressionEvaluator;
+  class FunctionTokenHelper;
 
   class FunctionToken : public IFunctionToken
   {
-    friend class ExpressionPostfixParser;
-    friend class ExpressionEvaluator;
+    friend class FunctionTokenHelper;
 
     public:
     using CallbackType = std::function<IValueToken*(const std::vector<IValueToken*>&)>;
@@ -51,9 +49,6 @@ namespace Text::Expression
     std::string m_Identifier;
     std::size_t m_MinArgumentCount;
     std::size_t m_MaxArgumentCount;
-
-    std::size_t m_ArgumentCount;
-    int m_BracketBalance;
   };
 } // namespace Text::Expression
 

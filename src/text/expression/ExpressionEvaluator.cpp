@@ -1,5 +1,6 @@
 #include "ExpressionEvaluator.hpp"
 #include "FunctionToken.hpp"
+#include "FunctionTokenHelper.hpp"
 #include "IBinaryOperatorToken.hpp"
 #include "IUnaryOperatorToken.hpp"
 #include "IVariableToken.hpp"
@@ -16,7 +17,7 @@ namespace Text::Expression
     IValueToken* value                   = nullptr;
     IUnaryOperatorToken* unaryOperator   = nullptr;
     IBinaryOperatorToken* binaryOperator = nullptr;
-    FunctionToken* function              = nullptr;
+    FunctionTokenHelper* function        = nullptr;
 
     while(!postfix.empty())
     {
@@ -60,7 +61,7 @@ namespace Text::Expression
 
         stack.push_back(value);
       }
-      else if((function = current->As<FunctionToken*>()) != nullptr)
+      else if((function = current->As<FunctionTokenHelper*>()) != nullptr)
       {
         if(function->m_ArgumentCount < function->GetMinArgumentCount() ||
            function->m_ArgumentCount > std::min(function->GetMaxArgumentCount(), FunctionToken::GetArgumentCountMaxLimit()))

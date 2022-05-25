@@ -28,8 +28,6 @@ namespace Text::Expression
       , m_Identifier(identifier)
       , m_MinArgumentCount(minArguments)
       , m_MaxArgumentCount(maxArguments)
-      , m_ArgumentCount(0u)
-      , m_BracketBalance(0)
   {
     if(m_MinArgumentCount > m_MaxArgumentCount)
     {
@@ -43,8 +41,6 @@ namespace Text::Expression
       , m_Identifier()
       , m_MinArgumentCount(0u)
       , m_MaxArgumentCount(FunctionToken::s_ArgumentsMaxLimit)
-      , m_ArgumentCount(0u)
-      , m_BracketBalance(0)
   {}
 
   FunctionToken::FunctionToken(const FunctionToken& other)
@@ -54,8 +50,6 @@ namespace Text::Expression
       , m_Identifier(other.m_Identifier)
       , m_MinArgumentCount(other.m_MinArgumentCount)
       , m_MaxArgumentCount(other.m_MaxArgumentCount)
-      , m_ArgumentCount(other.m_ArgumentCount)
-      , m_BracketBalance(other.m_BracketBalance)
   {}
 
   FunctionToken::FunctionToken(FunctionToken&& other)
@@ -64,8 +58,6 @@ namespace Text::Expression
       , m_Identifier(std::move(other.m_Identifier))
       , m_MinArgumentCount(std::move(other.m_MinArgumentCount))
       , m_MaxArgumentCount(std::move(other.m_MaxArgumentCount))
-      , m_ArgumentCount(std::move(other.m_ArgumentCount))
-      , m_BracketBalance(std::move(other.m_BracketBalance))
   {}
 
   FunctionToken& FunctionToken::operator=(const FunctionToken& other)
@@ -74,8 +66,6 @@ namespace Text::Expression
     m_Identifier       = other.m_Identifier;
     m_MinArgumentCount = other.m_MinArgumentCount;
     m_MaxArgumentCount = other.m_MaxArgumentCount;
-    m_ArgumentCount    = other.m_ArgumentCount;
-    m_BracketBalance   = other.m_BracketBalance;
 
     return *this;
   }
@@ -86,8 +76,6 @@ namespace Text::Expression
     m_Identifier       = std::move(other.m_Identifier);
     m_MinArgumentCount = std::move(other.m_MinArgumentCount);
     m_MaxArgumentCount = std::move(other.m_MaxArgumentCount);
-    m_ArgumentCount    = std::move(other.m_ArgumentCount);
-    m_BracketBalance   = std::move(other.m_BracketBalance);
 
     return *this;
   }

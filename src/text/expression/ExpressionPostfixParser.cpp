@@ -12,12 +12,12 @@ namespace Text::Expression
     m_FunctionCache.clear();
 
     const IOperatorToken* anyOperator = nullptr;
-    const FunctionToken* function     = nullptr;
+    const IFunctionToken* function    = nullptr;
     const MiscType* misc              = nullptr;
 
     std::queue<IToken*> queue;
     std::stack<IToken*> stack;
-    std::stack<FunctionToken*> functions;
+    std::stack<FunctionTokenHelper*> functions;
 
     const IToken* previous = nullptr;
     while(!tokens.empty())
@@ -46,10 +46,10 @@ namespace Text::Expression
 
         stack.push(current);
       }
-      else if((function = current->As<FunctionToken*>()) != nullptr)
+      else if((function = current->As<IFunctionToken*>()) != nullptr)
       {
-        auto functionClone = std::make_unique<FunctionToken>(*function);
-        m_FunctionCache.push_back(std::move(functionClone));
+        auto functionHelper = std::make_unique<FunctionTokenHelper>(*function);
+        m_FunctionCache.push_back(std::move(functionHelper));
         stack.push(m_FunctionCache.back().get());
         functions.push(m_FunctionCache.back().get());
       }
@@ -98,7 +98,7 @@ namespace Text::Expression
 
             stack.pop();
 
-            if(!stack.empty() && stack.top()->IsType<FunctionToken>())
+            if(!stack.empty() && stack.top()->IsType<IFunctionToken>())
             {
               queue.push(stack.top());
               stack.pop();

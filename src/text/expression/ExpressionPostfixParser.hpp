@@ -2,6 +2,7 @@
 #define __TEXT_EXPRESSION__EXPRESSIONPOSTFIXPARSER_HPP__
 
 #include "FunctionToken.hpp"
+#include "FunctionTokenHelper.hpp"
 #include "IValueToken.hpp"
 
 #include <memory>
@@ -22,7 +23,7 @@ namespace Text::Expression
     ExpressionPostfixParser(ExpressionPostfixParser&& other);
 
     private:
-    std::vector<std::unique_ptr<FunctionToken>> m_FunctionCache;
+    std::vector<std::unique_ptr<FunctionTokenHelper>> m_FunctionCache;
   };
 } // namespace Text::Expression
 
