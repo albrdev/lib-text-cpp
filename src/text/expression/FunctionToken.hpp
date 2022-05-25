@@ -2,10 +2,8 @@
 #define __TEXT_EXPRESSION__FUNCTIONTOKEN_HPP__
 
 #include "IFunctionToken.hpp"
-#include "IValueToken.hpp"
 
 #include <functional>
-#include <string>
 
 namespace Text::Expression
 {

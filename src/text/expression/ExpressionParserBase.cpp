@@ -1,5 +1,7 @@
 #include "ExpressionParserBase.hpp"
 
+#include <unordered_map>
+
 namespace Text::Expression
 {
   std::queue<IToken*> ExpressionParserBase::Parse(const std::string& expression)

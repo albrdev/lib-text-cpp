@@ -5,8 +5,6 @@
 #include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"
 
-#include <functional>
-
 namespace Text::Expression
 {
   class IUnaryOperatorToken : public virtual IOperatorToken, public Common::IIdentifiable<char>
@@ -20,7 +18,7 @@ namespace Text::Expression
     IUnaryOperatorToken() = default;
 
     private:
-    IUnaryOperatorToken(const IUnaryOperatorToken&) = delete;
+    IUnaryOperatorToken(const IUnaryOperatorToken&)            = delete;
     IUnaryOperatorToken& operator=(const IUnaryOperatorToken&) = delete;
   };
 } // namespace Text::Expression

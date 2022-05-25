@@ -8,7 +8,7 @@
 
 namespace Text::Expression
 {
-  IValueToken* ExpressionEvaluator::Execute(std::queue<IToken*> postfix)
+  IValueToken* ExpressionEvaluator::Execute(std::queue<IToken*>& postfix)
   {
     m_ResultCache.clear();
 

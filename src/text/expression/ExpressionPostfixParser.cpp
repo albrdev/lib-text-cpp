@@ -1,7 +1,10 @@
 #include "ExpressionPostfixParser.hpp"
 #include "GenericToken.hpp"
 #include "IOperatorToken.hpp"
+#include "IValueToken.hpp"
 #include "text/exception/SyntaxError.hpp"
+
+#include <stack>
 
 namespace Text::Expression
 {

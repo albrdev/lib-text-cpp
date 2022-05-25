@@ -1,23 +1,23 @@
 #ifndef __TEXT_EXPRESSION__EXPRESSIONTOKENIZER_HPP__
 #define __TEXT_EXPRESSION__EXPRESSIONTOKENIZER_HPP__
 
-#include "IBinaryOperatorToken.hpp"
-#include "IFunctionToken.hpp"
-#include "IUnaryOperatorToken.hpp"
-#include "IValueToken.hpp"
-#include "IVariableToken.hpp"
 #include "text/parsing/Parser.hpp"
 
 #include <functional>
 #include <memory>
 #include <queue>
-#include <string>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace Text::Expression
 {
+  class IToken;
+  class IValueToken;
+  class IVariableToken;
+  class IUnaryOperatorToken;
+  class IBinaryOperatorToken;
+  class IFunctionToken;
+
   class ExpressionTokenizer : public Parsing::Parser
   {
     public:

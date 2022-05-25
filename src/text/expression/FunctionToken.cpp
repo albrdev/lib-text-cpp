@@ -1,6 +1,5 @@
 #include "FunctionToken.hpp"
 
-#include <cstddef>
 #include <limits>
 
 namespace Text::Expression

@@ -2,10 +2,8 @@
 #define __TEXT_EXPRESSION__BINARYOPERATORTOKEN_HPP__
 
 #include "IBinaryOperatorToken.hpp"
-#include "IValueToken.hpp"
 
 #include <functional>
-#include <string>
 
 namespace Text::Expression
 {

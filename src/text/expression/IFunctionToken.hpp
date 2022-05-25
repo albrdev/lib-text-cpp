@@ -2,14 +2,14 @@
 #define __TEXT_EXPRESSION__IFUNCTIONTOKEN_HPP__
 
 #include "IToken.hpp"
-#include "IValueToken.hpp"
 #include "common/IIdentifiable.hpp"
 
-#include <functional>
 #include <vector>
 
 namespace Text::Expression
 {
+  class IValueToken;
+
   class IFunctionToken : public virtual IToken, public Common::IIdentifiable<std::string>
   {
     public:
@@ -24,7 +24,7 @@ namespace Text::Expression
     IFunctionToken() = default;
 
     private:
-    IFunctionToken(const IFunctionToken&) = delete;
+    IFunctionToken(const IFunctionToken&)            = delete;
     IFunctionToken& operator=(const IFunctionToken&) = delete;
   };
 } // namespace Text::Expression

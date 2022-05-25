@@ -2,10 +2,8 @@
 #define __TEXT_EXPRESSION__UNARYOPERATORTOKEN_HPP__
 
 #include "IUnaryOperatorToken.hpp"
-#include "IValueToken.hpp"
 
 #include <functional>
-#include <string>
 
 namespace Text::Expression
 {

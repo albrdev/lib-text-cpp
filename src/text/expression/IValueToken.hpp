@@ -3,8 +3,6 @@
 
 #include "IToken.hpp"
 
-#include <typeinfo>
-
 namespace Text::Expression
 {
   class IValueToken : public virtual IToken
@@ -18,7 +16,7 @@ namespace Text::Expression
     IValueToken() = default;
 
     private:
-    IValueToken(const IValueToken&) = delete;
+    IValueToken(const IValueToken&)            = delete;
     IValueToken& operator=(const IValueToken&) = delete;
   };
 } // namespace Text::Expression

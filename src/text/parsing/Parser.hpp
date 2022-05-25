@@ -3,8 +3,6 @@
 
 #include "ParserBase.hpp"
 
-#include <string>
-
 namespace Text::Parsing
 {
   class Parser : public ParserBase

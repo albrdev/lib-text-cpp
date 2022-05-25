@@ -12,7 +12,7 @@ namespace Text::Expression
   class ExpressionEvaluator
   {
     public:
-    IValueToken* Execute(std::queue<IToken*> postfix);
+    IValueToken* Execute(std::queue<IToken*>& postfix);
 
     virtual ~ExpressionEvaluator() = default;
     ExpressionEvaluator();

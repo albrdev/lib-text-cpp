@@ -1,13 +1,10 @@
 #ifndef __TEXT_EXPRESSION__EXPRESSIONPOSTFIXPARSER_HPP__
 #define __TEXT_EXPRESSION__EXPRESSIONPOSTFIXPARSER_HPP__
 
-#include "FunctionToken.hpp"
 #include "FunctionTokenHelper.hpp"
-#include "IValueToken.hpp"
 
 #include <memory>
 #include <queue>
-#include <stack>
 #include <vector>
 
 namespace Text::Expression

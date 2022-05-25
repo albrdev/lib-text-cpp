@@ -2,12 +2,11 @@
 #define __TEXT_EXPRESSION__EXPRESSIONPARSER_HPP__
 
 #include "ExpressionParserBase.hpp"
-#include "IValueToken.hpp"
-
-#include <string>
 
 namespace Text::Expression
 {
+  class IValueToken;
+
   class ExpressionParser : public ExpressionParserBase
   {
     public:

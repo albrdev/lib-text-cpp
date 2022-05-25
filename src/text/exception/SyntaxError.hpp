@@ -2,7 +2,6 @@
 #define __TEXT_EXCEPTION_SYNTAXERROR_HPP__
 
 #include <stdexcept>
-#include <string>
 
 namespace Text::Exception
 {

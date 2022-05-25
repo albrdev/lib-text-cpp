@@ -1,8 +1,9 @@
 #ifndef __TEXT_EXPRESSION__GENERICTOKEN_HPP__
 #define __TEXT_EXPRESSION__GENERICTOKEN_HPP__
 
+#include "IToken.hpp"
+
 #include <sstream>
-#include <string>
 
 namespace Text::Expression
 {

@@ -4,8 +4,6 @@
 #include "IVariableToken.hpp"
 #include "ValueToken.hpp"
 
-#include <string>
-
 namespace Text::Expression
 {
   template<class... Ts>

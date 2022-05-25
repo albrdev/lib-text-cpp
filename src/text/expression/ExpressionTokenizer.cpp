@@ -1,6 +1,13 @@
 #include "ExpressionTokenizer.hpp"
 #include "GenericToken.hpp"
+#include "IBinaryOperatorToken.hpp"
+#include "IFunctionToken.hpp"
+#include "IUnaryOperatorToken.hpp"
+#include "IValueToken.hpp"
+#include "IVariableToken.hpp"
 #include "text/exception/SyntaxError.hpp"
+
+#include <unordered_map>
 
 namespace Text::Expression
 {

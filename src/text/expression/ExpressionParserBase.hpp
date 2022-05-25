@@ -4,17 +4,9 @@
 #include "ExpressionEvaluator.hpp"
 #include "ExpressionPostfixParser.hpp"
 #include "ExpressionTokenizer.hpp"
-#include "IBinaryOperatorToken.hpp"
-#include "IFunctionToken.hpp"
-#include "IToken.hpp"
-#include "IUnaryOperatorToken.hpp"
-#include "IValueToken.hpp"
-#include "IVariableToken.hpp"
 #include "Token.hpp"
 
 #include <queue>
-#include <string>
-#include <unordered_map>
 
 namespace Text::Expression
 {

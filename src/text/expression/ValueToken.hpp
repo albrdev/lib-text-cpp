@@ -4,8 +4,6 @@
 #include "IValueToken.hpp"
 
 #include <sstream>
-#include <string>
-#include <typeinfo>
 #include <variant>
 
 namespace Text::Expression
