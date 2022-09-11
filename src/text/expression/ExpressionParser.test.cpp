@@ -102,16 +102,31 @@ static UnaryOperator __unaryOperator_Minus(
 static UnaryOperator __unaryOperator_Not(
     '!',
     [](IValueToken* rhs) { return new Value(static_cast<ValueType>(!rhs->As<Value*>()->GetValue<ValueType>())); },
-
     4,
     Associativity::Right);
 
 static UnaryOperator __unaryOperator_TwosComplement(
     '~',
     [](IValueToken* rhs) { return new Value(static_cast<ValueType>(~static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>()))); },
-
     4,
     Associativity::Right);
+
+static UnaryOperator __unaryOperator_Factorial(
+    '\\',
+    [](IValueToken* rhs) {
+      std::int64_t n      = static_cast<std::int64_t>(rhs->As<Value*>()->GetValue<ValueType>());
+      std::int64_t result = (n >= 0l ? 1l : -1l);
+
+      n = std::abs(n);
+      for(std::int64_t i = 1l; i <= n; i++)
+      {
+        result *= i;
+      }
+
+      return new Value(static_cast<ValueType>(result));
+    },
+    4,
+    Associativity::Left);
 
 static BinaryOperator __binaryOperator_Addition(
     "+",
@@ -125,28 +140,24 @@ static BinaryOperator __binaryOperator_Addition(
         return new Value(lhs->ToString() + rhs->ToString());
       }
     },
-
     1,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Subtraction(
     "-",
     [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() - rhs->As<Value*>()->GetValue<ValueType>()); },
-
     1,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Multiplication(
     "*",
     [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() * rhs->As<Value*>()->GetValue<ValueType>()); },
-
     2,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Division(
     "/",
     [](IValueToken* lhs, IValueToken* rhs) { return new Value(lhs->As<Value*>()->GetValue<ValueType>() / rhs->As<Value*>()->GetValue<ValueType>()); },
-
     2,
     Associativity::Left);
 
@@ -156,14 +167,12 @@ static BinaryOperator __binaryOperator_Remainder(
       return new Value(
           static_cast<ValueType>(static_cast<long>(lhs->As<Value*>()->GetValue<ValueType>()) % static_cast<long>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-
     2,
     Associativity::Left);
 
 static BinaryOperator __binaryOperator_Exponentiation(
     "**",
     [](IValueToken* lhs, IValueToken* rhs) { return new Value(std::pow(lhs->As<Value*>()->GetValue<ValueType>(), rhs->As<Value*>()->GetValue<ValueType>())); },
-
     3,
     Associativity::Right);
 
@@ -172,7 +181,6 @@ static BinaryOperator __binaryOperator_TruncatedDivision(
     [](IValueToken* lhs, IValueToken* rhs) {
       return new Value(std::trunc(lhs->As<Value*>()->GetValue<ValueType>() / rhs->As<Value*>()->GetValue<ValueType>()));
     },
-
     2,
     Associativity::Right);
 
@@ -182,7 +190,6 @@ static BinaryOperator __binaryOperator_Or(
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>()) |
                                               static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-
     1,
     Associativity::Left);
 
@@ -192,7 +199,6 @@ static BinaryOperator __binaryOperator_And(
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>()) &
                                               static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-
     1,
     Associativity::Left);
 
@@ -202,7 +208,6 @@ static BinaryOperator __binaryOperator_Xor(
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>()) ^
                                               static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-
     2,
     Associativity::Left);
 
@@ -212,7 +217,6 @@ static BinaryOperator __binaryOperator_LeftShift(
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>())
                                               << static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-
     1,
     Associativity::Left);
 
@@ -222,7 +226,6 @@ static BinaryOperator __binaryOperator_RightShift(
       return new Value(static_cast<ValueType>(static_cast<std::uint64_t>(lhs->As<Value*>()->GetValue<ValueType>()) >>
                                               static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>())));
     },
-
     1,
     Associativity::Left);
 
@@ -262,7 +265,6 @@ static BinaryOperator __binaryOperator_Assignment = BinaryOperator(
       }
       return variable;
     },
-
     4,
     Associativity::Right);
 
@@ -450,6 +452,7 @@ static ExpressionParser createInstance()
   __unaryOperators[__unaryOperator_Minus.GetIdentifier()]          = &__unaryOperator_Minus;
   __unaryOperators[__unaryOperator_Not.GetIdentifier()]            = &__unaryOperator_Not;
   __unaryOperators[__unaryOperator_TwosComplement.GetIdentifier()] = &__unaryOperator_TwosComplement;
+  __unaryOperators[__unaryOperator_Factorial.GetIdentifier()]      = &__unaryOperator_Factorial;
 
   __binaryOperators[__binaryOperator_Addition.GetIdentifier()]          = &__binaryOperator_Addition;
   __binaryOperators[__binaryOperator_Subtraction.GetIdentifier()]       = &__binaryOperator_Subtraction;
@@ -547,6 +550,42 @@ namespace UnitTest
       auto instance = createInstance();
       auto actual   = instance.Evaluate("~0");
       auto expected = static_cast<ValueType>(~0ul);
+      ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
+    }
+
+    // Factorial
+    {
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\\0");
+      auto expected = static_cast<ValueType>(1l);
+      ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
+    }
+
+    {
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\\1");
+      auto expected = static_cast<ValueType>(1l);
+      ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
+    }
+
+    {
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\\4");
+      auto expected = static_cast<ValueType>(24l);
+      ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
+    }
+
+    {
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\\-1");
+      auto expected = static_cast<ValueType>(-1l);
+      ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
+    }
+
+    {
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\\-4");
+      auto expected = static_cast<ValueType>(-24l);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
   }
@@ -1406,6 +1445,20 @@ namespace UnitTest
       auto instance = createInstance();
       auto actual   = instance.Evaluate("1 + 10**2**3");
       auto expected = 1.0 + std::pow(10.0, std::pow(2.0, 3.0));
+      ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
+    }
+
+    {
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\\+4");
+      auto expected = 24.0;
+      ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
+    }
+
+    {
+      auto instance = createInstance();
+      auto actual   = instance.Evaluate("\\-4");
+      auto expected = -24.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
