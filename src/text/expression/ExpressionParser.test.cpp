@@ -112,13 +112,16 @@ static UnaryOperator __unaryOperator_TwosComplement(
     Associativity::Right);
 
 static UnaryOperator __unaryOperator_Factorial(
-    '\\',
+    ':',
     [](IValueToken* rhs) {
-      std::int64_t n      = static_cast<std::int64_t>(rhs->As<Value*>()->GetValue<ValueType>());
-      std::int64_t result = (n >= 0l ? 1l : -1l);
+      if(rhs->As<Value*>()->GetValue<ValueType>() < 0)
+      {
+        throw std::range_error("Value cannot be negative");
+      }
 
-      n = std::abs(n);
-      for(std::int64_t i = 1l; i <= n; i++)
+      std::uint64_t n      = static_cast<std::uint64_t>(rhs->As<Value*>()->GetValue<ValueType>());
+      std::uint64_t result = 1ul;
+      for(std::uint64_t i = 1ul; i <= n; i++)
       {
         result *= i;
       }
@@ -126,7 +129,7 @@ static UnaryOperator __unaryOperator_Factorial(
       return new Value(static_cast<ValueType>(result));
     },
     4,
-    Associativity::Left);
+    Associativity::Right);
 
 static BinaryOperator __binaryOperator_Addition(
     "+",
@@ -556,37 +559,43 @@ namespace UnitTest
     // Factorial
     {
       auto instance = createInstance();
-      auto actual   = instance.Evaluate("\\0");
+      auto actual   = instance.Evaluate(":0");
       auto expected = static_cast<ValueType>(1l);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
       auto instance = createInstance();
-      auto actual   = instance.Evaluate("\\1");
+      auto actual   = instance.Evaluate(":1");
       auto expected = static_cast<ValueType>(1l);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
       auto instance = createInstance();
-      auto actual   = instance.Evaluate("\\4");
+      auto actual   = instance.Evaluate(":4");
       auto expected = static_cast<ValueType>(24l);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
       auto instance = createInstance();
-      auto actual   = instance.Evaluate("\\-1");
+      auto actual   = instance.Evaluate("-:1");
       auto expected = static_cast<ValueType>(-1l);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
     {
       auto instance = createInstance();
-      auto actual   = instance.Evaluate("\\-4");
+      auto actual   = instance.Evaluate("-:4");
       auto expected = static_cast<ValueType>(-24l);
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
+    }
+
+    {
+      auto instance  = createInstance();
+      using expected = std::range_error;
+      ASSERT_THROW(instance.Evaluate(":-1"), expected);
     }
   }
 
@@ -1445,20 +1454,6 @@ namespace UnitTest
       auto instance = createInstance();
       auto actual   = instance.Evaluate("1 + 10**2**3");
       auto expected = 1.0 + std::pow(10.0, std::pow(2.0, 3.0));
-      ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
-    }
-
-    {
-      auto instance = createInstance();
-      auto actual   = instance.Evaluate("\\+4");
-      auto expected = 24.0;
-      ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
-    }
-
-    {
-      auto instance = createInstance();
-      auto actual   = instance.Evaluate("\\-4");
-      auto expected = -24.0;
       ASSERT_EQ(actual->As<Value*>()->GetValue<ValueType>(), expected);
     }
 
