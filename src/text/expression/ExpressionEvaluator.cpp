@@ -95,7 +95,7 @@ namespace Text::Expression
 
     if(stack.size() != 1u)
     {
-      throw Exception::SyntaxError("Excessive values provided: " + std::to_string(stack.size()));
+      throw Exception::SyntaxError(std::string((stack.size() == 0u) ? "Insufficient" : "Excessive") + " values provided: " + std::to_string(stack.size()));
     }
 
     return stack.back();
