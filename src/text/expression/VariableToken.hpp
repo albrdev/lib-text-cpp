@@ -12,8 +12,6 @@ namespace Text::Expression
     public:
     virtual const std::string& GetIdentifier() const override { return m_Identifier; }
 
-    virtual std::string ToString() const override { return this->GetIdentifier(); }
-
     template<class T>
     VariableToken<Ts...>& operator=(const T& value)
     {
