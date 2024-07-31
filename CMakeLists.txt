@@ -11,6 +11,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(LIBRARY_TEXT text)
 set(UNITTEST_TEXT text-test)
 
+if(TARGET ${LIBRARY_TEXT})
+    return()
+endif()
+
 project(lib-text VERSION 1.0.0)
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
